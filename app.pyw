@@ -14,8 +14,21 @@ import datetime
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(CURRENT_DIR)
 
-# QtWebEngine 크래시 방지 및 매끄러운 하드웨어 가속 스크롤 플래그
-os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-gpu-shader-disk-cache --disable-gpu-process-crash-limit --disable-backgrounding-occluded-windows --enable-smooth-scrolling --js-flags=--max-old-space-size=4096"
+# QtWebEngine 안정성 극대화 및 GPU/Chromium 렌더 프로세스 충돌(0xC0000005) 방지 환경 변수
+os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = (
+    "--disable-gpu "
+    "--disable-gpu-compositing "
+    "--disable-gpu-rasterization "
+    "--disable-software-rasterizer "
+    "--disable-dev-shm-usage "
+    "--no-sandbox "
+    "--disable-gpu-shader-disk-cache "
+    "--disable-gpu-process-crash-limit "
+    "--disable-backgrounding-occluded-windows "
+    "--enable-smooth-scrolling "
+    "--js-flags=--max-old-space-size=4096"
+)
 
 LOG_FILE = os.path.join(CURRENT_DIR, "app_debug.log")
 
@@ -287,8 +300,17 @@ class MainWindow(QMainWindow):
         y = max(0, (screen.height() - self.height()) // 2)
         self.move(x, y)
 
+        # 다크 테마 배경 스타일 설정 (흰 화면 번쩍임 및 깜빡임 원천 차단)
+        self.setStyleSheet("QMainWindow { background-color: #131314; }")
+
         # WebEngine 설정
         self.view = QWebEngineView(self)
+        self.view.setStyleSheet("background-color: #131314;")
+        palette = self.view.palette()
+        palette.setColor(palette.Window, QColor("#131314"))
+        palette.setColor(palette.Base, QColor("#131314"))
+        self.view.setPalette(palette)
+
         self.page = CustomWebEnginePage(self.view)
         # 기본 배경을 다크로 설정하여 흰 화면 번쩍임 및 백지화 방지
         self.page.setBackgroundColor(QColor("#131314"))
@@ -346,9 +368,20 @@ class MainWindow(QMainWindow):
     def on_render_process_terminated(self, termination_status, exit_code):
         """WebEngine 렌더 프로세스가 비정상 종료되거나 메모리 초과로 크래시된 경우 자동 복구"""
         print(f"[WARNING] WebEngine render process terminated: status={termination_status}, exit_code={exit_code}")
-        # 자동 리로드하여 흰 화면 상태 방지
+        # 동기 즉시 리로드 시 Qt 내부 IPC 채널 및 마우스 이벤트 포커스가 먹통되는 현상 방지
+        # 300ms 지연 후 안전하게 리로드 및 윈도우 포커스/마우스 이벤트 채널 복원
+        try:
+            from PyQt5.QtCore import QTimer
+            QTimer.singleShot(300, self._safe_reload_after_crash)
+        except Exception as e:
+            print(f"Recovery timer error: {e}")
+
+    def _safe_reload_after_crash(self):
         try:
             self.view.reload()
+            self.view.setFocus()
+            self.activateWindow()
+            print("WebEngine recovered and reloaded cleanly after termination.")
         except Exception as e:
             print(f"Reload after crash notice: {e}")
 
@@ -361,7 +394,6 @@ class MainWindow(QMainWindow):
         if title.startswith("__ais_theme__:"):
             theme_name = title.replace("__ais_theme__:", "").strip()
             update_window_theme(self, theme_name)
-            self.setWindowTitle(" ")
 
     def on_download_requested(self, download_item):
         """웹에서 다운로드 발생 시 C드라이브 Downloads 폴더를 기본 위치로 하여 저장 다이얼로그 표시"""
@@ -446,6 +478,9 @@ def main():
     try:
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+        # QtWebEngine 안정성 및 Windows 메모리 접근 위반(0xC0000005) 방지
+        QApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
+        QApplication.setAttribute(Qt.AA_UseSoftwareOpenGL, True)
 
         app = QApplication(sys.argv)
         app.setApplicationName("Google AI Studio Prompt and Chunk Manager")

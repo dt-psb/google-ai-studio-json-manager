@@ -2815,6 +2815,25 @@
       return html;
     }
 
+    // [성능 최적화] 전역 Lucide 아이콘 생성 최적화 래퍼
+    // 대용량 청크 렌더링 시 전역 DOM 재탐색이 수십 번 연속 실행되어 브라우저 렌더러가 멈추거나 크래시되는 현상 방지
+    (function optimizeLucide() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        const _origCreateIcons = lucide.createIcons.bind(lucide);
+        let _rafId = null;
+        lucide.createIcons = function(options) {
+          if (options && options.root) {
+            try { return _origCreateIcons(options); } catch (_) {}
+          }
+          if (_rafId) return;
+          _rafId = requestAnimationFrame(() => {
+            _rafId = null;
+            try { _origCreateIcons(); } catch (_) {}
+          });
+        };
+      }
+    })();
+
     // ==========================================
     // 1. 테마 관리 (영구 저장 및 자동 복원)
     // ==========================================

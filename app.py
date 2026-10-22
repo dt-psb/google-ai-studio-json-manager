@@ -14,6 +14,22 @@ import datetime
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(CURRENT_DIR)
 
+# QtWebEngine 안정성 극대화 및 GPU/Chromium 렌더 프로세스 충돌(0xC0000005) 방지 환경 변수
+os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = (
+    "--disable-gpu "
+    "--disable-gpu-compositing "
+    "--disable-gpu-rasterization "
+    "--disable-software-rasterizer "
+    "--disable-dev-shm-usage "
+    "--no-sandbox "
+    "--disable-gpu-shader-disk-cache "
+    "--disable-gpu-process-crash-limit "
+    "--disable-backgrounding-occluded-windows "
+    "--enable-smooth-scrolling "
+    "--js-flags=--max-old-space-size=4096"
+)
+
 LOG_FILE = os.path.join(CURRENT_DIR, "app_debug.log")
 
 class LoggerTee:
@@ -73,12 +89,13 @@ def show_fatal_error(msg):
 try:
     import threading
     import time
+    import urllib.parse
     import socketserver
     from PyQt5.QtCore import QUrl, Qt
     from PyQt5.QtWidgets import (
         QApplication, QMainWindow, QMessageBox, QFileDialog, QInputDialog, QShortcut
     )
-    from PyQt5.QtGui import QIcon, QKeySequence
+    from PyQt5.QtGui import QIcon, QKeySequence, QColor
     from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineProfile, QWebEngineSettings
 except Exception as e:
     err_text = f"PyQt5 또는 QtWebEngine 모듈을 불러올 수 없습니다.\n오류: {e}\n\n{traceback.format_exc()}"
@@ -102,7 +119,7 @@ except Exception as e:
 
 
 class CustomWebEnginePage(QWebEnginePage):
-    """자바스크립트 alert, confirm, prompt를 네이티브 Qt 다이얼로그로 처리"""
+    """자바스크립트 alert, confirm, prompt를 네이티브 Qt 다이얼로그로 안전하게 처리 및 콘솔 에러 추적"""
     def __init__(self, parent=None):
         super().__init__(parent)
         # 클립보드 / 미디어 등 권한 요청 시 자동 허용
@@ -131,26 +148,45 @@ class CustomWebEnginePage(QWebEnginePage):
         self.setFeaturePermission(origin, feature, QWebEnginePage.PermissionGrantedByUser)
 
     def javaScriptAlert(self, securityOrigin, msg):
-        QMessageBox.information(self.view(), "Google AI Studio", msg)
+        try:
+            QMessageBox.information(self.view(), "Google AI Studio", str(msg))
+        except Exception:
+            pass
 
     def javaScriptConfirm(self, securityOrigin, msg):
-        result = QMessageBox.question(
-            self.view(),
-            "확인",
-            msg,
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes
-        )
-        return result == QMessageBox.Yes
+        try:
+            result = QMessageBox.question(
+                self.view(),
+                "확인",
+                str(msg),
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            return result == QMessageBox.Yes
+        except Exception:
+            return True
 
-    def javaScriptPrompt(self, securityOrigin, msg, defaultValue):
-        text, ok = QInputDialog.getText(
-            self.view(),
-            "입력",
-            msg,
-            text=defaultValue
-        )
-        return ok, text
+    def javaScriptPrompt(self, securityOrigin, msg, defaultValue, *args):
+        try:
+            text, ok = QInputDialog.getText(
+                self.view(),
+                "입력",
+                str(msg),
+                text=str(defaultValue or "")
+            )
+            # args가 있는 경우(PyQt5 C++ result 포인터 전달형)
+            if args and hasattr(args[0], 'setValue'):
+                args[0].setValue(text if ok else "")
+                return ok
+            return ok, text
+        except Exception as prompt_err:
+            print(f"javaScriptPrompt notice: {prompt_err}")
+            return False, ""
+
+    def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
+        # 자바스크립트 오류 로그 추적
+        if level >= 2:  # 2: Error
+            print(f"[JS ERROR] {sourceID}:{lineNumber} -> {message}")
 
 
 class DevToolsWindow(QMainWindow):
@@ -264,10 +300,24 @@ class MainWindow(QMainWindow):
         y = max(0, (screen.height() - self.height()) // 2)
         self.move(x, y)
 
+        # 다크 테마 배경 스타일 설정 (흰 화면 번쩍임 및 깜빡임 원천 차단)
+        self.setStyleSheet("QMainWindow { background-color: #131314; }")
+
         # WebEngine 설정
         self.view = QWebEngineView(self)
+        self.view.setStyleSheet("background-color: #131314;")
+        palette = self.view.palette()
+        palette.setColor(palette.Window, QColor("#131314"))
+        palette.setColor(palette.Base, QColor("#131314"))
+        self.view.setPalette(palette)
+
         self.page = CustomWebEnginePage(self.view)
+        # 기본 배경을 다크로 설정하여 흰 화면 번쩍임 및 백지화 방지
+        self.page.setBackgroundColor(QColor("#131314"))
         self.view.setPage(self.page)
+
+        # 렌더 프로세스 비정상 종료 시 자동 복구(흰 화면 방지)
+        self.view.renderProcessTerminated.connect(self.on_render_process_terminated)
 
         # WebEngine 설정 활성화
         settings = self.view.settings()
@@ -275,7 +325,7 @@ class MainWindow(QMainWindow):
         settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
         settings.setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
         settings.setAttribute(QWebEngineSettings.LocalContentCanAccessFileUrls, True)
-        settings.setAttribute(QWebEngineSettings.ScrollAnimatorEnabled, True)
+        settings.setAttribute(QWebEngineSettings.ScrollAnimatorEnabled, False)
 
         self.setCentralWidget(self.view)
 
@@ -315,16 +365,35 @@ class MainWindow(QMainWindow):
         self.view.titleChanged.connect(self.on_title_changed)
         self.view.load(QUrl(self.url))
 
+    def on_render_process_terminated(self, termination_status, exit_code):
+        """WebEngine 렌더 프로세스가 비정상 종료되거나 메모리 초과로 크래시된 경우 자동 복구"""
+        print(f"[WARNING] WebEngine render process terminated: status={termination_status}, exit_code={exit_code}")
+        # 동기 즉시 리로드 시 Qt 내부 IPC 채널 및 마우스 이벤트 포커스가 먹통되는 현상 방지
+        # 300ms 지연 후 안전하게 리로드 및 윈도우 포커스/마우스 이벤트 채널 복원
+        try:
+            from PyQt5.QtCore import QTimer
+            QTimer.singleShot(300, self._safe_reload_after_crash)
+        except Exception as e:
+            print(f"Recovery timer error: {e}")
+
+    def _safe_reload_after_crash(self):
+        try:
+            self.view.reload()
+            self.view.setFocus()
+            self.activateWindow()
+            print("WebEngine recovered and reloaded cleanly after termination.")
+        except Exception as e:
+            print(f"Reload after crash notice: {e}")
+
     def showEvent(self, event):
         super().showEvent(event)
         update_window_theme(self, self.current_theme)
 
     def on_title_changed(self, title):
-        """웹에서 테마 변경 시 document.title을 통해 전달되는 테마 신호 감지"""
+        """웹에서 테마 변경 시 document.title을 통해 전달되는 테마 신호 감지하여 네이티브 타이틀바 즉각 갱신"""
         if title.startswith("__ais_theme__:"):
             theme_name = title.replace("__ais_theme__:", "").strip()
             update_window_theme(self, theme_name)
-            self.setWindowTitle(" ")
 
     def on_download_requested(self, download_item):
         """웹에서 다운로드 발생 시 C드라이브 Downloads 폴더를 기본 위치로 하여 저장 다이얼로그 표시"""
@@ -409,6 +478,9 @@ def main():
     try:
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+        # QtWebEngine 안정성 및 Windows 메모리 접근 위반(0xC0000005) 방지
+        QApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
+        QApplication.setAttribute(Qt.AA_UseSoftwareOpenGL, True)
 
         app = QApplication(sys.argv)
         app.setApplicationName("Google AI Studio Prompt and Chunk Manager")
@@ -422,7 +494,6 @@ def main():
         saved_settings = server.load_app_settings()
         saved_theme = saved_settings.get("theme", "dark")
 
-        import urllib.parse
         target_url = f"http://127.0.0.1:{port}/index.html?theme={urllib.parse.quote(saved_theme)}"
         window = MainWindow(target_url, saved_theme=saved_theme)
         window.show()
