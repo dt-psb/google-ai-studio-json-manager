@@ -16,6 +16,7 @@ import hashlib
 import http.server
 import json
 import os
+import re
 import shutil
 import socketserver
 import subprocess
@@ -1245,6 +1246,185 @@ def search_in_storage(query: str, scope: str = "all", target_worldview: Optional
     }
 
 
+def find_and_replace_in_storage(
+    find_str: str,
+    replace_str: str,
+    scope: str = "current",
+    target_worldview: Optional[str] = None,
+    target_file: Optional[str] = None,
+    case_sensitive: bool = False,
+    is_preview: bool = False
+) -> Dict[str, Any]:
+    """
+    한 세션, 특정 세계관, 또는 보관함 전체의 JSON 대화 파일들을 대상으로
+    특정 단어를 고속 검색/미리보기 하거나 일괄 치환합니다.
+    - is_preview=True: 파일 수정 없이 일치 건수 및 전후 스니펫 미리보기 반환
+    - is_preview=False: 실제 파일 수정 및 .bak 백업 생성 후 결과 반환
+    """
+    clean_find = find_str.strip()
+    if not clean_find:
+        return {"error": "찾을 단어를 입력해주세요."}
+
+    wv_cfg = load_worldviews_config()
+    norm_mappings = _build_normalized_mappings(wv_cfg.get("mappings", {}))
+    target_file_norm = normalize_path(target_file).lstrip("storage/").lstrip("/") if target_file else None
+
+    flags = 0 if case_sensitive else re.IGNORECASE
+    try:
+        pattern = re.compile(re.escape(clean_find), flags)
+    except Exception as e:
+        return {"error": f"정규식 컴파일 오류: {e}"}
+
+    total_matches = 0
+    files_modified = 0
+    modified_paths = []
+    preview_items = []
+    files_searched = 0
+
+    search_dirs = [STORAGE_DIR]
+    for s_dir in search_dirs:
+        for root, _dirs, files in os.walk(s_dir):
+            for filename in files:
+                abs_path = normalize_path(os.path.abspath(os.path.join(root, filename)))
+                if not is_valid_json_file(abs_path, filename):
+                    continue
+
+                rel_path = normalize_path(os.path.relpath(abs_path, STORAGE_DIR))
+                clean_rel = rel_path.lstrip("storage/").lstrip("/")
+                rel_parts = rel_path.split("/")
+                category = _resolve_category(rel_path, filename, rel_parts, norm_mappings)
+
+                # Scope 조건 검사
+                if scope == "current" and target_file_norm:
+                    if clean_rel.lower() != target_file_norm.lower() and filename.lower() != target_file_norm.lower():
+                        continue
+                elif scope == "worldview" and target_worldview:
+                    if category != target_worldview:
+                        continue
+
+                files_searched += 1
+
+                # 1단계: 초고속 텍스트 선별
+                try:
+                    with open(abs_path, "r", encoding="utf-8", errors="replace") as f:
+                        raw_content = f.read()
+                except Exception:
+                    continue
+
+                if case_sensitive:
+                    if clean_find not in raw_content:
+                        continue
+                else:
+                    if clean_find.lower() not in raw_content.lower():
+                        continue
+
+                # 2단계: JSON 구조 파싱
+                try:
+                    data = json.loads(raw_content)
+                except Exception:
+                    continue
+
+                file_matches = 0
+
+                # A. systemInstruction 검사/치환
+                sys_inst = data.get("systemInstruction", {})
+                if isinstance(sys_inst, dict) and "text" in sys_inst and isinstance(sys_inst["text"], str):
+                    matches = list(pattern.finditer(sys_inst["text"]))
+                    if matches:
+                        file_matches += len(matches)
+                        if is_preview:
+                            for m in matches[:3]:
+                                s_start = max(0, m.start() - 35)
+                                s_end = min(len(sys_inst["text"]), m.end() + 35)
+                                before_snip = ("..." if s_start > 0 else "") + sys_inst["text"][s_start:s_end].replace("\r", " ").replace("\n", " ") + ("..." if s_end < len(sys_inst["text"]) else "")
+                                after_snip = pattern.sub(replace_str, before_snip)
+                                preview_items.append({
+                                    "filename": filename,
+                                    "rel_path": rel_path,
+                                    "category": category,
+                                    "chunk_index": -1,
+                                    "role": "system",
+                                    "before": before_snip,
+                                    "after": after_snip
+                                })
+                        else:
+                            sys_inst["text"] = pattern.sub(replace_str, sys_inst["text"])
+
+                # B. chunkedPrompt.chunks 검사/치환
+                chunks = data.get("chunkedPrompt", {}).get("chunks", [])
+                if isinstance(chunks, list):
+                    for c_idx, chunk in enumerate(chunks):
+                        if not isinstance(chunk, dict):
+                            continue
+                        chunk_text = chunk.get("text", "")
+                        is_thought = bool(chunk.get("isThought", False))
+                        role = "thought" if is_thought else chunk.get("role", "user")
+
+                        if isinstance(chunk_text, str) and chunk_text:
+                            matches = list(pattern.finditer(chunk_text))
+                            if matches:
+                                file_matches += len(matches)
+                                if is_preview:
+                                    for m in matches[:2]:
+                                        s_start = max(0, m.start() - 35)
+                                        s_end = min(len(chunk_text), m.end() + 35)
+                                        before_snip = ("..." if s_start > 0 else "") + chunk_text[s_start:s_end].replace("\r", " ").replace("\n", " ") + ("..." if s_end < len(chunk_text) else "")
+                                        after_snip = pattern.sub(replace_str, before_snip)
+                                        preview_items.append({
+                                            "filename": filename,
+                                            "rel_path": rel_path,
+                                            "category": category,
+                                            "chunk_index": c_idx,
+                                            "role": role,
+                                            "before": before_snip,
+                                            "after": after_snip
+                                        })
+                                else:
+                                    chunk["text"] = pattern.sub(replace_str, chunk_text)
+
+                        # parts 검사/치환
+                        parts = chunk.get("parts", [])
+                        if isinstance(parts, list):
+                            for part in parts:
+                                if isinstance(part, dict) and "text" in part and isinstance(part["text"], str):
+                                    p_matches = list(pattern.finditer(part["text"]))
+                                    if p_matches:
+                                        file_matches += len(p_matches)
+                                        if not is_preview:
+                                            part["text"] = pattern.sub(replace_str, part["text"])
+
+                if file_matches > 0:
+                    total_matches += file_matches
+                    files_modified += 1
+                    modified_paths.append(rel_path)
+
+                    if not is_preview:
+                        # 안전 백업 생성 후 저장
+                        try:
+                            backup_path = abs_path + ".bak"
+                            with open(backup_path, "w", encoding="utf-8") as bf:
+                                bf.write(raw_content)
+                            with open(abs_path, "w", encoding="utf-8") as f:
+                                json.dump(data, f, ensure_ascii=False, indent=2)
+                        except Exception as e:
+                            print(f"[Error saving find/replace file {abs_path}]: {e}")
+
+    return {
+        "success": True,
+        "is_preview": is_preview,
+        "total_matches": total_matches,
+        "total_replaced": total_matches if not is_preview else 0,
+        "files_modified": files_modified,
+        "files_searched": files_searched,
+        "modified_paths": modified_paths,
+        "preview_items": preview_items[:150],
+        "find": clean_find,
+        "replace": replace_str,
+        "scope": scope,
+        "worldview": target_worldview
+    }
+
+
 # ---------------------------------------------------------------------------
 # 파일 경로 해석 헬퍼
 # ---------------------------------------------------------------------------
@@ -1544,6 +1724,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             "/api/storage/propagate-lineage": self._post_propagate_lineage,
             "/api/storage/open-external":     self._post_open_external,
             "/api/download-to-c":             self._post_download_to_c,
+            "/api/storage/find-replace":       self._post_find_replace,
         }
 
         for route, handler in post_routes.items():
@@ -1870,6 +2051,39 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             print(f"[Download to C Error] {e}\n{traceback.format_exc()}")
             self._send_error(500, f"다운로드 폴더 저장 실패: {e}")
+
+    def _post_find_replace(self):
+        """
+        한 세션, 특정 세계관, 또는 보관함 전체의 파일에서 특정 단어를 일괄 검색/교체합니다.
+        """
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        find_str = payload.get("find", "")
+        replace_str = payload.get("replace", "")
+        scope = payload.get("scope", "current")
+        worldview = payload.get("worldview")
+        file_path = payload.get("file")
+        case_sensitive = bool(payload.get("case_sensitive", False))
+        is_preview = bool(payload.get("is_preview", False))
+
+        try:
+            res = find_and_replace_in_storage(
+                find_str=find_str,
+                replace_str=replace_str,
+                scope=scope,
+                target_worldview=worldview,
+                target_file=file_path,
+                case_sensitive=case_sensitive,
+                is_preview=is_preview
+            )
+            if "error" in res:
+                self._send_error(400, res["error"])
+            else:
+                self._send_json(res)
+        except Exception as e:
+            print(f"[Find Replace Error] {e}\n{traceback.format_exc()}")
+            self._send_error(500, f"일괄 바꾸기 처리 실패: {e}")
 
     def _post_settings(self):
         payload = self._read_json_body()

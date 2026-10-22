@@ -1534,70 +1534,184 @@
 
       <!-- 3. Full-Page Search Session (검색 전용 풀페이지 메인 세션) -->
       <div id="searchSessionViewContainer" class="flex-1 flex flex-col h-full bg-google-bgDark overflow-hidden min-w-0 hidden">
-        <!-- Search Session Header Bar -->
-        <div class="border-b border-google-borderDark px-6 py-4 bg-google-surfaceDark/90 backdrop-blur flex-shrink-0 space-y-3 z-10 shadow-sm">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
-              <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <i data-lucide="search" class="w-4 h-4"></i>
+        <!-- Search & Batch Replace Session Top Header Bar -->
+        <div class="border-b border-google-borderDark px-6 py-4 bg-google-surfaceDark/90 backdrop-blur flex-shrink-0 space-y-4 z-10 shadow-sm">
+          <!-- Top Row: Icon + Title + Mode Switcher Tabs (대화 검색 vs 일괄 바꾸기) -->
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center space-x-3">
+              <div id="ssHeaderIconBox" class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shadow-sm">
+                <i data-lucide="search" id="ssHeaderIcon" class="w-4 h-4"></i>
               </div>
               <div>
-                <h2 class="text-sm font-bold text-google-textPrimary flex items-center space-x-2">
-                  <span>대화 검색 세션</span>
-                  <span id="searchSessionStatsBadge" class="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 text-[10px] font-mono border border-google-borderDark">검색 대기</span>
+                <h2 class="text-sm sm:text-base font-bold text-google-textPrimary flex items-center space-x-2">
+                  <span id="ssHeaderTitle">대화 검색 세션</span>
+                  <span id="searchSessionStatsBadge" class="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 text-[10px] font-mono border border-google-borderDark">대기 중</span>
                 </h2>
-                <p class="text-[11px] text-google-textSecondary">현재 대화, 특정 세계관 그룹, 또는 보관함의 모든 대화 파일 본문을 고속으로 스캔합니다.</p>
+                <p id="ssHeaderDesc" class="text-[11px] text-google-textSecondary">현재 대화, 특정 세계관 그룹, 또는 보관함의 모든 대화 파일 본문을 고속으로 스캔합니다.</p>
               </div>
             </div>
 
-            <!-- Scope Segment Buttons -->
-            <div class="flex items-center space-x-1 bg-google-cardDark p-1 rounded-xl border border-google-borderDark text-xs">
-              <button type="button" onclick="setSearchScope('current')" id="ssScopeCurrent" class="px-3 py-1.5 rounded-lg text-white bg-blue-600 transition font-semibold flex items-center space-x-1.5 cursor-pointer shadow-sm">
-                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-                <span>현재 대화</span>
+            <!-- Mode Switcher Tabs -->
+            <div class="flex items-center p-1 rounded-xl bg-google-bgDark border border-google-borderDark text-xs shadow-inner">
+              <button type="button" onclick="switchSSTab('search')" id="ssTabSearch" class="px-3.5 py-1.5 rounded-lg text-white bg-emerald-600 font-semibold flex items-center space-x-1.5 cursor-pointer transition shadow-sm">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <span>대화 검색</span>
               </button>
-              <button type="button" onclick="setSearchScope('worldview')" id="ssScopeWorldview" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer">
-                <i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>
-                <span>세계관 내</span>
-              </button>
-              <button type="button" onclick="setSearchScope('all')" id="ssScopeAll" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer">
-                <i data-lucide="folder-search" class="w-3.5 h-3.5 text-emerald-400"></i>
-                <span>전체 보관함</span>
+              <button type="button" onclick="switchSSTab('replace')" id="ssTabReplace" class="px-3.5 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent font-medium flex items-center space-x-1.5 cursor-pointer transition">
+                <i data-lucide="replace" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>특정 단어 일괄 바꾸기</span>
               </button>
             </div>
           </div>
 
-          <!-- Search Input Bar with Controls -->
-          <div class="flex items-center space-x-2 max-w-4xl">
-            <div class="relative flex-1">
-              <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-google-textSecondary"></i>
-              <input type="text" id="searchSessionInput" 
-                     onkeydown="if(event.key === 'Enter') triggerSearchSession()"
-                     placeholder="검색어를 입력하고 Enter 키 또는 [검색] 버튼을 누르세요..." 
-                     class="w-full bg-google-cardDark text-google-textPrimary placeholder-google-textSecondary pl-10 pr-10 py-2.5 rounded-xl border border-google-borderDark focus:outline-none focus:border-emerald-500 text-xs shadow-inner">
-              <button type="button" onclick="clearSearchSession()" class="absolute right-3 top-2.5 text-google-textSecondary hover:text-white p-0.5 cursor-pointer" title="검색어 지우기">
-                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          <!-- PANEL 1: SEARCH BAR (대화 검색 전용) -->
+          <div id="searchSessionSearchBox" class="space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <!-- Search Input Bar -->
+              <div class="relative flex-1 min-w-[280px]">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-google-textSecondary"></i>
+                <input type="text" id="searchSessionInput" 
+                       onkeydown="if(event.key === 'Enter') triggerSearchSession()"
+                       placeholder="검색어를 입력하고 Enter 키 또는 [검색] 버튼을 누르세요..." 
+                       class="w-full bg-google-cardDark text-google-textPrimary placeholder-google-textSecondary pl-10 pr-10 py-2.5 rounded-xl border border-google-borderDark focus:outline-none focus:border-emerald-500 text-xs shadow-inner">
+                <button type="button" onclick="clearSearchSession()" class="absolute right-3 top-2.5 text-google-textSecondary hover:text-white p-0.5 cursor-pointer" title="검색어 지우기">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- Scope Segment Buttons for Search -->
+              <div class="flex items-center space-x-1 bg-google-cardDark p-1 rounded-xl border border-google-borderDark text-xs flex-shrink-0">
+                <button type="button" onclick="setSearchScope('current')" id="ssScopeCurrent" class="px-3 py-1.5 rounded-lg text-white bg-blue-600 transition font-semibold flex items-center space-x-1.5 cursor-pointer shadow-sm">
+                  <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                  <span>현재 대화</span>
+                </button>
+                <button type="button" onclick="setSearchScope('worldview')" id="ssScopeWorldview" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer">
+                  <i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>
+                  <span>세계관 내</span>
+                </button>
+                <button type="button" onclick="setSearchScope('all')" id="ssScopeAll" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer">
+                  <i data-lucide="folder-search" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>전체 보관함</span>
+                </button>
+              </div>
+
+              <button type="button" id="btnExecuteSearchSession" onclick="triggerSearchSession()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center space-x-1.5 shadow-md transition cursor-pointer flex-shrink-0">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <span>검색</span>
               </button>
             </div>
-            <button type="button" id="btnExecuteSearchSession" onclick="triggerSearchSession()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center space-x-1.5 shadow-md transition cursor-pointer flex-shrink-0">
-              <i data-lucide="search" class="w-3.5 h-3.5"></i>
-              <span>검색</span>
-            </button>
+
+            <!-- Search Target Meta Badge -->
+            <div id="searchSessionMetaBar" class="flex items-center space-x-3 text-[11px] text-google-textSecondary pt-0.5">
+              <span class="flex items-center space-x-1">
+                <span>현재 파일:</span>
+                <strong id="searchSessionCurrentFileDisplay" class="text-blue-300 font-mono">-</strong>
+              </span>
+              <span class="text-zinc-600">|</span>
+              <span class="flex items-center space-x-1">
+                <span>소속 세계관:</span>
+                <strong id="searchSessionWorldviewDisplay" class="text-purple-300 font-bold">미분류</strong>
+              </span>
+            </div>
           </div>
 
-          <!-- Search Target Meta Badge -->
-          <div id="searchSessionMetaBar" class="flex items-center space-x-3 text-[11px] text-google-textSecondary pt-0.5">
-            <span class="flex items-center space-x-1">
-              <span>현재 열린 파일:</span>
-              <strong id="searchSessionCurrentFileDisplay" class="text-blue-300 font-mono">-</strong>
-            </span>
-            <span class="text-zinc-600">|</span>
-            <span class="flex items-center space-x-1">
-              <span>소속 세계관:</span>
-              <strong id="searchSessionWorldviewDisplay" class="text-purple-300 font-bold">미분류</strong>
-            </span>
+          <!-- PANEL 2: BATCH FIND & REPLACE (특정 단어 일괄 바꾸기 전용) -->
+          <div id="findReplacePanel" class="hidden space-y-3.5 pt-1">
+            <!-- Scope Selector (한 세션 / 세계관 / 전체) + Worldview Selector Dropdown -->
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-google-borderDark/60">
+              <div class="flex items-center space-x-2 text-xs flex-wrap gap-y-1.5">
+                <span class="text-amber-400 font-bold flex items-center space-x-1">
+                  <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                  <span>교체 적용 범위:</span>
+                </span>
+                <div class="flex items-center space-x-1 bg-google-cardDark p-1 rounded-xl border border-google-borderDark text-xs">
+                  <button type="button" onclick="setFRScope('current')" id="frScopeCurrent" class="px-3 py-1.5 rounded-lg text-white bg-blue-600 transition font-semibold flex items-center space-x-1.5 cursor-pointer shadow-sm text-xs">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                    <span>현재 대화 (한 세션)</span>
+                  </button>
+                  <button type="button" onclick="setFRScope('worldview')" id="frScopeWorldview" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer text-xs">
+                    <i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <span>세계관 전체</span>
+                  </button>
+                  <button type="button" onclick="setFRScope('all')" id="frScopeAll" class="px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer text-xs">
+                    <i data-lucide="folder-search" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span>전체 보관함 (모든 파일)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Worldview Dropdown (세계관 범위 선택 시 노출) -->
+              <div id="frWorldviewSelectContainer" class="hidden flex items-center space-x-2 text-xs">
+                <span class="text-purple-300 font-semibold">대상 세계관:</span>
+                <select id="frWorldviewSelect" onchange="onFRWorldviewChanged()" class="bg-google-cardDark text-purple-200 border border-purple-500/50 rounded-lg px-2.5 py-1 text-xs focus:outline-none cursor-pointer font-medium">
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+
+              <!-- Scope Info Badge -->
+              <span id="frScopeBadge" class="px-2.5 py-1 rounded-lg text-[11px] font-mono bg-amber-950/60 text-amber-300 border border-amber-700/60">
+                현재 대화 (한 세션)
+              </span>
+            </div>
+
+            <!-- Find & Replace Input Row -->
+            <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+              <!-- 찾을 단어 -->
+              <div class="relative flex-1 min-w-[200px]">
+                <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3.5 top-3 text-google-textSecondary"></i>
+                <input type="text" id="frFindInput" placeholder="찾을 기존 단어..."
+                       class="w-full bg-google-cardDark text-google-textPrimary placeholder-google-textSecondary pl-9 pr-3 py-2.5 rounded-xl border border-google-borderDark focus:outline-none focus:border-amber-500 text-xs shadow-inner"
+                       onkeydown="if(event.key==='Enter') frPreview()">
+              </div>
+
+              <div class="w-7 h-7 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center flex-shrink-0 border border-amber-500/30">
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </div>
+
+              <!-- 바꿀 단어 -->
+              <div class="relative flex-1 min-w-[200px]">
+                <i data-lucide="pencil" class="w-3.5 h-3.5 absolute left-3.5 top-3 text-google-textSecondary"></i>
+                <input type="text" id="frReplaceInput" placeholder="바꿀 새 단어 (비워두면 해당 단어 일괄 삭제)..."
+                       class="w-full bg-google-cardDark text-google-textPrimary placeholder-google-textSecondary pl-9 pr-3 py-2.5 rounded-xl border border-google-borderDark focus:outline-none focus:border-amber-500 text-xs shadow-inner"
+                       onkeydown="if(event.key==='Enter') frPreview()">
+              </div>
+
+              <!-- 대소문자 구분 -->
+              <label class="flex items-center gap-1.5 cursor-pointer text-xs text-google-textSecondary hover:text-white select-none flex-shrink-0 px-2 py-2 bg-google-cardDark rounded-xl border border-google-borderDark" title="영문 대소문자 엄격 구분">
+                <input type="checkbox" id="frCaseSensitive" class="accent-amber-500 rounded cursor-pointer">
+                <span class="text-[11px]">대소문자 구분</span>
+              </label>
+
+              <!-- 미리보기 버튼 -->
+              <button type="button" onclick="frPreview()" class="px-4 py-2.5 rounded-xl bg-google-cardDark hover:bg-zinc-700/80 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer flex-shrink-0 transition shadow-sm">
+                <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>미리보기</span>
+              </button>
+
+              <!-- 일괄 바꾸기 실행 버튼 -->
+              <button type="button" onclick="frExecute()" id="btnFRExecute" disabled
+                      class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer flex-shrink-0 transition shadow-lg shadow-amber-600/30">
+                <i data-lucide="replace-all" class="w-3.5 h-3.5"></i>
+                <span>일괄 바꾸기 실행</span>
+              </button>
+            </div>
+
+            <!-- 미리보기 요약 배너 -->
+            <div id="frPreviewBar" class="hidden p-3 rounded-xl bg-amber-950/30 border border-amber-700/50 flex items-center justify-between text-xs flex-wrap gap-2">
+              <div class="flex items-center space-x-2.5">
+                <i data-lucide="check-circle" class="w-4 h-4 text-amber-400"></i>
+                <span id="frPreviewCount" class="font-bold text-amber-300"></span>
+                <span class="text-zinc-500">|</span>
+                <span id="frPreviewScope" class="text-google-textSecondary"></span>
+              </div>
+              <div class="flex items-center space-x-2 text-[11px] text-zinc-400">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>실행 시 원본 파일 자동 백업(.bak)이 생성되어 언제든 안전합니다.</span>
+              </div>
+            </div>
           </div>
         </div>
+        
 
         <!-- Search Session Results Main Stage -->
         <div id="searchSessionMainStage" class="flex-1 overflow-y-auto p-6 max-w-5xl mx-auto w-full space-y-3 min-h-0">
@@ -8633,6 +8747,388 @@
         `;
         lucide.createIcons();
       }
+    }
+
+    // ==========================================
+    // 11. 일괄 찾아 바꾸기 (Find & Replace)
+    // ==========================================
+    let _frScope = 'current';
+    let _frLastPreviewResults = null;
+
+    function switchSSTab(tab) {
+      const searchBox  = document.getElementById('searchSessionSearchBox');
+      const frPanel    = document.getElementById('findReplacePanel');
+      const tabSearch  = document.getElementById('ssTabSearch');
+      const tabReplace = document.getElementById('ssTabReplace');
+      const headerTitle = document.getElementById('ssHeaderTitle');
+      const headerDesc  = document.getElementById('ssHeaderDesc');
+      const headerIconBox = document.getElementById('ssHeaderIconBox');
+      const headerIcon    = document.getElementById('ssHeaderIcon');
+      const stage = document.getElementById('searchSessionMainStage');
+
+      if (tab === 'search') {
+        if (searchBox) searchBox.classList.remove('hidden');
+        if (frPanel) frPanel.classList.add('hidden');
+
+        tabSearch?.classList.add('text-white', 'bg-emerald-600', 'font-semibold');
+        tabSearch?.classList.remove('text-google-textSecondary', 'bg-transparent', 'font-medium');
+        tabReplace?.classList.remove('text-white', 'bg-amber-600', 'font-semibold');
+        tabReplace?.classList.add('text-google-textSecondary', 'bg-transparent', 'font-medium');
+
+        if (headerTitle) headerTitle.textContent = '대화 본문 검색';
+        if (headerDesc) headerDesc.textContent = '현재 대화, 특정 세계관, 또는 보관함 전체의 대화 본문을 고속 검색합니다.';
+        if (headerIconBox) {
+          headerIconBox.className = 'w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shadow-sm';
+        }
+        if (headerIcon) headerIcon.setAttribute('data-lucide', 'search');
+      } else {
+        if (searchBox) searchBox.classList.add('hidden');
+        if (frPanel) frPanel.classList.remove('hidden');
+
+        tabReplace?.classList.add('text-white', 'bg-amber-600', 'font-semibold');
+        tabReplace?.classList.remove('text-google-textSecondary', 'bg-transparent', 'font-medium');
+        tabSearch?.classList.remove('text-white', 'bg-emerald-600', 'font-semibold');
+        tabSearch?.classList.add('text-google-textSecondary', 'bg-transparent', 'font-medium');
+
+        if (headerTitle) headerTitle.textContent = '특정 단어 일괄 바꾸기 (Batch Find & Replace)';
+        if (headerDesc) headerDesc.textContent = '한 세션(현재 파일), 특정 세계관, 또는 보관함 전체 파일의 단어를 한 번에 일괄 교체합니다.';
+        if (headerIconBox) {
+          headerIconBox.className = 'w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-sm';
+        }
+        if (headerIcon) headerIcon.setAttribute('data-lucide', 'replace');
+
+        populateFRWorldviewSelect();
+        setFRScope(_frScope);
+      }
+      lucide.createIcons();
+    }
+
+    function populateFRWorldviewSelect() {
+      const select = document.getElementById('frWorldviewSelect');
+      if (!select) return;
+      const currentCat = getCurrentFileCategory() || '미분류';
+      const list = Array.isArray(userWorldviews) && userWorldviews.length > 0 ? userWorldviews : ['SF', '판타지', '일상'];
+      
+      select.innerHTML = list.map(wv => {
+        const isSel = (wv === currentCat) ? 'selected' : '';
+        return `<option value="${escapeHtml(wv)}" ${isSel}>${escapeHtml(wv)}</option>`;
+      }).join('');
+    }
+
+    function onFRWorldviewChanged() {
+      const select = document.getElementById('frWorldviewSelect');
+      const badge = document.getElementById('frScopeBadge');
+      if (badge && select) {
+        badge.textContent = `세계관: [${select.value}] 전체`;
+      }
+      resetFRPreview();
+    }
+
+    function setFRScope(scope) {
+      _frScope = scope;
+      const scopes = ['current', 'worldview', 'all'];
+      scopes.forEach(s => {
+        const btn = document.getElementById(`frScope${s.charAt(0).toUpperCase() + s.slice(1)}`);
+        if (!btn) return;
+        if (s === scope) {
+          const colors = { current: 'bg-blue-600', worldview: 'bg-purple-600', all: 'bg-emerald-600' };
+          btn.className = `px-3 py-1.5 rounded-lg text-white ${colors[s]} transition font-semibold flex items-center space-x-1.5 cursor-pointer shadow-sm text-xs`;
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-google-textSecondary hover:text-white bg-transparent transition font-medium flex items-center space-x-1.5 cursor-pointer text-xs';
+        }
+      });
+
+      const wvContainer = document.getElementById('frWorldviewSelectContainer');
+      const badge = document.getElementById('frScopeBadge');
+      const wvSelect = document.getElementById('frWorldviewSelect');
+
+      if (scope === 'worldview') {
+        if (wvContainer) wvContainer.classList.remove('hidden');
+        populateFRWorldviewSelect();
+        if (badge) badge.textContent = `세계관: [${wvSelect?.value || getCurrentFileCategory()}] 전체`;
+      } else {
+        if (wvContainer) wvContainer.classList.add('hidden');
+        if (badge) {
+          badge.textContent = (scope === 'current') ? '현재 대화 (한 세션)' : '전체 보관함 (모든 파일)';
+        }
+      }
+      resetFRPreview();
+    }
+
+    function resetFRPreview() {
+      const bar = document.getElementById('frPreviewBar');
+      if (bar) bar.classList.add('hidden');
+      const execBtn = document.getElementById('btnFRExecute');
+      if (execBtn) execBtn.disabled = true;
+      _frLastPreviewResults = null;
+    }
+
+    async function frPreview() {
+      const find    = (document.getElementById('frFindInput')?.value ?? '').trim();
+      const replace = document.getElementById('frReplaceInput')?.value ?? '';
+      const cs      = document.getElementById('frCaseSensitive')?.checked ?? false;
+      const stage   = document.getElementById('searchSessionMainStage');
+
+      if (!find) {
+        showToast('찾을 기존 단어를 입력하세요.', 'alert-circle');
+        return;
+      }
+
+      const wvSelect = document.getElementById('frWorldviewSelect');
+      const targetWv = (_frScope === 'worldview') ? (wvSelect?.value || getCurrentFileCategory()) : '';
+
+      // 로딩 표시
+      if (stage) {
+        stage.innerHTML = `
+          <div class="text-center py-16 text-google-textSecondary space-y-3">
+            <div class="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p class="text-sm font-medium text-amber-300">'${escapeHtml(find)}' 단어를 검색 및 변경 시뮬레이션 중...</p>
+          </div>
+        `;
+      }
+
+      try {
+        const resp = await fetch('/api/storage/find-replace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            find: find,
+            replace: replace,
+            scope: _frScope,
+            worldview: targetWv,
+            file: activeFilePath || '',
+            case_sensitive: cs,
+            is_preview: true
+          })
+        });
+
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error);
+
+        _frLastPreviewResults = data;
+        _showFRPreview(data.total_matches || 0, data.files_modified || 0, find, replace, data.preview_items || []);
+      } catch (err) {
+        showToast('미리보기 실패: ' + err.message, 'alert-circle');
+        if (stage) {
+          stage.innerHTML = `<div class="p-6 text-center text-rose-400">오류 발생: ${escapeHtml(err.message)}</div>`;
+        }
+      }
+    }
+
+    function _showFRPreview(total, files, find, replace, previewItems) {
+      const bar   = document.getElementById('frPreviewBar');
+      const count = document.getElementById('frPreviewCount');
+      const scope = document.getElementById('frPreviewScope');
+      const btn   = document.getElementById('btnFRExecute');
+      const stage = document.getElementById('searchSessionMainStage');
+
+      if (bar) bar.classList.remove('hidden');
+      const replaceLabel = replace === '' ? '<span class="text-rose-400 font-bold">(완전 삭제)</span>' : `<span class="text-emerald-300 font-bold">'${escapeHtml(replace)}'</span>`;
+      
+      if (count) {
+        count.innerHTML = total === 0
+          ? `<span class="text-zinc-400 font-normal">'${escapeHtml(find)}' 일치 항목 없음</span>`
+          : `총 <span class="text-amber-400 text-sm font-black">${total}건</span> 일치 (<span class="text-white font-bold">${files}개</span> 파일)`;
+      }
+      if (scope) {
+        scope.innerHTML = total > 0 ? `→ ${replaceLabel}(으)로 일괄 교체 예정` : '';
+      }
+
+      if (btn) btn.disabled = (total === 0);
+
+      // Render Stage Cards
+      if (!stage) return;
+      if (total === 0) {
+        stage.innerHTML = `
+          <div class="text-center py-20 text-google-textSecondary space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-zinc-800 text-zinc-500 border border-zinc-700 flex items-center justify-center mx-auto">
+              <i data-lucide="search-x" class="w-6 h-6"></i>
+            </div>
+            <p class="text-sm font-bold text-google-textPrimary">'${escapeHtml(find)}' 단어를 찾을 수 없습니다.</p>
+            <p class="text-xs opacity-75">선택한 범위 내에 일치하는 본문이 없습니다. 다른 단어나 범위를 선택해보세요.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      let html = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-3.5 rounded-2xl bg-amber-950/20 border border-amber-600/30 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span class="text-amber-200 font-bold">일괄 교체 미리보기 결과 (${total}건)</span>
+            </div>
+            <button onclick="frExecute()" class="px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center space-x-1 shadow transition cursor-pointer">
+              <i data-lucide="replace-all" class="w-3.5 h-3.5"></i>
+              <span>지금 일괄 교체 실행</span>
+            </button>
+          </div>
+      `;
+
+      previewItems.forEach((item, idx) => {
+        const isSys = item.chunk_index === -1;
+        const roleLabel = isSys ? 'SYSTEM' : (item.role || 'USER').toUpperCase();
+        const roleBg = isSys ? 'bg-amber-950/80 text-amber-300 border-amber-700/60' : (item.role === 'model' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60' : 'bg-blue-950/80 text-blue-300 border-blue-700/60');
+
+        html += `
+          <div class="p-4 rounded-2xl bg-google-cardDark/95 border border-google-borderDark hover:border-amber-500/50 transition space-y-2.5 shadow-sm text-xs">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center space-x-2 min-w-0">
+                <i data-lucide="file-text" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
+                <span class="font-bold text-google-textPrimary font-mono truncate" title="${escapeHtml(item.rel_path)}">${escapeHtml(item.filename)}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-950/80 text-purple-300 border border-purple-700/50">${escapeHtml(item.category || '미분류')}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono border ${roleBg}">${roleLabel} ${!isSys ? '#' + (item.chunk_index + 1) : ''}</span>
+              </div>
+              <button onclick="navigateToFRResult('${escapeHtml(item.rel_path)}', ${item.chunk_index}, '${escapeHtml(item.filename)}')" class="px-2.5 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700 text-[11px] flex items-center space-x-1 transition cursor-pointer">
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+                <span>대화로 이동</span>
+              </button>
+            </div>
+
+            <!-- Before vs After Comparison Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono pt-1">
+              <div class="p-2.5 rounded-xl bg-rose-950/20 border border-rose-900/40 text-rose-200">
+                <div class="text-[10px] text-rose-400 font-bold mb-1 flex items-center space-x-1">
+                  <span>[변경 전]</span>
+                </div>
+                <div class="break-words whitespace-pre-wrap">${escapeHtml(item.before).replace(new RegExp(escapeRegex(find), 'gi'), '<mark class="bg-rose-500/30 text-rose-200 font-bold px-1 rounded line-through">$&</mark>')}</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-emerald-950/20 border border-emerald-900/40 text-emerald-200">
+                <div class="text-[10px] text-emerald-400 font-bold mb-1 flex items-center space-x-1">
+                  <span>[변경 후]</span>
+                </div>
+                <div class="break-words whitespace-pre-wrap">${escapeHtml(item.after).replace(new RegExp(escapeRegex(replace), 'gi'), '<mark class="bg-emerald-500/30 text-emerald-200 font-bold px-1 rounded">$&</mark>')}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      stage.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    async function frExecute() {
+      const find    = (document.getElementById('frFindInput')?.value ?? '').trim();
+      const replace = document.getElementById('frReplaceInput')?.value ?? '';
+      const cs      = document.getElementById('frCaseSensitive')?.checked ?? false;
+      const btn     = document.getElementById('btnFRExecute');
+
+      if (!find) {
+        showToast('찾을 단어를 입력하세요.', 'alert-circle');
+        return;
+      }
+
+      const wvSelect = document.getElementById('frWorldviewSelect');
+      const targetWv = (_frScope === 'worldview') ? (wvSelect?.value || getCurrentFileCategory()) : '';
+
+      const scopeLabels = {
+        current: '현재 열린 대화 세션',
+        worldview: `'${targetWv}' 세계관 내 모든 대화 세션`,
+        all: '보관함 전체 모든 대화 세션'
+      };
+      const scopeDesc = scopeLabels[_frScope] || '지정 범위';
+
+      const confirmed = await new Promise(res => {
+        const msg = `[${scopeDesc}] 내 모든 청크에서
+
+'${find}' ➔ '${replace || '(삭제)'}'
+
+으로 특정 단어를 일괄 교체하시겠습니까?
+
+※ 실행 시 모든 원본 파일은 자동으로 .bak 백업이 보존됩니다.`;
+        res(window.confirm(msg));
+      });
+      if (!confirmed) return;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>교체 처리 중...</span>';
+      }
+
+      try {
+        const resp = await fetch('/api/storage/find-replace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            find: find,
+            replace: replace,
+            scope: _frScope,
+            worldview: targetWv,
+            file: activeFilePath || '',
+            case_sensitive: cs,
+            is_preview: false
+          })
+        });
+
+        const result = await resp.json();
+        if (result.error) throw new Error(result.error);
+
+        showToast(`🎉 총 ${result.total_replaced}건 일괄 교체 완료! (${result.files_modified}개 파일 변경)`, 'check-circle');
+
+        // 현재 열린 활성 파일이 변경된 경우 실시간 즉시 갱신
+        if (activeFilePath && result.modified_paths && result.modified_paths.length > 0) {
+          const isCurrentModified = result.modified_paths.some(p => {
+            const pNorm = p.split('\\').join('/').toLowerCase();
+            const aNorm = (activeFilePath || '').split('\\').join('/').toLowerCase();
+            return pNorm.includes(aNorm) || aNorm.includes(pNorm);
+          });
+          if (isCurrentModified) {
+            await reloadCurrentFile();
+          }
+        }
+
+        // 완료 배너 표시
+        const stage = document.getElementById('searchSessionMainStage');
+        if (stage) {
+          stage.innerHTML = `
+            <div class="text-center py-20 text-google-textSecondary space-y-4">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+                <i data-lucide="check-check" class="w-8 h-8"></i>
+              </div>
+              <h3 class="text-lg font-bold text-google-textPrimary">일괄 바꾸기가 성공적으로 완료되었습니다!</h3>
+              <p class="text-xs text-google-textSecondary max-w-md mx-auto leading-relaxed">
+                총 <strong class="text-amber-400 font-bold">${result.total_replaced}건</strong>의 단어가 성공적으로 교체되었으며, <strong class="text-white font-bold">${result.files_modified}개</strong> 파일이 안전하게 갱신되었습니다.<br>
+                (원본 파일은 언제든 복원 가능하도록 <code>.bak</code> 파일로 백업되었습니다.)
+              </p>
+            </div>
+          `;
+          lucide.createIcons();
+        }
+
+        resetFRPreview();
+      } catch (err) {
+        showToast('일괄 바꾸기 실패: ' + err.message, 'alert-circle');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="replace-all" class="w-3.5 h-3.5"></i><span>일괄 바꾸기 실행</span>';
+          lucide.createIcons();
+        }
+      }
+    }
+
+    async function navigateToFRResult(relPath, chunkIndex, fileName) {
+      await switchMainView('feed');
+      await openSearchResultChunk(relPath, chunkIndex, fileName);
+    }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+
+    async function reloadCurrentFile() {
+      if (!activeFilePath) return;
+      try {
+        const resp = await fetch(`/api/file?path=${encodeURIComponent(activeFilePath)}`);
+        if (resp.ok) {
+          currentData = await resp.json();
+          renderChunks();
+        }
+      } catch(_) {}
     }
 
     // --- 사이드바 미니 검색 컨트롤러 ---
