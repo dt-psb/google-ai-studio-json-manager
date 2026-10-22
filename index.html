@@ -1211,33 +1211,29 @@
       </div>
 
       <!-- Multiple Color Theme Selector Dropdown -->
-      <div class="flex items-center space-x-1 bg-google-cardDark border border-google-borderDark rounded-md px-2 py-1 shadow-sm">
+      <div class="flex items-center space-x-1 bg-google-cardDark border border-google-borderDark rounded-md px-2 py-1 shadow-sm relative z-20 pointer-events-auto">
         <i data-lucide="palette" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
         <select id="themeSelect" onchange="changeTheme(this.value)" class="bg-transparent text-xs text-google-textPrimary focus:outline-none cursor-pointer font-medium pr-1">
-          <optgroup label="── Gemini 3.8 Flash 작 ──">
-            <option value="dark">🌙 Dark Studio</option>
-            <option value="midnight">🌌 Midnight Navy</option>
-            <option value="forest">🌲 Forest Emerald (눈 편함)</option>
-            <option value="nord">❄️ Nordic Slate</option>
-            <option value="cyberpunk">🔮 Cyberpunk Violet</option>
-            <option value="oled">🖤 OLED Pure Black</option>
-            <option value="warm">📜 Warm Paper (세피아)</option>
-            <option value="cleanlight">☀️ Clean Studio Light</option>
-          </optgroup>
-          <optgroup label="── Claude (Antigravity) 작 ──">
-            <option value="rosé">🌹 Rosé Noir (와인빛 다크)</option>
-            <option value="abyss">🌊 Abyss Teal (심해 청록)</option>
-            <option value="ember">🔥 Amber Ember (잿불 황금)</option>
-            <option value="sakura">🌸 Sakura Mist (벚꽃 라이트)</option>
-          </optgroup>
+          <option value="dark" class="bg-zinc-900 text-white">🌙 Dark Studio</option>
+          <option value="midnight" class="bg-zinc-900 text-white">🌌 Midnight Navy</option>
+          <option value="forest" class="bg-zinc-900 text-white">🌲 Forest Emerald (눈 편함)</option>
+          <option value="nord" class="bg-zinc-900 text-white">❄️ Nordic Slate</option>
+          <option value="cyberpunk" class="bg-zinc-900 text-white">🔮 Cyberpunk Violet</option>
+          <option value="oled" class="bg-zinc-900 text-white">🖤 OLED Pure Black</option>
+          <option value="warm" class="bg-zinc-900 text-white">📜 Warm Paper (세피아)</option>
+          <option value="cleanlight" class="bg-zinc-900 text-white">☀️ Clean Studio Light</option>
+          <option value="rose" class="bg-zinc-900 text-white">🌹 Rosé Noir (와인빛 다크)</option>
+          <option value="abyss" class="bg-zinc-900 text-white">🌊 Abyss Teal (심해 청록)</option>
+          <option value="ember" class="bg-zinc-900 text-white">🔥 Amber Ember (잿불 황금)</option>
+          <option value="sakura" class="bg-zinc-900 text-white">🌸 Sakura Mist (벚꽃 라이트)</option>
         </select>
       </div>
 
       <!-- Manual / Help Button -->
-      <a href="/manual.html" target="_blank" class="px-2.5 py-1.5 rounded-md bg-purple-950/70 hover:bg-purple-900 border border-purple-700/60 text-purple-300 hover:text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-sm" title="기능 종합 사용설명서 열기 (새 탭)">
+      <button onclick="openManualGuide()" class="px-2.5 py-1.5 rounded-md bg-purple-950/70 hover:bg-purple-900 border border-purple-700/60 text-purple-300 hover:text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-sm cursor-pointer" title="기능 종합 사용설명서 열기 (새 창)">
         <i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-400"></i>
         <span class="hidden sm:inline">설명서</span>
-      </a>
+      </button>
 
       <!-- Settings & Tools Panel Toggle -->
       <button onclick="toggleSidePanel()" class="p-1.5 rounded-md hover:bg-google-cardDark text-google-textSecondary hover:text-google-textPrimary transition" title="설정 & 도구 패널 토글">
@@ -9087,18 +9083,58 @@
       }
     }
 
-    function downloadJsonFile() {
+    function openManualGuide() {
+      // 1. 데스크톱 앱 및 로컬 서버 환경: 시스템 기본 브라우저(Chrome/Edge 등)로 즉각 실행
+      fetch('/api/open-manual').catch(() => {});
+      // 2. 일반 웹 브라우저 환경 새 탭 오픈
+      try {
+        window.open('/manual.html', '_blank');
+      } catch (_) {}
+    }
+
+    async function downloadJsonFile() {
+      if (!currentData) {
+        showToast('다운로드할 대화 데이터가 없습니다.', 'alert-circle');
+        return;
+      }
+      let filename = currentFileName || 'ai_studio_export.json';
+      if (!filename.toLowerCase().endsWith('.json')) {
+        filename += '.json';
+      }
+
+      // 1. 서버 모드인 경우 C드라이브 Downloads 폴더로 우선 직접 저장
+      if (isServerMode) {
+        try {
+          const resp = await fetch('/api/download-to-c', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: filename,
+              content: currentData
+            })
+          });
+          const resJson = await resp.json();
+          if (resJson && resJson.ok) {
+            showToast(`C:\...\Downloads 폴더에 즉시 저장되었습니다: '${filename}'`, 'download');
+            return;
+          }
+        } catch (e) {
+          console.warn('Direct Downloads folder save notice, fallback to client download:', e);
+        }
+      }
+
+      // 2. 브라우저/클라이언트 기본 다운로드 트리거
       const jsonStr = JSON.stringify(currentData, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = currentFileName || 'ai_studio_export.json';
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast(`'${a.download}' 다운로드 시작`, 'download');
+      showToast(`'${a.download}' 다운로드 시작 (내 PC 다운로드 폴더 저장)`, 'download');
     }
 
     function toggleSidePanel() {

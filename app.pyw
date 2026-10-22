@@ -112,6 +112,25 @@ class CustomWebEnginePage(QWebEnginePage):
         # 클립보드 / 미디어 등 권한 요청 시 자동 허용
         self.featurePermissionRequested.connect(self._grant_permission)
 
+    def acceptNavigationRequest(self, url, navType, isMainFrame):
+        """설명서 또는 외부 링크 클릭 시 기본 시스템 브라우저(Chrome/Edge 등)로 연결"""
+        url_str = url.toString()
+        if "manual.html" in url_str:
+            import webbrowser
+            webbrowser.open(url_str)
+            return False
+        return super().acceptNavigationRequest(url, navType, isMainFrame)
+
+    def createWindow(self, windowType):
+        """target='_blank' 또는 window.open 링크 요청 시 시스템 기본 브라우저로 안전하게 팝업"""
+        import webbrowser
+        class ExternalLinkPage(QWebEnginePage):
+            def acceptNavigationRequest(self, url, navType, isMainFrame):
+                webbrowser.open(url.toString())
+                return False
+        self._temp_ext_page = ExternalLinkPage(self)
+        return self._temp_ext_page
+
     def _grant_permission(self, origin, feature):
         self.setFeaturePermission(origin, feature, QWebEnginePage.PermissionGrantedByUser)
 
@@ -345,13 +364,20 @@ class MainWindow(QMainWindow):
             self.setWindowTitle(" ")
 
     def on_download_requested(self, download_item):
-        """웹에서 다운로드 발생 시 파일 저장 다이얼로그 표시"""
+        """웹에서 다운로드 발생 시 C드라이브 Downloads 폴더를 기본 위치로 하여 저장 다이얼로그 표시"""
         suggested_filename = download_item.suggestedFileName() or "download.json"
+        downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+        try:
+            os.makedirs(downloads_dir, exist_ok=True)
+            default_save_path = os.path.join(downloads_dir, suggested_filename)
+        except Exception:
+            default_save_path = os.path.join(CURRENT_DIR, suggested_filename)
+
         save_path, _ = QFileDialog.getSaveFileName(
             self,
-            "파일 저장",
-            os.path.join(CURRENT_DIR, suggested_filename),
-            "모든 파일 (*.*)"
+            "파일 저장 (기본 위치: 내 PC 다운로드 폴더)",
+            default_save_path,
+            "JSON 파일 (*.json);;모든 파일 (*.*)"
         )
         if save_path:
             download_item.setPath(save_path)

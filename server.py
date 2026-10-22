@@ -1336,6 +1336,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             "/api/file":             lambda: self._get_file(qs),
             "/api/search":           lambda: self._get_search(qs),
             "/api/settings":         self._get_settings,
+            "/api/open-manual":      self._get_open_manual,
         }
 
         for route, handler in routes.items():
@@ -1347,6 +1348,16 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
 
     def _get_settings(self):
         self._send_json(load_app_settings())
+
+    def _get_open_manual(self):
+        """기능 종합 설명서(manual.html)를 시스템 기본 웹 브라우저로 엽니다."""
+        import webbrowser
+        try:
+            port = self.server.server_address[1]
+            webbrowser.open(f"http://127.0.0.1:{port}/manual.html")
+            self._send_json({"ok": True})
+        except Exception as e:
+            self._send_error(500, f"설명서 열기 실패: {e}")
 
     def _get_search(self, qs):
         query = (qs.get("q", [""])[0]).strip()
@@ -1532,6 +1543,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             "/api/storage/sync-lineage":      self._post_sync_lineage,
             "/api/storage/propagate-lineage": self._post_propagate_lineage,
             "/api/storage/open-external":     self._post_open_external,
+            "/api/download-to-c":             self._post_download_to_c,
         }
 
         for route, handler in post_routes.items():
@@ -1831,6 +1843,33 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             print(f"[Open External Error] {e}\n{traceback.format_exc()}")
             self._send_error(500, f"Failed to open external app: {e}")
+
+    def _post_download_to_c(self):
+        """
+        현재 작업 중인 대화 JSON 내용을 C 드라이브 사용자 Downloads 폴더에 즉시 저장합니다.
+        """
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        raw_name = (payload.get("filename") or "ai_studio_export.json").strip()
+        safe_name = os.path.basename(raw_name)
+        if not safe_name.lower().endswith(".json"):
+            safe_name += ".json"
+        content = payload.get("content")
+
+        downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+        try:
+            os.makedirs(downloads_dir, exist_ok=True)
+            target_path = os.path.join(downloads_dir, safe_name)
+            with open(target_path, "w", encoding="utf-8") as f:
+                if isinstance(content, (dict, list)):
+                    json.dump(content, f, ensure_ascii=False, indent=2)
+                else:
+                    f.write(str(content or ""))
+            self._send_json({"ok": True, "path": target_path, "filename": safe_name})
+        except Exception as e:
+            print(f"[Download to C Error] {e}\n{traceback.format_exc()}")
+            self._send_error(500, f"다운로드 폴더 저장 실패: {e}")
 
     def _post_settings(self):
         payload = self._read_json_body()

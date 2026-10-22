@@ -1,0 +1,5 @@
+# Google AI Studio Manager 의존성 목록
+# ※ 웹 브라우저 모드(run.bat) 실행 시에는 파이썬 표준 라이브러리만 사용하므로 아래 패키지 설치 없이도 즉시 동작합니다.
+# ※ 전용 데스크톱 창(app.pyw / launch_app.bat)으로 실행할 때만 아래 패키지가 필요합니다.
+PyQt5>=5.15.0
+PyQtWebEngine>=5.15.0
