@@ -1,0 +1,58 @@
+{
+  "runSettings": {
+    "temperature": 0.7,
+    "model": "models/gemini-2.5-pro",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 8192
+  },
+  "systemInstruction": {
+    "text": "아르카디아 제국 궁정 마법사 기록관"
+  },
+  "chunkedPrompt": {
+    "chunks": [
+      {
+        "role": "user",
+        "text": "제국 수도의 대도서관 지하 서고에서 잊혀진 고대 마법서가 발견되었습니다. 서책의 봉인을 확인하세요.",
+        "tokenCount": 28
+      },
+      {
+        "role": "model",
+        "isThought": true,
+        "text": "마법서에 걸린 금제 주문의 계열과 마력 잔여량을 측정한다. 저주나 함정의 유무를 감별한다.",
+        "parts": [
+          {
+            "text": "금제 주문 계열 감별 중...",
+            "thought": true
+          }
+        ],
+        "tokenCount": 32
+      },
+      {
+        "role": "model",
+        "text": "서책 표면에 7중 사슬 결계가 걸려 있습니다. 제3대 대마법사의 인장이 희미하게 빛나고 있습니다.",
+        "tokenCount": 36
+      },
+      {
+        "role": "user",
+        "text": "해독 마법을 사용하여 첫 번째 사슬 결계를 해제하겠습니다.",
+        "tokenCount": 18
+      },
+      {
+        "role": "model",
+        "text": "첫 번째 사슬이 풀리면서 서책이 푸른 안개를 내뿜기 시작했습니다. 고대 정령어 문장이 드러났습니다.",
+        "tokenCount": 34
+      },
+      {
+        "role": "user",
+        "text": "고대 정령어 문장을 해독하여 봉인된 마수의 이름을 확인하세요.",
+        "tokenCount": 20
+      },
+      {
+        "role": "model",
+        "text": "해독 결과, 빙결의 군주 '프로스트팽'의 영혼이 서책 속에 봉인되어 있습니다! 즉시 결계를 재강화해야 합니다.",
+        "tokenCount": 38
+      }
+    ]
+  }
+}

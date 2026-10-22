@@ -1,0 +1,63 @@
+{
+  "runSettings": {
+    "temperature": 0.7,
+    "model": "models/gemini-2.5-pro",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 8192
+  },
+  "systemInstruction": {
+    "text": "화성 탐사 기지 메인 컴퓨터 제어 시스템"
+  },
+  "chunkedPrompt": {
+    "chunks": [
+      {
+        "role": "user",
+        "text": "화성 기지 7구역에서 미확인 지하 음향 신호가 감지되었습니다. 신호 패턴을 분석하고 1차 탐사 계획을 수립하세요.",
+        "tokenCount": 24
+      },
+      {
+        "role": "model",
+        "isThought": true,
+        "text": "음향 주파수 스펙트럼을 분석하여 지질학적 진동인지 인공 신호인지 판별한다. 탐사 로봇 및 센서 배치를 검토한다.",
+        "parts": [
+          {
+            "text": "음향 주파수 스펙트럼 분석 중...",
+            "thought": true
+          }
+        ],
+        "tokenCount": 35
+      },
+      {
+        "role": "model",
+        "text": "주파수 분석 결과: 규칙적인 3.8Hz 펄스 신호로 인공 구조물의 공명 현상일 가능성이 높습니다. 입구 좌표(34.2N, 12.8W)로 정찰을 추천합니다.",
+        "tokenCount": 42
+      },
+      {
+        "role": "user",
+        "text": "알겠습니다. 정찰 로봇 알파를 입구로 출동시켰습니다.",
+        "tokenCount": 16
+      },
+      {
+        "role": "model",
+        "text": "로봇 알파가 지하 50m 지점에 진입했습니다. 암벽에 고대 외계 문명으로 추정되는 발광 벽화를 발견했습니다.",
+        "tokenCount": 38
+      },
+      {
+        "role": "user",
+        "text": "벽화의 문양을 고해상도로 스캔하고 텍스트 번역을 시도하세요.",
+        "tokenCount": 20
+      },
+      {
+        "role": "model",
+        "text": "벽화 스캔 번역 결과, '영원의 불꽃'이라 명명된 구형 에너지 코어의 보관 장소로 확인되었습니다. 제단 중앙에서 코어를 발견했습니다!",
+        "tokenCount": 45
+      },
+      {
+        "role": "user",
+        "text": "코어의 에너지 방출량과 방사능 수치를 측정하세요.",
+        "tokenCount": 18
+      }
+    ]
+  }
+}

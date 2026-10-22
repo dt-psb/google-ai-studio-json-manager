@@ -1,0 +1,43 @@
+# ==============================================================
+# Google AI Studio Manager - Git Ignore Configuration
+# ==============================================================
+
+# 1. 개인 대화 스토리지 보호 (test 폴더 및 안내 텍스트만 업로드 허용)
+storage/*
+!storage/test/
+!storage/README.txt
+
+# 2. 사용자 개인 세계관 설정 및 로컬 환경설정 (로컬에만 유지)
+worldviews_config.json
+app_settings.json
+
+# 3. 로그 및 실행 디버그 기록
+*.log
+app_debug.log
+launch_error.log
+
+# 4. 윈도우 바로가기 및 시스템 임시 파일
+*.lnk
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# 5. 파일 편집/동기화 시 생성되는 백업 파일
+*.bak
+*.bak.*
+*.backup
+
+# 6. 파이썬 캐시 및 가상환경
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# 7. IDE 및 에디터 캐시
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

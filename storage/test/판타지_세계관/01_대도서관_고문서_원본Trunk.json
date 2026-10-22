@@ -1,0 +1,50 @@
+{
+  "runSettings": {
+    "temperature": 0.7,
+    "model": "models/gemini-2.5-pro",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 8192
+  },
+  "systemInstruction": {
+    "text": "아르카디아 제국 궁정 마법사 기록관"
+  },
+  "chunkedPrompt": {
+    "chunks": [
+      {
+        "role": "user",
+        "text": "제국 수도의 대도서관 지하 서고에서 잊혀진 고대 마법서가 발견되었습니다. 서책의 봉인을 확인하세요.",
+        "tokenCount": 28
+      },
+      {
+        "role": "model",
+        "isThought": true,
+        "text": "마법서에 걸린 금제 주문의 계열과 마력 잔여량을 측정한다. 저주나 함정의 유무를 감별한다.",
+        "parts": [
+          {
+            "text": "금제 주문 계열 감별 중...",
+            "thought": true
+          }
+        ],
+        "tokenCount": 32
+      },
+      {
+        "role": "model",
+        "text": "서책 표면에 7중 사슬 결계가 걸려 있습니다. 제3대 대마법사의 인장이 희미하게 빛나고 있습니다.",
+        "tokenCount": 36
+      },
+      {
+        "role": "user",
+        "text": "ㅁㄴㅇㄻㄴㅇㄹ",
+        "tokenCount": 2,
+        "createTime": "2026-10-10T11:12:35.860Z"
+      },
+      {
+        "role": "user",
+        "text": "ㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷ",
+        "tokenCount": 4,
+        "createTime": "2026-10-10T11:12:38.384Z"
+      }
+    ]
+  }
+}

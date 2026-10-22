@@ -1,0 +1,5 @@
+storage/
+storage/**
+*.bak
+*.bak.json
+__pycache__/

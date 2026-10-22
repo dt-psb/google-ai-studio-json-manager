@@ -1,0 +1,43 @@
+{
+  "runSettings": {
+    "temperature": 0.7,
+    "model": "models/gemini-2.5-pro",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 8192
+  },
+  "systemInstruction": {
+    "text": "화성 탐사 기지 메인 컴퓨터 제어 시스템"
+  },
+  "chunkedPrompt": {
+    "chunks": [
+      {
+        "role": "user",
+        "text": "화성 기지 7구역에서 미확인 지하 음향 신호가 감지되었습니다. 신호 패턴을 분석하고 1차 탐사 계획을 수립하세요.",
+        "tokenCount": 24
+      },
+      {
+        "role": "model",
+        "isThought": true,
+        "text": "음향 주파수 스펙트럼을 분석하여 지질학적 진동인지 인공 신호인지 판별한다. 탐사 로봇 및 센서 배치를 검토한다.",
+        "parts": [
+          {
+            "text": "음향 주파수 스펙트럼 분석 중...",
+            "thought": true
+          }
+        ],
+        "tokenCount": 35
+      },
+      {
+        "role": "model",
+        "text": "주파수 분석 결과: 규칙적인 3.8Hz 펄스 신호로 인공 구조물의 공명 현상일 가능성이 높습니다. 입구 좌표(34.2N, 12.8W)로 정찰을 추천합니다.",
+        "tokenCount": 42
+      },
+      {
+        "role": "user",
+        "text": "알겠습니다. 정찰 로봇 알파를 입구로 출동시켰습니다.",
+        "tokenCount": 16
+      }
+    ]
+  }
+}

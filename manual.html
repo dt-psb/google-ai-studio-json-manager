@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google AI Studio Manager - 사용자 설명서</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              950: '#2e1065'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .dark ::-webkit-scrollbar-thumb { background: #2a3148; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb:hover { background: #3f496b; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .glass-card {
+      transition: all 0.2s ease-in-out;
+    }
+    .dark .glass-card {
+      background: rgba(20, 23, 34, 0.85);
+      border: 1px solid rgba(50, 57, 82, 0.7);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(226, 232, 240, 1);
+    }
+    .hero-glow {
+      background-size: cover;
+    }
+    .dark .hero-glow {
+      background: radial-gradient(circle at 50% 15%, rgba(124, 58, 237, 0.12), transparent 60%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0c0e14] text-slate-800 dark:text-zinc-200 font-sans antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+
+  <!-- ============================================================== -->
+  <!-- 1. TOP GLOBAL NAVIGATION BAR -->
+  <!-- ============================================================== -->
+  <header class="sticky top-0 z-50 h-16 bg-white/90 dark:bg-[#0c0e14]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#23283b] flex items-center justify-between px-6 transition-colors">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white tracking-tight">Google AI Studio Manager</span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-zinc-400">대화 세션 & 브랜치 계통도 관리 완벽 가이드북</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <!-- 실시간 검색 인풋 -->
+      <div class="relative hidden md:block">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-zinc-500"></i>
+        <input type="text" id="manualSearchInput" oninput="filterManualContent(this.value)" placeholder="기능, 키워드 검색..." class="w-64 bg-slate-100 dark:bg-[#141722] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-500 pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#23283b] focus:outline-none focus:border-brand-500 transition">
+      </div>
+
+      <!-- 다크/라이트 모드 토글 버튼 -->
+      <button onclick="toggleTheme()" id="themeToggleBtn" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#141722] dark:hover:bg-[#1a1e2d] border border-slate-200 dark:border-[#23283b] text-slate-700 dark:text-zinc-300 text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer" title="화면 테마 전환">
+        <i data-lucide="sun" id="themeIconLight" class="w-4 h-4 text-amber-500 hidden dark:inline"></i>
+        <i data-lucide="moon" id="themeIconDark" class="w-4 h-4 text-indigo-600 dark:hidden"></i>
+        <span id="themeText">라이트 모드</span>
+      </button>
+
+      <a href="/" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center space-x-1.5 shadow-md shadow-brand-600/30 transition active:scale-95">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>앱으로 이동</span>
+      </a>
+
+      <button onclick="window.print()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#141722] dark:hover:bg-[#1a1e2d] text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#23283b] transition" title="설명서 인쇄 / PDF 저장">
+        <i data-lucide="printer" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="max-w-[1600px] mx-auto flex min-h-[calc(100vh-4rem)]">
+
+    <!-- ============================================================== -->
+    <!-- 2. STICKY SIDEBAR NAVIGATION (TOC) -->
+    <!-- ============================================================== -->
+    <aside class="w-68 hidden lg:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto p-6 border-r border-slate-200 dark:border-[#23283b] flex-shrink-0 space-y-6 text-sm">
+      <div>
+        <h4 class="font-bold text-xs text-slate-400 dark:text-zinc-400 uppercase tracking-wider mb-3">목차 바로가기</h4>
+        <nav class="space-y-1.5" id="tocNav">
+          <a href="#section-overview" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="compass" class="w-4 h-4 text-brand-500"></i>
+            <span>1. 개요 & 탄생 배경</span>
+          </a>
+          <a href="#section-layout" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="layout" class="w-4 h-4 text-blue-500"></i>
+            <span>2. 메인 인터페이스 구조</span>
+          </a>
+          <a href="#section-feed-editor" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="message-square" class="w-4 h-4 text-emerald-500"></i>
+            <span>3. 청크 에디터 & 도트 레일</span>
+          </a>
+          <a href="#section-branch-off" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="git-fork" class="w-4 h-4 text-purple-500"></i>
+            <span>4. 브랜치 분기 (Branch Off)</span>
+          </a>
+          <a href="#section-sync" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-500"></i>
+            <span>5. 부모-자식 양방향 대화 연동</span>
+          </a>
+          <a href="#section-tree-modes" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="network" class="w-4 h-4 text-indigo-500"></i>
+            <span>6. 대화 계통도 트리 (3대 뷰)</span>
+          </a>
+          <a href="#section-worldview" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="globe" class="w-4 h-4 text-teal-500"></i>
+            <span>7. 세계관(Worldview) 관리</span>
+          </a>
+          <a href="#section-storage-ops" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="folder" class="w-4 h-4 text-sky-500"></i>
+            <span>8. 보관함 & 외부 툴 연동</span>
+          </a>
+          <a href="#section-faq" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl text-slate-700 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-[#141722] hover:text-brand-600 dark:hover:text-white transition font-medium">
+            <i data-lucide="help-circle" class="w-4 h-4 text-rose-500"></i>
+            <span>9. 단축키 & 문제 해결 FAQ</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+        <div class="font-bold text-slate-900 dark:text-white text-xs flex items-center space-x-1.5">
+          <i data-lucide="info" class="w-4 h-4 text-brand-500"></i>
+          <span>빠른 도움말</span>
+        </div>
+        <p class="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
+          10만 자 이상의 방대한 대화 파일도 브라우저 멈춤 없이 쾌적하게 렌더링되도록 최적화되어 있습니다.
+        </p>
+      </div>
+    </aside>
+
+    <!-- ============================================================== -->
+    <!-- 3. MAIN DOCUMENTATION CONTENT -->
+    <!-- ============================================================== -->
+    <main class="flex-1 p-6 sm:p-10 lg:p-12 space-y-16 max-w-5xl mx-auto min-w-0 hero-glow">
+
+      <!-- HERO BANNER -->
+      <section class="space-y-4 pt-2 border-b border-slate-200 dark:border-[#23283b] pb-10">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-950/80 border border-brand-300 dark:border-brand-700/60 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>공식 사용설명서 & 가이드북</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          Google AI Studio 대화 세션 & 브랜치 계통도 완벽 활용 가이드
+        </h1>
+        <p class="text-base sm:text-lg text-slate-600 dark:text-zinc-400 leading-relaxed max-w-3xl">
+          수백 개의 질문과 답변으로 이루어진 방대한 대화를 파일 하나에 끝없이 담지 않고, <strong class="text-slate-900 dark:text-white">Git 브랜치처럼 가지치기하고 부모-자식 간 공통 설정을 완벽하게 동기화</strong>할 수 있는 차세대 프롬프트 매니저입니다.
+        </p>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 1. OVERVIEW -->
+      <!-- ============================================================== -->
+      <section id="section-overview" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-brand-500/15 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 flex items-center justify-center border border-brand-500/30">
+            <i data-lucide="compass" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">1. 개요 & 탄생 배경</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            Google AI Studio를 사용할 때 가장 큰 고충 중 하나는 <strong>"대화가 너무 길어져 파일이 무거워지고, 여러 갈래의 스토리를 시험해보고 싶은데 파일이 분리되면 앞부분 설정 수정사항이 연동되지 않는 것"</strong>이었습니다.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            <div class="p-5 sm:p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 space-y-3 shadow-sm">
+              <h4 class="font-bold text-rose-800 dark:text-rose-300 text-sm sm:text-base flex items-center space-x-2">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span>기존의 문제점</span>
+              </h4>
+              <ul class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 space-y-2 list-disc list-inside leading-relaxed">
+                <li>파일 하나가 수백 개 청크로 불어나 스크롤과 로딩이 극도로 느려짐</li>
+                <li>새 아이디어를 시험하려고 '다른 이름으로 저장'하면 앞부분 세계관 설정이 나중에 수정되었을 때 수동으로 복붙해야 함</li>
+                <li>수십 개의 파일이 어디서 갈라져 나왔는지 계통을 전혀 알 수 없음</li>
+              </ul>
+            </div>
+
+            <div class="p-5 sm:p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-3 shadow-sm">
+              <h4 class="font-bold text-emerald-800 dark:text-emerald-300 text-sm sm:text-base flex items-center space-x-2">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                <span>AI Studio Manager의 해결책</span>
+              </h4>
+              <ul class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 space-y-2 list-disc list-inside leading-relaxed">
+                <li><strong>Branch Off</strong>: 원하는 대화 청크 지점에서 새 분기 파일 생성</li>
+                <li><strong>상속 계통도</strong>: 공통 부모 대화는 접어두고 내 고유 대화만 쾌적하게 작성</li>
+                <li><strong>원클릭 동기화</strong>: 부모 내용을 바꾸면 수십 개 하위 분기 파일도 자동 일괄 교체</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 2. LAYOUT TOUR -->
+      <!-- ============================================================== -->
+      <section id="section-layout" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/15 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/30">
+            <i data-lucide="layout" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">2. 메인 인터페이스 구조</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>화면은 작업 효율성을 극대화하기 위해 3단 반응형 구조로 설계되어 있습니다.</p>
+
+          <div class="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2.5 shadow-sm">
+                <span class="font-bold text-sky-600 dark:text-sky-300 font-mono text-sm block">1. 좌측 보관함 사이드바</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">로컬 `storage/` 폴더 내의 모든 JSON 파일과 하위 폴더를 트리 형태로 표시합니다. 우클릭 컨텍스트 메뉴로 메모장 열기, 폴더 열기가 지원됩니다.</p>
+              </div>
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2.5 shadow-sm">
+                <span class="font-bold text-brand-600 dark:text-brand-300 font-mono text-sm block">2. 중앙 메인 스테이지</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">대화창 피드(Feed), 대화 계통도 트리(Tree), 검색 전용 세션(Search)을 상단 탭으로 자유롭게 전환합니다.</p>
+              </div>
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2.5 shadow-sm">
+                <span class="font-bold text-amber-600 dark:text-amber-300 font-mono text-sm block">3. 우측 네비게이터 & 하단 입력창</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">우측 세로 도트 레일로 원하는 청크로 순간 점프하며, 하단 대기열 입력창을 통해 새 청크를 즉시 추가합니다.</p>
+              </div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-[#23283b]/60 text-xs sm:text-sm text-slate-700 dark:text-zinc-300 flex items-center space-x-3">
+              <i data-lucide="mouse-pointer-click" class="w-5 h-5 text-brand-500 flex-shrink-0"></i>
+              <span>패널 경계선(좌측 패널 우측 경계, 하단 입력창 상단 경계)을 마우스로 드래그하여 높이와 너비를 자유롭게 조절할 수 있습니다.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 3. CHUNK FEED & EDITOR -->
+      <!-- ============================================================== -->
+      <section id="section-feed-editor" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">3. 청크 에디터 & 도트 레일</h2>
+        </div>
+
+        <div class="space-y-6 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <span>✨ 청크 카드의 핵심 조작법</span>
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs sm:text-sm">
+            <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-3 shadow-sm">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 font-bold font-mono text-xs">USER</span>
+                <span class="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-bold font-mono text-xs">MODEL</span>
+                <span class="px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700 font-bold font-mono text-xs">THINKING</span>
+              </div>
+              <h5 class="font-bold text-slate-900 dark:text-white text-base">역할(Role) 원클릭 순환 변경</h5>
+              <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">청크 상단의 역할 뱃지를 클릭하면 즉시 User ➔ Model ➔ Thinking 순서로 변경됩니다.</p>
+            </div>
+
+            <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-3 shadow-sm">
+              <div class="flex items-center space-x-1.5 text-brand-600 dark:text-brand-400">
+                <i data-lucide="book-marked" class="w-5 h-5"></i>
+                <span class="font-bold text-slate-900 dark:text-white text-base">옵시디언 설정 덤프 스마트 분리</span>
+              </div>
+              <h5 class="font-bold text-slate-900 dark:text-white text-base">10만자 Lorebook 자동 감지</h5>
+              <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">청크 내에 방대한 설정(#, ## 마크다운 헤더)이 포함되어 있으면 상단에 <strong>[설정 청크로 분리]</strong> 배지가 뜨며, 본문과 지시 프롬프트를 깔끔하게 분리할 수 있습니다.</p>
+            </div>
+          </div>
+
+          <!-- 우측 도트 레일 상세 설명 (노란색 + 보라색 마름모 상세 안내) -->
+          <div class="p-6 sm:p-8 rounded-3xl glass-card space-y-5">
+            <h4 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center space-x-2.5">
+              <i data-lucide="compass" class="w-5 h-5 text-amber-500"></i>
+              <span>우측 퀵 점프 도트 레일 (네비게이터) 넛지 가이드</span>
+            </h4>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+              우측 끝의 세로 레일은 수십 개의 청크를 스크롤 없이 원클릭으로 탐색하게 돕습니다. 도트의 <strong>모양(원형 vs 마름모)</strong>과 <strong>색상</strong>으로 대화의 성격을 한눈에 직관적으로 파악할 수 있습니다.
+            </p>
+
+            <div class="space-y-4 pt-2">
+              <!-- 1. 호박색/골드 마름모 -->
+              <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700/60 flex items-start space-x-4">
+                <div class="w-4 h-4 rotate-45 rounded-[2px] bg-gradient-to-tr from-amber-400 to-orange-400 shadow-md shadow-amber-500/50 flex-shrink-0 mt-1"></div>
+                <div class="space-y-1 min-w-0">
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-amber-800 dark:text-amber-300 text-sm sm:text-base">호박색(앰버-골드) 마름모 도트</span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 font-bold font-mono">분기점 (Branch Fork)</span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-700 dark:text-zinc-300 leading-relaxed">
+                    <strong>현재 파일의 이 청크에서 다른 대화 파일들로 갈라져 나간 분기점</strong>입니다. 마우스를 올리면 <span class="font-mono font-semibold text-amber-600 dark:text-amber-300">[🌿 분기점: N개 갈라짐]</span> 툴팁과 분기된 파일명이 보이며, 클릭 시 해당 지점의 분기 배너를 즉시 펄스 하이라이트합니다.
+                  </p>
+                </div>
+              </div>
+
+              <!-- 2. 보라-인디고 마름모 -->
+              <div class="p-4 sm:p-5 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-700/60 flex items-start space-x-4">
+                <div class="w-4 h-4 rotate-45 rounded-[2px] bg-gradient-to-tr from-purple-500 via-indigo-400 to-indigo-300 shadow-md shadow-purple-500/50 flex-shrink-0 mt-1"></div>
+                <div class="space-y-1 min-w-0">
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-purple-800 dark:text-purple-300 text-sm sm:text-base">보라-인디고(바이올렛) 마름모 도트</span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200 font-bold font-mono">고유 대화 분기 시작점</span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-700 dark:text-zinc-300 leading-relaxed">
+                    <strong>상위 부모 세션으로부터 이 파일이 분기되어 시작된 첫 번째 고유 청크 지점</strong>입니다. 상속받은 부모의 공통 대화 구간(#1~#N)이 끝나고, 현재 파일만의 고유한 대화가 시작되는 중요한 경계선을 은은하게 넛지해 줍니다.
+                  </p>
+                </div>
+              </div>
+
+              <!-- 3. 일반 원형 도트 -->
+              <div class="p-4 rounded-xl bg-slate-100 dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] flex items-center space-x-4">
+                <div class="flex items-center space-x-1.5 flex-shrink-0">
+                  <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                  <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                </div>
+                <div class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                  <strong>원형 도트:</strong> 일반 대화 청크 (파랑 = USER, 초록 = MODEL, 보라 = THINKING, 반투명 테두리 = 상속된 공통 대화)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 4. BRANCH OFF -->
+      <!-- ============================================================== -->
+      <section id="section-branch-off" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-purple-500/15 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/30">
+            <i data-lucide="git-fork" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">4. 브랜치 분기 (Branch Off)</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            대화가 진행되다가 <strong class="text-slate-900 dark:text-white">"여기서 다른 선택을 했다면 어땠을까?"</strong> 혹은 <strong class="text-slate-900 dark:text-white">"이 시점에서 외전이나 다른 루트로 이야기를 전개하고 싶다"</strong>는 생각이 들 때 사용하는 기능입니다.
+          </p>
+
+          <div class="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base uppercase tracking-wider text-purple-600 dark:text-purple-300">가지치기 분기 3단계 흐름</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs sm:text-sm">
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+                <span class="text-purple-600 dark:text-purple-400 font-bold font-mono text-sm block">Step 1. 청크 선택</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">갈라져 나가고 싶은 청크 카드의 우측 상단 툴바에서 <strong>[🌿 가지치기 (Branch Off)]</strong> 아이콘을 누릅니다.</p>
+              </div>
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+                <span class="text-purple-600 dark:text-purple-400 font-bold font-mono text-sm block">Step 2. 파일명 입력</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">모달 창이 뜨면 새로 만들 파일 이름(예: `chat_route_b.json`)과 저장할 폴더를 지정합니다.</p>
+              </div>
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+                <span class="text-purple-600 dark:text-purple-400 font-bold font-mono text-sm block">Step 3. 즉시 생성 & 전환</span>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">선택한 청크까지의 모든 공통 대화가 자동으로 복제된 새 파일이 생성되며, 즉시 해당 파일로 전환됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 5. SYNC ENGINE -->
+      <!-- ============================================================== -->
+      <section id="section-sync" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">5. 부모-자식 양방향 대화 연동 (Sync Engine)</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            파일이 분기된 이후 <strong class="text-slate-900 dark:text-white">"부모 파일의 앞부분 설정을 고쳤을 때 다른 자식 파일들도 자동으로 연동되는가?"</strong>에 대한 완벽한 솔루션입니다.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- 부모 -> 자식 전파 -->
+            <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#141722] border border-purple-300 dark:border-purple-700/60 space-y-4 shadow-md">
+              <div class="flex items-center space-x-2 text-purple-700 dark:text-purple-300 font-bold text-sm sm:text-base">
+                <i data-lucide="git-merge" class="w-5 h-5"></i>
+                <span>부모 파일에서 ➔ 하위 자식 세션들에 일괄 연동</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                부모 파일의 대화 내용을 수정한 후 상단 배너의 <strong>[하위 세션 N개에 일괄 연동]</strong> 버튼을 누르면, 이 부모를 공유하는 모든 자식 파일의 공통 구간(#1~#N)이 최신 내용으로 자동 교체됩니다.
+              </p>
+              <div class="p-3.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40 text-xs sm:text-sm text-purple-900 dark:text-purple-200 font-medium">
+                ✅ 자식 파일 각각의 고유 대화는 100% 보존되며 공통 부모 파트만 교체됩니다.
+              </div>
+            </div>
+
+            <!-- 자식 -> 부모 가져오기 -->
+            <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#141722] border border-amber-300 dark:border-amber-600/60 space-y-4 shadow-md">
+              <div class="flex items-center space-x-2 text-amber-700 dark:text-amber-300 font-bold text-sm sm:text-base">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                <span>자식 파일에서 ➔ 최신 부모 내용으로 연동</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                자식 파일을 열었을 때 부모 파일이 수정되어 내용이 달라졌다면, 상단에 <strong>[부모 내용 변경됨]</strong> 경고 뱃지가 뜹니다. 우측의 <strong>[🔄 최신 부모 내용으로 연동]</strong>을 누르면 최신 부모 대화로 즉시 갱신됩니다.
+              </p>
+              <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-xs sm:text-sm text-amber-900 dark:text-amber-200 font-medium">
+                💡 상속된 조상 청크는 평소에 <strong>[접기]</strong> 상태로 숨겨두어 내 고유 대화에만 몰입할 수 있습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 6. TREE MODES (3대 뷰 모드 & 시원한 패딩 적용) -->
+      <!-- ============================================================== -->
+      <section id="section-tree-modes" class="space-y-8 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+            <i data-lucide="network" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">6. 대화 계통도 트리 맵 (3대 뷰 모드)</h2>
+        </div>
+
+        <div class="space-y-6 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            상단 탭에서 <strong>[대화 계통도 트리]</strong>를 선택하면 보관함의 모든 파일들의 혈통 관계를 시각적으로 탐색할 수 있습니다.
+          </p>
+
+          <!-- 필터 설명 바 -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] flex items-center justify-between flex-wrap gap-4 shadow-sm">
+            <div class="space-y-1">
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">대화 유형 필터 (독립 단일 대화 따로 보기)</h4>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400">수십 개의 파일 중 가지치기된 대화와 단일 대화를 원클릭으로 분리합니다.</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-slate-100 dark:bg-black/40 p-1.5 rounded-xl border border-slate-200 dark:border-[#23283b] text-xs sm:text-sm">
+              <span class="px-3 py-1.5 rounded-lg bg-brand-600 text-white font-bold shadow-sm">전체</span>
+              <span class="px-3 py-1.5 text-slate-600 dark:text-zinc-400 font-medium">🌳 분기 계통 대화만</span>
+              <span class="px-3 py-1.5 text-slate-600 dark:text-zinc-400 font-medium">🌱 독립 단일 대화만</span>
+            </div>
+          </div>
+
+          <!-- 3대 뷰 모드 상세 카드 (시원하고 여유로운 패딩 적용) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+            <!-- 1. 세로 계층형 트리 -->
+            <div class="p-6 sm:p-7 rounded-3xl glass-card space-y-4 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/15 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold">
+                  🌲
+                </div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base sm:text-lg">1. 세로 계층형 트리 (Vertical)</h4>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                  클래식한 인덴트 트리 구조입니다. 자식 파일이 직계 부모의 몇 번 청크에서 갈라져 나왔는지(#N) 상세 딥링크와 Diff 분석 버튼을 함께 제공합니다.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-black/30 text-xs font-mono text-purple-700 dark:text-purple-300 border border-slate-200 dark:border-[#23283b]">
+                특징: 직관적인 부모-자식 인덴트 계층
+              </div>
+            </div>
+
+            <!-- 2. 가로 분기 마인드맵 -->
+            <div class="p-6 sm:p-7 rounded-3xl glass-card space-y-4 flex flex-col justify-between border-2 border-brand-500/40 shadow-lg">
+              <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+                  🌿
+                </div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base sm:text-lg">2. 가로 분기 마인드맵 (Mindmap)</h4>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                  부모 노드 바로 오른쪽에 직계 자식 노드들이 화살표로 매핑되는 마인드맵형 브랜치 파이프라인입니다. 71개 등 세션이 많을 때 <strong>[▾ 하위 N개 접기/펼치기]</strong>로 원하는 가지만 깔끔하게 펼쳐볼 수 있습니다.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-xs font-mono text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/40">
+                특징: 부모-자식 직결 & 하위 가지 접기 지원
+              </div>
+            </div>
+
+            <!-- 3. 카드 그리드 대시보드 -->
+            <div class="p-6 sm:p-7 rounded-3xl glass-card space-y-4 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                  ▦
+                </div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base sm:text-lg">3. 카드 그리드 대시보드 (Grid)</h4>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+                  각 계통도를 3열 바둑판식 카드로 배치한 대시보드 뷰입니다. 세션이 6개를 초과하면 <strong>[더보기 아코디언]</strong>으로 깔끔하게 접어두어 갤러리처럼 조망할 수 있습니다.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-black/30 text-xs font-mono text-emerald-700 dark:text-emerald-300 border border-slate-200 dark:border-[#23283b]">
+                특징: 갤러리형 요약 & 대량 세션 접기
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 7. WORLDVIEW -->
+      <!-- ============================================================== -->
+      <section id="section-worldview" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-teal-500/15 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center border border-teal-500/30">
+            <i data-lucide="globe" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">7. 세계관(Worldview) 관리 시스템</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            대화가 많아질수록 <strong class="text-slate-900 dark:text-white">"이 대화는 SF 세계관인가, 판타지 세계관인가, 일상물인가?"</strong>를 태깅하여 분류하는 기능입니다.
+          </p>
+
+          <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-4 text-xs sm:text-sm shadow-sm">
+            <div class="flex items-center space-x-2 text-teal-700 dark:text-teal-300 font-bold text-base">
+              <i data-lucide="tag" class="w-5 h-5"></i>
+              <span>세계관 배정 및 필터링 방법</span>
+            </div>
+            <ul class="space-y-2.5 text-slate-600 dark:text-zinc-400 list-disc list-inside leading-relaxed">
+              <li><strong>상단 알약(Pill) 버튼</strong>: 원하는 세계관 알약을 클릭하면 해당 세계관에 속한 대화들만 즉시 필터링됩니다.</li>
+              <li><strong>계통도 드롭다운</strong>: 계통도 카드 상단의 <strong>[세계관: ...]</strong> 드롭다운을 눌러 계통도 전체를 한 번에 특정 세계관으로 배정할 수 있습니다.</li>
+              <li><strong>세계관 관리자 모달</strong>: 상단 <strong>[세계관 관리]</strong> 버튼을 눌러 새 세계관을 추가하거나 순서를 드래그 앤 드롭으로 바꿀 수 있습니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 8. STORAGE & EXTERNAL TOOLS -->
+      <!-- ============================================================== -->
+      <section id="section-storage-ops" class="space-y-6 scroll-mt-24 doc-section">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-sky-500/15 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/30">
+            <i data-lucide="folder" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">8. 보관함 & 외부 툴 연동</h2>
+        </div>
+
+        <div class="space-y-5 text-sm sm:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+          <p>
+            좌측 사이드바의 보관함 트리에서 파일이나 폴더를 <strong>마우스 우클릭</strong>하면 강력한 빠른 작업 메뉴가 열립니다.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <div class="p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] flex items-center space-x-4 shadow-sm">
+              <i data-lucide="file-text" class="w-7 h-7 text-sky-500 flex-shrink-0"></i>
+              <div>
+                <h5 class="font-bold text-slate-900 dark:text-white text-base">메모장으로 바로 열기</h5>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed text-xs sm:text-sm">Windows 기본 메모장(Notepad)으로 JSON 파일을 즉시 열어 원본 코드를 확인하고 편집합니다.</p>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] flex items-center space-x-4 shadow-sm">
+              <i data-lucide="folder" class="w-7 h-7 text-amber-500 flex-shrink-0"></i>
+              <div>
+                <h5 class="font-bold text-slate-900 dark:text-white text-base">탐색기에서 파일 / 폴더 열기</h5>
+                <p class="text-slate-600 dark:text-zinc-400 leading-relaxed text-xs sm:text-sm">해당 파일이 위치한 실제 윈도우 파일 탐색기를 열고 해당 파일을 포커스합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- SECTION 9. FAQ & SHORTCUTS -->
+      <!-- ============================================================== -->
+      <section id="section-faq" class="space-y-6 scroll-mt-24 doc-section pb-24">
+        <div class="flex items-center space-x-3 border-b border-slate-200 dark:border-[#23283b] pb-4">
+          <div class="w-9 h-9 rounded-xl bg-rose-500/15 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-500/30">
+            <i data-lucide="help-circle" class="w-5 h-5"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">9. 단축키 & 문제 해결 FAQ</h2>
+        </div>
+
+        <!-- 단축키 표 -->
+        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-4 shadow-sm">
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">주요 단축키 모음</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs sm:text-sm text-left">
+              <thead class="text-slate-500 dark:text-zinc-400 border-b border-slate-200 dark:border-[#23283b]">
+                <tr>
+                  <th class="py-2.5 px-3">기능</th>
+                  <th class="py-2.5 px-3">단축키</th>
+                  <th class="py-2.5 px-3">설명</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-zinc-300">
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-slate-900 dark:text-white">대화 저장</td>
+                  <td class="py-3 px-3 font-mono text-brand-600 dark:text-brand-300 font-bold">Ctrl + S</td>
+                  <td class="py-3 px-3 text-slate-600 dark:text-zinc-400">현재 대화 내용을 storage 폴더에 즉시 저장합니다.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-slate-900 dark:text-white">청크 삭제 취소 (복구)</td>
+                  <td class="py-3 px-3 font-mono text-emerald-600 dark:text-emerald-300 font-bold">Ctrl + Z</td>
+                  <td class="py-3 px-3 text-slate-600 dark:text-zinc-400">휴지통에서 방금 삭제한 청크를 제자리에 되돌립니다.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-slate-900 dark:text-white">대기열 전송</td>
+                  <td class="py-3 px-3 font-mono text-blue-600 dark:text-blue-300 font-bold">Ctrl + Enter</td>
+                  <td class="py-3 px-3 text-slate-600 dark:text-zinc-400">하단 입력창에서 새 청크를 즉시 피드에 추가합니다.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-slate-900 dark:text-white">전체 새로고침</td>
+                  <td class="py-3 px-3 font-mono text-amber-600 dark:text-amber-300 font-bold">F5</td>
+                  <td class="py-3 px-3 text-slate-600 dark:text-zinc-400">UI 화면을 최신 상태로 새로고침합니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FAQ 아코디언 -->
+        <div class="space-y-4">
+          <div class="p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+            <h5 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">Q. 부모 내용을 연동할 때 자식 파일에서 내가 덧붙인 대화가 날아가나요?</h5>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+              절대 날아가지 않습니다! 알고리즘이 부모와 자식 간의 공통 접두 청크 구간(#1~#N)만 정확히 식별하여 교체하며, 자식 파일의 고유 대화는 1글자도 유실되지 않고 안전하게 보존됩니다.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white dark:bg-[#141722] border border-slate-200 dark:border-[#23283b] space-y-2 shadow-sm">
+            <h5 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">Q. 71개 세션처럼 분기가 너무 많은 계통도는 어떻게 보나요?</h5>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+              <strong>[가로 분기 트리]</strong> 보기에서 계통도 상단의 <strong>[모두 접기]</strong>를 누르면 루트 1개만 남아 한눈에 조망할 수 있으며, 카드 하단의 <strong>[▾ 하위 N개 펼치기]</strong>를 통해 내가 보고 싶은 가지만 쏙쏙 열어볼 수 있습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- SCRIPT FOR DYNAMIC ICONS, SEARCH FILTER & THEME TOGGLE -->
+  <script>
+    // 1. Init Theme from LocalStorage
+    const savedTheme = localStorage.getItem('ais_manual_theme') || 'dark';
+    setTheme(savedTheme);
+
+    function setTheme(theme) {
+      const html = document.documentElement;
+      const themeText = document.getElementById('themeText');
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        localStorage.setItem('ais_manual_theme', 'dark');
+        if (themeText) themeText.textContent = '라이트 모드';
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('ais_manual_theme', 'light');
+        if (themeText) themeText.textContent = '다크 모드';
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'light' : 'dark');
+    }
+
+    // 2. Lucide Icons
+    lucide.createIcons();
+
+    // 3. Filter Content by Query
+    function filterManualContent(query) {
+      const q = (query || '').toLowerCase().trim();
+      const sections = document.querySelectorAll('.doc-section');
+      
+      sections.forEach(sec => {
+        if (!q) {
+          sec.classList.remove('hidden');
+          return;
+        }
+        const text = sec.textContent.toLowerCase();
+        if (text.includes(q)) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

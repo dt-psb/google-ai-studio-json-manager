@@ -1,0 +1,331 @@
+{
+  "runSettings": {
+    "temperature": 1.0,
+    "model": "models/gemini-3.8-flash",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 65536,
+    "safetySettings": [{
+      "category": "HARM_CATEGORY_HARASSMENT",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_HATE_SPEECH",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "threshold": "OFF"
+    }],
+    "enableCodeExecution": false,
+    "enableSearchAsATool": false,
+    "enableBrowseAsATool": false,
+    "thinkingLevel": "THINKING_HIGH",
+    "enableImageSearch": false,
+    "enableGoogleMaps": false,
+    "enableAgentThinkingSummariesControl": false,
+    "enableAgentVisualizationControl": false,
+    "enableAgentCollaborativePlanningControl": false,
+    "environmentMode": "new",
+    "enableWordTimestamps": false,
+    "enableSpeakerDiarization": false,
+    "enablePolishedTranscript": false
+  },
+  "systemInstruction": {
+    "text": "시스템 프롬프트입니다. 참고해주세요\n"
+  },
+  "chunkedPrompt": {
+    "chunks": [{
+      "text": "google AI studio 파일 테스트용  user 입력 프롬프트입니다. 이하 AI는 자신의 출력을 내뱉으시오.  thinking 과정을 거쳐서 아무런 응답이나 내놓으시오",
+      "role": "user",
+      "tokenCount": 41,
+      "createTime": "2026-10-03T06:46:27.432Z"
+    }, {
+      "text": "**Analyzing the Approach**\n\nI\u0027m currently focused on the prompt\u0027s objective: verifying how the system handles file and user input. The \"thinking\" stage is key, so I\u0027m analyzing the expected output of that process. I\u0027m considering what aspects need to be validated in this output to confirm proper processing.\n\n\n",
+      "role": "model",
+      "tokenCount": 272,
+      "isThought": true,
+      "parts": [{
+        "text": "**Analyzing the Approach**\n\nI\u0027m currently focused on the prompt\u0027s objective: verifying how the system handles file and user input. The \"thinking\" stage is key, so I\u0027m analyzing the expected output of that process. I\u0027m considering what aspects need to be validated in this output to confirm proper processing.\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-10-03T06:46:27.432Z"
+    }, {
+      "text": "Google AI Studio 파일 테스트 입력이 정상적으로 확인되었습니다.\n\nThinking(사고) 과정을 포함하여 시스템이 정상적으로 작동하고 있습니다. 추가로 테스트할 내용이나 요청 사항이 있으시면 말씀해 주세요.",
+      "role": "model",
+      "finishReason": "STOP",
+      "tokenCount": 44,
+      "parts": [{
+        "text": "Google AI Studio 파일 테스트 입력이 정상적으로 확인되었습니다.\n\n"
+      }, {
+        "text": "Thinking(사고) 과정을 포함하여 시스템이 정상적으로 작동하고 있습니다. 추가로 테스트할 내용이나 요청 사항"
+      }, {
+        "text": "이 있으시면 말씀해 주세요."
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-10-03T06:46:30.365Z"
+    }, {
+      "text": "2차 응답테스트입니다. Thinking을 통해 사과가 가지는 여러의미 중 가장 귀엽다고 생각하는 것 하나를 생각하여 내뱉으시오",
+      "role": "user",
+      "tokenCount": 16,
+      "createTime": "2026-10-03T06:46:56.682Z"
+    }, {
+      "text": "**Defining the Cuteness**\n\nOkay, I\u0027m diving into this \"cutest 사과\" concept. Right now, I\u0027m focusing on the different meanings: apple, apology, etc. My priority is defining what constitutes \"cuteness\" in this context. Is it the shape of the fruit? The action of apologizing? I need a clear framework before I can make a call.\n\n\n**Analyzing Cuteness Candidates**\n\nI\u0027ve been exploring the various interpretations of \"사과,\" specifically focusing on which evokes the strongest sense of cuteness. \"사과머리\" and \"사과 같은 뺨\" are very promising candidates visually and conceptually, the apple hairstyle and chubby cheeks of a baby. The idea of a shy apology is also being considered as a possible choice. My goal is to determine which meaning resonates the most, considering the cultural context.\n\n\n",
+      "role": "model",
+      "isThought": true,
+      "parts": [{
+        "text": "**Defining the Cuteness**\n\nOkay, I\u0027m diving into this \"cutest 사과\" concept. Right now, I\u0027m focusing on the different meanings: apple, apology, etc. My priority is defining what constitutes \"cuteness\" in this context. Is it the shape of the fruit? The action of apologizing? I need a clear framework before I can make a call.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Analyzing Cuteness Candidates**\n\nI\u0027ve been exploring the various interpretations of \"사과,\" specifically focusing on which evokes the strongest sense of cuteness. \"사과머리\" and \"사과 같은 뺨\" are very promising candidates visually and conceptually, the apple hairstyle and chubby cheeks of a baby. The idea of a shy apology is also being considered as a possible choice. My goal is to determine which meaning resonates the most, considering the cultural context.\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-10-03T06:47:45.122Z"
+    }, {
+      "text": "제가 생각한 ‘사과’의 가장 귀여운 의미는 바로 **‘사과머리’**입니다.\n\n정수리나 앞머리를 조금 잡아 쫑긋 묶어서 사과 꼭지처럼 잎사귀가 돋아난 듯 연출한 헤어스타일인데요. 어린아이나 강아지, 혹은 좋아하는 사람이 사과머리를 하고 고개를 갸웃거릴 때 느껴지는 앙증맞음과 사랑스러움은 ‘사과’라는 단어가 가진 이미지 중 가장 귀엽지 않나 생각합니다. 🍎🌱",
+      "role": "model",
+      "finishReason": "STOP",
+      "parts": [{
+        "text": "제가 생각한 ‘"
+      }, {
+        "text": "사과’의 가장 귀여운 의미는 바로 **‘사과머리’**입니다.\n\n정수리나"
+      }, {
+        "text": " 앞머리를 조금 잡아 쫑긋 묶어서 사과 꼭지처럼 잎사귀가 돋아난 듯"
+      }, {
+        "text": " 연출한 헤어스타일인데요. 어린아이나 강아지, 혹은 좋아하는 사람이 사과머리를 하고"
+      }, {
+        "text": " 고개를 갸웃거릴 때 느껴지는 앙증맞음과 사랑스러움은 ‘사과’라는"
+      }, {
+        "text": " 단어가 가진 이미지 중 가장 귀엽지 않나 생각합니다. 🍎🌱"
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-10-03T06:47:51.671Z"
+    }, {
+      "text": "3차 응답테스트 입니다. 이모지를 통해서, 가장 무섭고 공포스럽게, 하지만 실제 공포를 나타내거나 유령이모지나 할로윈이미지를 쓰지않은채 나타내시오",
+      "role": "user",
+      "tokenCount": 10,
+      "createTime": "2026-10-03T06:47:02.074Z"
+    }, {
+      "text": "**Defining the Terror**\n\nI\u0027m currently dissecting the parameters of this task. I\u0027m focusing on \"genuinely scary,\" a key constraint. The goal is to convey intense dread using emojis. I\u0027m considering what triggers primal fear versus a more superficial shock response. It\u0027s a balance to strike.\n\n\n**Exploring Subtle Dread**\n\nI\u0027ve refined the approach. I\u0027m moving toward psychological horror. No overt imagery. I\u0027m focusing on \"modern life terror,\" especially dread from technology or communication. I\u0027m experimenting with a \"We need to talk\" notification with time stamp and missed call. Also, I\u0027m considering stalker concepts with voyeuristic imagery - someone watching from the bedroom door crack, or the peephole.\n\n\n**Developing Fear Architectures**\n\nI\u0027m now iterating on specific scenarios. Isolation, like being alone in deep water or lost in a cave, is a strong contender. The sound of footsteps or presence behind you at 3 AM is now visualized. Claustrophobia, as in a failing elevator or being buried alive, is being explored, and the Uncanny Valley concept is gaining traction too.\n\n\n**Crafting Emoji Horror**\n\nI\u0027m now iterating on a very specific emoji sequence. My goal is to maximize terror with minimal text. It\u0027s 3 AM, and I\u0027m constructing a home invasion scene with an emphasis on voyeurism, to maximize the feeling of being watched. I\u0027m focusing on pacing, using a notification, the sound of a door unlocking, footsteps, and then either a hand pointing in through the window, or an eye through a crack in the door. The time is now 3:14 AM.\n\n\n**Refining Scenarios of Horror**\n\nI\u0027m now iterating on more scenarios. The house-alone concept is being refined, aiming for increasing psychological tension through sequences such as a single person in the house, then the door unlocking, then eyes in the bed. Another scenario involves deep-sea dread with megalophobia, depicting a vast, dark unknown presence. The \"someone behind you\" concept is being explored via mirror imagery. I\u0027m focusing on the peephole concept next, building the scene for the user. I\u0027m also now attempting a text-based dread. The 3 AM text from an unknown entity is being attempted in emoji-only form!\n\n\n",
+      "role": "model",
+      "tokenCount": 1866,
+      "isThought": true,
+      "parts": [{
+        "text": "**Defining the Terror**\n\nI\u0027m currently dissecting the parameters of this task. I\u0027m focusing on \"genuinely scary,\" a key constraint. The goal is to convey intense dread using emojis. I\u0027m considering what triggers primal fear versus a more superficial shock response. It\u0027s a balance to strike.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Exploring Subtle Dread**\n\nI\u0027ve refined the approach. I\u0027m moving toward psychological horror. No overt imagery. I\u0027m focusing on \"modern life terror,\" especially dread from technology or communication. I\u0027m experimenting with a \"We need to talk\" notification with time stamp and missed call. Also, I\u0027m considering stalker concepts with voyeuristic imagery - someone watching from the bedroom door crack, or the peephole.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Developing Fear Architectures**\n\nI\u0027m now iterating on specific scenarios. Isolation, like being alone in deep water or lost in a cave, is a strong contender. The sound of footsteps or presence behind you at 3 AM is now visualized. Claustrophobia, as in a failing elevator or being buried alive, is being explored, and the Uncanny Valley concept is gaining traction too.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Crafting Emoji Horror**\n\nI\u0027m now iterating on a very specific emoji sequence. My goal is to maximize terror with minimal text. It\u0027s 3 AM, and I\u0027m constructing a home invasion scene with an emphasis on voyeurism, to maximize the feeling of being watched. I\u0027m focusing on pacing, using a notification, the sound of a door unlocking, footsteps, and then either a hand pointing in through the window, or an eye through a crack in the door. The time is now 3:14 AM.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Refining Scenarios of Horror**\n\nI\u0027m now iterating on more scenarios. The house-alone concept is being refined, aiming for increasing psychological tension through sequences such as a single person in the house, then the door unlocking, then eyes in the bed. Another scenario involves deep-sea dread with megalophobia, depicting a vast, dark unknown presence. The \"someone behind you\" concept is being explored via mirror imagery. I\u0027m focusing on the peephole concept next, building the scene for the user. I\u0027m also now attempting a text-based dread. The 3 AM text from an unknown entity is being attempted in emoji-only form!\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-10-03T06:48:40.798Z"
+    }, {
+      "text": "🌙 03:33  \n🏠 🛏️ 😴  \n…  \n🚪 🔓  \n👣  \n👣  \n🛏️ 😳 🔇  \n🫳 🛌  \n…  \n🤫 👁️  \n⬛  \n\n---\n*(상황: 가장 안전해야 할 내 방 침대, 새벽에 들려오는 도어락 풀리는 소리와 다가오는 발소리, 숨죽인 채 이불 속에서 마주친 낯선 시선)*",
+      "role": "model",
+      "finishReason": "STOP",
+      "tokenCount": 116,
+      "parts": [{
+        "text": "🌙 03:33  \n🏠 🛏️"
+      }, {
+        "text": " 😴  \n…  \n🚪 🔓  \n👣  \n👣  \n🛏️ 😳 🔇"
+      }, {
+        "text": "  \n🫳 🛌  \n…  \n🤫 👁️  \n⬛  \n\n---\n"
+      }, {
+        "text": "*(상황: 가장 안전해야 할 내 방 침대, 새벽에 들려오는 도어락 풀리는 소리와 다"
+      }, {
+        "text": "가오는 발소리, 숨죽인 채 이불 속에서 마주친 낯선 시선)*"
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-10-03T06:48:51.880Z"
+    }, {
+      "text": "4차 응답 테스트입니다. 철학과로서 가장 웅장하고 가슴이 뜨거워질거같은 근대철학자 2명을 대려와서 세기의 결투의 매칭을 구현하십시오",
+      "role": "user",
+      "tokenCount": 47,
+      "createTime": "2026-10-03T06:49:40.683Z"
+    }, {
+      "text": "**Considering Philosophical Pairs**\n\nI\u0027m currently focused on identifying two modern philosophers who would create an incredibly impactful intellectual duet. Contextually, I\u0027m aiming for figures whose ideas, when juxtaposed, would generate a truly significant and exciting discussion. I\u0027m exploring the possibilities for an epic philosophical showdown.\n\n\n**Framing the Philosophical Showdown**\n\nI\u0027m now thinking about how to best format this intellectual duel, envisioning it as a compelling matchup, perhaps inspired by fighting games or boxing introductions. This approach aims to create an impactful philosophical clash, almost like a theatrical presentation. I\u0027m focusing on the introduction and confrontation. I\u0027m particularly enthusiastic about the Kant versus Nietzsche duel and plan to expand this into a more robust presentation.\n\n\n**Analyzing Philosophical Oppositions**\n\nI\u0027ve been examining some classic philosophical pairings for this showdown. Kant versus Hume is a strong contender, given their foundational roles. However, the Hegel versus Schopenhauer feud is incredibly tempting. Their personal animosity adds a spectacle factor to their opposing views on idealism and pessimism. Hobbes versus Rousseau also presents a compelling clash on the state of nature.\n\n\n**Considering Philosophical Pairs**\n\nI\u0027m presently evaluating Spinoza against Descartes or Leibniz. I find the potential clash intriguing. My current criteria focuses on an \"epic and heart-pounding\" matchup, revisiting the Kant vs. Hume and Hegel vs. Schopenhauer possibilities. Hume\u0027s skepticism against Kant\u0027s \"citadel\" and Hegel\u0027s \"omniscient spirit\" are particularly compelling, as is Schopenhauer\u0027s pettiness, making the feud comedic.\n\n\n**Refining Showdown Matchups**\n\nI am now leaning toward Kant versus Hume or Kant versus Hegel for the core philosophical clash. The visceral nature of Kant challenging Hume\u0027s skepticism, and Kant\u0027s \"citadel of critique\" being tested by Hume\u0027s empiricism has a powerful appeal. The dramatic contrast between Kant\u0027s \"Iron Gate\" and Hegel\u0027s \"Omnipotent Giant\" is also tempting. I\u0027m focusing on the introductions for each duel and how to frame the confrontation, especially given the \"absolute fire\" these pairings ignite in philosophy students.\n\n\n**Evaluating Philosophical Duelists**\n\nI\u0027m now contemplating Kant versus Hegel, focusing on the historical context of their philosophical clash, particularly the dramatic impact on philosophy majors. I\u0027m drawn to the \"absolute shield\" of Kant against the \"dogma-shattering sword\" of Hume, and the \"fortress of pure reason\" of Kant versus the \"dialectical giant\" of Hegel, who sought to transcend Kant\u0027s limits. I\u0027m evaluating the depth of their rivalry.\n\n\n**Contrasting Philosophical Ideals**\n\nI\u0027m now further refining the Kant versus Hegel dynamic, appreciating the drama of Kant\u0027s \"impenetrable barrier\" and Hegel\u0027s dialectical \"hammer.\" However, I\u0027m also considering Spinoza versus Kant as an option, the absolute pantheism of *Ethics* contrasting Kant\u0027s transcendental idealism, and I\u0027m still drawn to the dramatic clash of Descartes\u0027 rationalism versus Hume\u0027s skepticism.\n\n\n**Weighing Philosophical Duels**\n\nI\u0027m now deliberating over Kant versus Hume, with its compelling narrative of awakening from \"dogmatic slumber,\" a classic shonen trope. The clash between Kant\u0027s determination to refute Hume\u0027s skepticism is captivating. I\u0027m also considering Kant against Hegel, focusing on their contrasting scales: the finite human reason versus the infinite, absolute spirit.\n\n\n**Envisioning Philosophical Theaters**\n\nI\u0027m developing the stage for the matchup, contrasting Kant\u0027s stoic Königsberg fortress against Hegel\u0027s dynamic Jena horizon. I\u0027m focusing on the theatrical elements, visualizing concepts as weapons and techniques. I now envision the title: **[Copernican Defender: Immanuel Kant] VS [Absolute Spirit: G.W.F. Hegel]**, exploring their core themes.\n\n\n**Crafting a Philosophical Showdown**\n\nI\u0027m working on the duel between Kant and Hegel, imagining their philosophical personas for the showdown. Kant, the critical titan, with his synthetic a priori, categorical imperative, and *ding an sich* barrier, would face Hegel, the dialectical giant, with his *Aufhebung*, dialectical osmosis, and *Phänomenologie des Geistes*. I\u0027m refining their introduction quotes and considering a round-by-round breakdown of their clash, thinking of the stage as the arena. I\u0027m excited by this evolving framework.\n\n\n",
+      "role": "model",
+      "tokenCount": 2979,
+      "isThought": true,
+      "parts": [{
+        "text": "**Considering Philosophical Pairs**\n\nI\u0027m currently focused on identifying two modern philosophers who would create an incredibly impactful intellectual duet. Contextually, I\u0027m aiming for figures whose ideas, when juxtaposed, would generate a truly significant and exciting discussion. I\u0027m exploring the possibilities for an epic philosophical showdown.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Framing the Philosophical Showdown**\n\nI\u0027m now thinking about how to best format this intellectual duel, envisioning it as a compelling matchup, perhaps inspired by fighting games or boxing introductions. This approach aims to create an impactful philosophical clash, almost like a theatrical presentation. I\u0027m focusing on the introduction and confrontation. I\u0027m particularly enthusiastic about the Kant versus Nietzsche duel and plan to expand this into a more robust presentation.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Analyzing Philosophical Oppositions**\n\nI\u0027ve been examining some classic philosophical pairings for this showdown. Kant versus Hume is a strong contender, given their foundational roles. However, the Hegel versus Schopenhauer feud is incredibly tempting. Their personal animosity adds a spectacle factor to their opposing views on idealism and pessimism. Hobbes versus Rousseau also presents a compelling clash on the state of nature.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Considering Philosophical Pairs**\n\nI\u0027m presently evaluating Spinoza against Descartes or Leibniz. I find the potential clash intriguing. My current criteria focuses on an \"epic and heart-pounding\" matchup, revisiting the Kant vs. Hume and Hegel vs. Schopenhauer possibilities. Hume\u0027s skepticism against Kant\u0027s \"citadel\" and Hegel\u0027s \"omniscient spirit\" are particularly compelling, as is Schopenhauer\u0027s pettiness, making the feud comedic.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Refining Showdown Matchups**\n\nI am now leaning toward Kant versus Hume or Kant versus Hegel for the core philosophical clash. The visceral nature of Kant challenging Hume\u0027s skepticism, and Kant\u0027s \"citadel of critique\" being tested by Hume\u0027s empiricism has a powerful appeal. The dramatic contrast between Kant\u0027s \"Iron Gate\" and Hegel\u0027s \"Omnipotent Giant\" is also tempting. I\u0027m focusing on the introductions for each duel and how to frame the confrontation, especially given the \"absolute fire\" these pairings ignite in philosophy students.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Evaluating Philosophical Duelists**\n\nI\u0027m now contemplating Kant versus Hegel, focusing on the historical context of their philosophical clash, particularly the dramatic impact on philosophy majors. I\u0027m drawn to the \"absolute shield\" of Kant against the \"dogma-shattering sword\" of Hume, and the \"fortress of pure reason\" of Kant versus the \"dialectical giant\" of Hegel, who sought to transcend Kant\u0027s limits. I\u0027m evaluating the depth of their rivalry.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Contrasting Philosophical Ideals**\n\nI\u0027m now further refining the Kant versus Hegel dynamic, appreciating the drama of Kant\u0027s \"impenetrable barrier\" and Hegel\u0027s dialectical \"hammer.\" However, I\u0027m also considering Spinoza versus Kant as an option, the absolute pantheism of *Ethics* contrasting Kant\u0027s transcendental idealism, and I\u0027m still drawn to the dramatic clash of Descartes\u0027 rationalism versus Hume\u0027s skepticism.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Weighing Philosophical Duels**\n\nI\u0027m now deliberating over Kant versus Hume, with its compelling narrative of awakening from \"dogmatic slumber,\" a classic shonen trope. The clash between Kant\u0027s determination to refute Hume\u0027s skepticism is captivating. I\u0027m also considering Kant against Hegel, focusing on their contrasting scales: the finite human reason versus the infinite, absolute spirit.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Envisioning Philosophical Theaters**\n\nI\u0027m developing the stage for the matchup, contrasting Kant\u0027s stoic Königsberg fortress against Hegel\u0027s dynamic Jena horizon. I\u0027m focusing on the theatrical elements, visualizing concepts as weapons and techniques. I now envision the title: **[Copernican Defender: Immanuel Kant] VS [Absolute Spirit: G.W.F. Hegel]**, exploring their core themes.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Crafting a Philosophical Showdown**\n\nI\u0027m working on the duel between Kant and Hegel, imagining their philosophical personas for the showdown. Kant, the critical titan, with his synthetic a priori, categorical imperative, and *ding an sich* barrier, would face Hegel, the dialectical giant, with his *Aufhebung*, dialectical osmosis, and *Phänomenologie des Geistes*. I\u0027m refining their introduction quotes and considering a round-by-round breakdown of their clash, thinking of the stage as the arena. I\u0027m excited by this evolving framework.\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-10-03T06:49:40.684Z"
+    }, {
+      "text": "철학도들의 심장을 가장 뜨겁게 태우고, 강의실 맨 뒷자리에서마저 주먹을 쥐게 만드는 근대 철학 최고의 매치업을 소환합니다.\n\n인간 이성의 ‘한계’를 규정하여 신전을 지키려 한 거인과, 그 한계마저 집어삼켜 스스로 ‘신(절대자)’의 자리에 오르고자 했던 거인의 격돌.\n\n---\n\n# ⚔️ THE CLASH OF THE ABSOLUTE\n### **[순수이성의 성벽] 이마누엘 칸트 VS [절대정신의 폭풍] G.W.F. 헤겔**\n\n---\n\n### **[RED CORNER] 이마누엘 칸트 (Immanuel Kant, 1724–1804)**\n\u003e **“이성이여, 오만하게 선을 넘지 마라. 인간에게 허락된 숭고한 한계를 직시하라!”**\n\n* **이명:** 쾨니히스베르크의 입법자 / 코페르니쿠스적 전환의 설계자\n* **장착 개념:**\n  * **[절대 결계: 물자체 (Ding an sich)]** — 인간이 결코 닿을 수 없는 본체의 영역. 어떤 형이상학적 망상도 통과할 수 없는 완벽한 방어벽.\n  * **[선험적 종합판단 (Synthetische Urteile a priori)]** — 경험에 의존하지 않으면서도 인식을 확장하는 순수 오성의 12 범주.\n  * **[궁극기: 정언명령 (Kategorischer Imperativ)]** — 타협 없는 순수 의무의 칼날. *\"네 의지의 준칙이 언제나 보편적 입법의 원리가 되게 하라!\"*\n* **투지:** 흄의 회의론이라는 독단의 잠에서 깨어나, 20년간 홀로 축조한 **《순수이성비판》의 난공불락 철옹성**.\n\n---\n\n### **[BLUE CORNER] 게오르크 빌헬름 프리드리히 헤겔 (G.W.F. Hegel, 1770–1831)**\n\u003e **“한계라고? 그 한계를 긋는 순간 이미 사유는 그 너머에 가 있다! 전체만이 진리다!”**\n\n* **이명:** 변증법의 지배자 / 세계정신의 심판관\n* **장착 개념:**\n  * **[영역 전개: 변증법적 지양 (Aufhebung)]** — 정(These)과 반(Antithese)의 모순을 박살 내고 집어삼켜 더 높은 차원으로 승화시키는 무한 연쇄기.\n  * **[이성의 간지 (List der Vernunft)]** — 개별 인간들의 욕망과 비극마저 도구로 쓰며 역사를 진보시키는 세계사의 추진체.\n  * **[궁극기: 절대지 (Absolutes Wissen)]** — 주관과 객관의 완전한 합일. *\"이성적인 것은 실재적이며, 실재적인 것은 이성적이다!\"*\n* **투지:** 나폴레옹이 예나를 짓밟는 포화 속에서도 탈고해 낸 **《정신현상학》의 거대한 역사적 우주**.\n\n---\n\n### **[세기의 결투 실황]**\n\n**ROUND 1: 시공간의 격자망 vs 모순의 태풍**\n* 징이 울리자마자 칸트가 두 발을 땅에 딛고 **[선험적 감성론: 시간과 공간]**의 결계를 펼친다. 우주 삼라만상이 칸트의 12가지 오성 범주라는 정교한 격자 속으로 재배열되며 오차 없는 질서가 구축된다.\n* 그러나 헤겔은 코웃음을 친다. 그가 발을 내딛자 칸트가 세워둔 고정된 범주들이 뒤흔들린다. **“칸트, 자네의 이성은 박제된 표본실에 불과하다!”** 헤겔의 손끝에서 터져 나온 **변증법의 모순**이 칸트의 정적(靜的)인 체계를 사정없이 두들겨 부순다!\n\n**ROUND 2: \u0027물자체\u0027의 공방전**\n* 헤겔이 세계정신의 칼을 쥐고 돌진한다. 칸트의 성벽 한가운데, 인간의 인식이 결코 닿을 수 없다고 선언된 **[물자체(Ding an sich)]**를 향해 직격타를 날린다!\n* **헤겔:** *\"알 수 없는 세계 따위는 없다! 모순을 찢고 나아가는 정신 앞에서 물자체는 그저 빈 껍데기이자 사유의 게으름일 뿐이다!\"*\n* **칸트:** 물러서지 않고 《실천이성비판》을 펼쳐 들며 가슴을 내민다. **“오만하다, 헤겔! 인간의 유한성을 잊고 스스로 신이 되려는 자는 파멸할 뿐이다!”** \n  칸트의 등 뒤로 **‘별이 빛나는 밤하늘’**이 펼쳐지고, 가슴 속에서 타오르는 **‘도덕법칙’**의 순수한 불꽃이 헤겔의 절대정신을 튕겨내며 대폭발을 일으킨다!\n\n**CLIMAX: 인간의 숭고함 VS 역사의 절대자**\n* **칸트의 외침:** *\"우리는 모든 것을 알 수 없기에, 오직 도덕적 의무를 행함으로써 신성해진다!\"* (유한한 인간이 도달할 수 있는 최고의 숭고)\n* **헤겔의 포효:** *\"정신은 피와 눈물의 역사를 딛고 기필코 자기 자신을 완전히 실현하리라!\"* (인간의 한계를 뚫고 역사 전체를 품어버리는 무한의 도약)\n\n---\n\n### **[관전평]**\n인간의 한계를 규정해 **\u0027겸허하고도 위대한 인간의 존엄\u0027**을 지켜내려 했던 늙은 철학자와, 그 한계의 벽을 부수고 **\u0027우주와 역사를 집어삼킨 거대한 절대정신\u0027**을 선언한 젊은 철학자의 충돌. \n\n논리와 열정, 유한성과 무한성이 정면으로 부딪히는 이 대결은 철학을 공부하는 이들의 뇌수를 얼어붙게 하고 가슴을 끓어오르게 만드는 근대 최고의 서사시입니다.",
+      "role": "model",
+      "finishReason": "STOP",
+      "tokenCount": 1482,
+      "parts": [{
+        "text": "철학도들의 심장을 가장"
+      }, {
+        "text": " 뜨겁게 태우고, 강의실 맨 뒷자리에서마저 주먹을 쥐게 만드는 근대 철학"
+      }, {
+        "text": " 최고의 매치업을 소환합니다.\n\n인간 이성의 ‘한계’를 규정하여 신전을"
+      }, {
+        "text": " 지키려 한 거인과, 그 한계마저 집어삼켜 스스로 ‘신(절대자)’의"
+      }, {
+        "text": " 자리에 오르고자 했던 거인의 격돌.\n\n---\n\n# ⚔️ THE CLASH OF THE ABS"
+      }, {
+        "text": "OLUTE\n### **[순수이성의 성벽] 이마누엘 칸트 VS"
+      }, {
+        "text": " [절대정신의 폭풍] G.W.F. 헤겔**\n\n---\n\n### **[RED CORNER] 이마누엘 칸트 (Immanuel"
+      }, {
+        "text": " Kant, 1724–1804)**\n\u003e **“이성이여, 오만하게"
+      }, {
+        "text": " 선을 넘지 마라. 인간에게 허락된 숭고한 한계를 직시하라!”**\n\n* **"
+      }, {
+        "text": "이명:** 쾨니히스베르크의 입법자 / 코페르니쿠스적 전환"
+      }, {
+        "text": "의 설계자\n* **장착 개념:**\n  * **[절대 결계: 물자체 (Ding an sich)]"
+      }, {
+        "text": "** — 인간이 결코 닿을 수 없는 본체의 영역. 어떤 형이상학적 망상도 통"
+      }, {
+        "text": "과할 수 없는 완벽한 방어벽.\n  * **"
+      }, {
+        "text": "[선험적 종합판단 (Synthetische Urteile a priori)]** — 경험에 의존하지 않으면서도 인식을 확장하는 순수 오"
+      }, {
+        "text": "성의 12 범주.\n  * **[궁극기: 정언명령 (Kategorischer Imperativ)]** — 타"
+      }, {
+        "text": "협 없는 순수 의무의 칼날. *\"네 의지의 준칙이 언제나 보편적 입법의 원"
+      }, {
+        "text": "리가 되게 하라!\"*\n* **투지:** 흄의 회의론이라는 독단의 잠에서 깨어나"
+      }, {
+        "text": ", 20년간 홀로 축조한 **《순수이성비판》의 난공불락"
+      }, {
+        "text": " 철옹성**.\n\n---\n\n### **[BLUE CORNER] 게오르크 빌헬름 프리드리히 헤겔"
+      }, {
+        "text": " (G.W.F. Hegel, 1770–1831)**\n\u003e **“한계라고"
+      }, {
+        "text": "? 그 한계를 긋는 순간 이미 사유는 그 너머에 가 있다! 전체만이 진리다!”**\n\n*"
+      }, {
+        "text": " **이명:** 변증법의 지배자 / 세계정신의 심판관\n* **장착 개념:**\n"
+      }, {
+        "text": "  * **[영역 전개: 변증법적 지양 (Aufhebung)]** — 정(These"
+      }, {
+        "text": ")과 반(Antithese)의 모순을 박살 내고 집어삼켜 더 높은 차원으로 승화시키는 무"
+      }, {
+        "text": "한 연쇄기.\n  * **[이성의 간지 (List der Vernunft)]** — 개"
+      }, {
+        "text": "별 인간들의 욕망과 비극마저 도구로 쓰며 역사를 진보시키는 세계사의 추진체"
+      }, {
+        "text": ".\n  * **[궁극기: 절대지 (Absolutes Wissen)]** — 주관과 객관"
+      }, {
+        "text": "의 완전한 합일. *\"이성적인 것은 실재적이며, 실재적인 것은 이성적이다!\"*\n* **투지"
+      }, {
+        "text": ":** 나폴레옹이 예나를 짓밟는 포화 속에서도 탈고해 낸 **《정신현상"
+      }, {
+        "text": "학》의 거대한 역사적 우주**.\n\n---\n\n### **[세기의 결투 실황]**\n\n**"
+      }, {
+        "text": "ROUND 1: 시공간의 격자망 vs 모순의 태풍**\n* 징이 울리"
+      }, {
+        "text": "자마자 칸트가 두 발을 땅에 딛고 **[선험적 감성론: 시간과 공간]**의 결"
+      }, {
+        "text": "계를 펼친다. 우주 삼라만상이 칸트의 12가지 오성 범주라는 정"
+      }, {
+        "text": "교한 격자 속으로 재배열되며 오차 없는 질서가 구축된다.\n* 그러나 헤겔은"
+      }, {
+        "text": " 코웃음을 친다. 그가 발을 내딛자 칸트가 세워둔 고정된 범주들이"
+      }, {
+        "text": " 뒤흔들린다. **“칸트, 자네의 이성은 박제된 표본실에 불과하다!”** 헤겔"
+      }, {
+        "text": "의 손끝에서 터져 나온 **변증법의 모순**이 칸트의 정적(靜的)인"
+      }, {
+        "text": " 체계를 사정없이 두들겨 부순다!\n\n**ROUND 2: \u0027물자체\u0027의 공"
+      }, {
+        "text": "방전**\n* 헤겔이 세계정신의 칼을 쥐고 돌진한다. 칸트의 성벽"
+      }, {
+        "text": " 한가운데, 인간의 인식이 결코 닿을 수 없다고 선언된 **"
+      }, {
+        "text": "[물자체(Ding an sich)]**를 향해 직격타를 날린다!\n* **헤겔:** *\"알 수 없는 세계"
+      }, {
+        "text": " 따위는 없다! 모순을 찢고 나아가는 정신 앞에서 물자체는 그저 빈 껍데기이자"
+      }, {
+        "text": " 사유의 게으름일 뿐이다!\"*\n* **칸트:** 물러서지 않고 《실"
+      }, {
+        "text": "천이성비판》을 펼쳐 들며 가슴을 내민다. **“오만하다,"
+      }, {
+        "text": " 헤겔! 인간의 유한성을 잊고 스스로 신이 되려는 자는 파멸할 뿐이다!”"
+      }, {
+        "text": "** \n  칸트의 등 뒤로 **‘별이 빛나는 밤하늘’**이 펼쳐지고"
+      }, {
+        "text": ", 가슴 속에서 타오르는 **‘도덕법칙’**의 순수한 불꽃이 헤겔의"
+      }, {
+        "text": " 절대정신을 튕겨내며 대폭발을 일으킨다!\n\n**CLIMAX: 인간"
+      }, {
+        "text": "의 숭고함 VS 역사의 절대자**\n* **칸트의 외침:** *\"우리는 모든"
+      }, {
+        "text": " 것을 알 수 없기에, 오직 도덕적 의무를 행함으로써 신성해진다!\"* (유한한 인간이"
+      }, {
+        "text": " 도달할 수 있는 최고의 숭고)\n* **헤겔의 포효:** *\"정신은 피"
+      }, {
+        "text": "와 눈물의 역사를 딛고 기필코 자기 자신을 완전히 실현하리라!\"* (인간의"
+      }, {
+        "text": " 한계를 뚫고 역사 전체를 품어버리는 무한의 도약)\n\n---\n\n### **"
+      }, {
+        "text": "[관전평]**\n인간의 한계를 규정해 **\u0027겸허하고도 위대한 인간의 존"
+      }, {
+        "text": "엄\u0027**을 지켜내려 했던 늙은 철학자와, 그 한계의 벽을 부수"
+      }, {
+        "text": "고 **\u0027우주와 역사를 집어삼킨 거대한 절대정신\u0027**을 선언한 젊은 철학자의 충"
+      }, {
+        "text": "돌. \n\n논리와 열정, 유한성과 무한성이 정면으로 부딪히는 이 대"
+      }, {
+        "text": "결은 철학을 공부하는 이들의 뇌수를 얼어붙게 하고 가슴을 끓어오"
+      }, {
+        "text": "르게 만드는 근대 최고의 서사시입니다."
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-10-03T06:49:57.265Z"
+    }],
+    "pendingInputs": [{
+      "text": "",
+      "role": "user"
+    }]
+  }
+}
