@@ -17,10 +17,6 @@ os.chdir(CURRENT_DIR)
 # QtWebEngine 안정성 극대화 및 GPU/Chromium 렌더 프로세스 충돌(0xC0000005) 방지 환경 변수
 os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
 os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = (
-    "--disable-gpu "
-    "--disable-gpu-compositing "
-    "--disable-gpu-rasterization "
-    "--disable-software-rasterizer "
     "--disable-dev-shm-usage "
     "--no-sandbox "
     "--disable-gpu-shader-disk-cache "
@@ -412,19 +408,9 @@ class CustomWebEnginePage(QWebEnginePage):
             print(f"javaScriptAlert notice: {e}")
 
     def javaScriptConfirm(self, securityOrigin, msg):
-        try:
-            res = show_styled_message_box(
-                self.view(),
-                QMessageBox.Question,
-                "확인",
-                str(msg),
-                QMessageBox.Yes | QMessageBox.No,
-                default_button=QMessageBox.Yes
-            )
-            return res == QMessageBox.Yes
-        except Exception as e:
-            print(f"javaScriptConfirm notice: {e}")
-            return True
+        # 인앱 모달(showConfirmDialog)이 HTML 레벨에서 처리되므로,
+        # 네이티브 modal exec_()이 Chromium IPC를 블로킹하여 화면이 검게 먹통되는 현상 방지
+        return True
 
     def javaScriptPrompt(self, securityOrigin, msg, defaultValue, *args):
         try:
@@ -684,7 +670,6 @@ def main():
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         # QtWebEngine 안정성 및 Windows 메모리 접근 위반(0xC0000005) 방지
         QApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
-        QApplication.setAttribute(Qt.AA_UseSoftwareOpenGL, True)
 
         app = QApplication(sys.argv)
         app.setApplicationName("Google AI Studio Prompt and Chunk Manager")
