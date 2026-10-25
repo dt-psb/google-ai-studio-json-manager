@@ -471,6 +471,135 @@
       background: linear-gradient(90deg, transparent, #3b82f6 30%, #3b82f6 70%, transparent);
     }
 
+    /* --- 라이트 테마: 추가 텍스트 대비 보정 (보라/앰버/에메랄드 밝은 톤) --- */
+    [data-theme="warm"]       .text-purple-100,
+    [data-theme="cleanlight"] .text-purple-100,
+    [data-theme="sakura"]     .text-purple-100 { color: #581c87 !important; }
+
+    [data-theme="warm"]       .text-amber-100,
+    [data-theme="cleanlight"] .text-amber-100,
+    [data-theme="sakura"]     .text-amber-100,
+    [data-theme="warm"]       .text-amber-200,
+    [data-theme="cleanlight"] .text-amber-200,
+    [data-theme="sakura"]     .text-amber-200,
+    [data-theme="warm"]       .text-amber-300,
+    [data-theme="cleanlight"] .text-amber-300,
+    [data-theme="sakura"]     .text-amber-300 { color: #92400e !important; }
+
+    [data-theme="warm"]       .text-emerald-100,
+    [data-theme="cleanlight"] .text-emerald-100,
+    [data-theme="sakura"]     .text-emerald-100 { color: #065f46 !important; }
+
+    /* --- 라이트 테마: 배지/필(Pill) 배경 및 텍스트 시인성 보정 --- */
+    [data-theme="warm"]       .bg-emerald-950\/60,
+    [data-theme="cleanlight"] .bg-emerald-950\/60,
+    [data-theme="sakura"]     .bg-emerald-950\/60,
+    [data-theme="warm"]       .bg-emerald-950\/80,
+    [data-theme="cleanlight"] .bg-emerald-950\/80,
+    [data-theme="sakura"]     .bg-emerald-950\/80 {
+      background-color: #ecfdf5 !important;
+      border-color: #a7f3d0 !important;
+      color: #065f46 !important;
+    }
+    [data-theme="warm"]       .bg-emerald-950\/60 span,
+    [data-theme="cleanlight"] .bg-emerald-950\/60 span,
+    [data-theme="sakura"]     .bg-emerald-950\/60 span,
+    [data-theme="warm"]       .bg-emerald-950\/80 span,
+    [data-theme="cleanlight"] .bg-emerald-950\/80 span,
+    [data-theme="sakura"]     .bg-emerald-950\/80 span {
+      color: #065f46 !important;
+    }
+
+    [data-theme="warm"]       .bg-purple-950,
+    [data-theme="cleanlight"] .bg-purple-950,
+    [data-theme="sakura"]     .bg-purple-950,
+    [data-theme="warm"]       .bg-purple-950\/60,
+    [data-theme="cleanlight"] .bg-purple-950\/60,
+    [data-theme="sakura"]     .bg-purple-950\/60,
+    [data-theme="warm"]       .bg-purple-950\/70,
+    [data-theme="cleanlight"] .bg-purple-950\/70,
+    [data-theme="sakura"]     .bg-purple-950\/70,
+    [data-theme="warm"]       .bg-purple-950\/80,
+    [data-theme="cleanlight"] .bg-purple-950\/80,
+    [data-theme="sakura"]     .bg-purple-950\/80 {
+      background-color: #f3e8ff !important;
+      border-color: #d8b4fe !important;
+      color: #6b21a8 !important;
+    }
+    [data-theme="warm"]       .bg-purple-950 span,
+    [data-theme="cleanlight"] .bg-purple-950 span,
+    [data-theme="sakura"]     .bg-purple-950 span,
+    [data-theme="warm"]       .bg-purple-950\/80 span,
+    [data-theme="cleanlight"] .bg-purple-950\/80 span,
+    [data-theme="sakura"]     .bg-purple-950\/80 span {
+      color: #6b21a8 !important;
+    }
+
+    [data-theme="warm"]       .bg-blue-950\/70,
+    [data-theme="cleanlight"] .bg-blue-950\/70,
+    [data-theme="sakura"]     .bg-blue-950\/70,
+    [data-theme="warm"]       .bg-blue-950\/80,
+    [data-theme="cleanlight"] .bg-blue-950\/80,
+    [data-theme="sakura"]     .bg-blue-950\/80 {
+      background-color: #dbeafe !important;
+      border-color: #bfdbfe !important;
+      color: #1d4ed8 !important;
+    }
+
+    /* --- 대화 계통도 배너 (#inheritedLineageBanner) 라이트 테마 최적화 --- */
+    [data-theme="warm"]       #inheritedLineageBanner,
+    [data-theme="cleanlight"] #inheritedLineageBanner,
+    [data-theme="sakura"]     #inheritedLineageBanner {
+      background: var(--g-card) !important;
+      border-color: var(--g-border) !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
+    }
+    [data-theme="warm"]       #inheritedLineageBanner .bg-purple-900\/30,
+    [data-theme="cleanlight"] #inheritedLineageBanner .bg-purple-900\/30,
+    [data-theme="sakura"]     #inheritedLineageBanner .bg-purple-900\/30 {
+      background-color: rgba(124, 58, 237, 0.08) !important;
+      border-color: rgba(124, 58, 237, 0.25) !important;
+    }
+    [data-theme="warm"]       #inheritedLineageBanner .bg-black\/30,
+    [data-theme="cleanlight"] #inheritedLineageBanner .bg-black\/30,
+    [data-theme="sakura"]     #inheritedLineageBanner .bg-black\/30 {
+      background-color: var(--g-surface) !important;
+      border-color: var(--g-border) !important;
+    }
+    [data-theme="warm"]       #inheritedLineageBanner button.bg-zinc-800,
+    [data-theme="cleanlight"] #inheritedLineageBanner button.bg-zinc-800,
+    [data-theme="sakura"]     #inheritedLineageBanner button.bg-zinc-800 {
+      background-color: var(--g-card) !important;
+      border-color: var(--g-border) !important;
+      color: var(--g-text-p) !important;
+    }
+    [data-theme="warm"]       #inheritedLineageBanner button.bg-zinc-800:hover,
+    [data-theme="cleanlight"] #inheritedLineageBanner button.bg-zinc-800:hover,
+    [data-theme="sakura"]     #inheritedLineageBanner button.bg-zinc-800:hover {
+      background-color: var(--g-border) !important;
+      color: var(--g-text-p) !important;
+    }
+
+    /* --- 고유 대화 시작 구분선 (Branch Divider) 라이트 테마 최적화 --- */
+    [data-theme="warm"]       #branchForkStartDivider > div.rounded-full,
+    [data-theme="cleanlight"] #branchForkStartDivider > div.rounded-full,
+    [data-theme="sakura"]     #branchForkStartDivider > div.rounded-full {
+      background-color: #ecfdf5 !important;
+      border-color: #6ee7b7 !important;
+      color: #065f46 !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+    }
+    [data-theme="warm"]       #branchForkStartDivider i,
+    [data-theme="cleanlight"] #branchForkStartDivider i,
+    [data-theme="sakura"]     #branchForkStartDivider i {
+      color: #059669 !important;
+    }
+    [data-theme="warm"]       #branchForkStartDivider .h-px,
+    [data-theme="cleanlight"] #branchForkStartDivider .h-px,
+    [data-theme="sakura"]     #branchForkStartDivider .h-px {
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.45), transparent) !important;
+    }
+
     /* --- 토스트 알림 --- */
     [data-theme="warm"] #toast,
     [data-theme="cleanlight"] #toast {

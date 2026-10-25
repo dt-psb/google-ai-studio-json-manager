@@ -118,92 +118,6 @@ except Exception as e:
     print(f"AppUserModelID setup notice: {e}")
 
 
-class CustomWebEnginePage(QWebEnginePage):
-    """자바스크립트 alert, confirm, prompt를 네이티브 Qt 다이얼로그로 안전하게 처리 및 콘솔 에러 추적"""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # 클립보드 / 미디어 등 권한 요청 시 자동 허용
-        self.featurePermissionRequested.connect(self._grant_permission)
-
-    def acceptNavigationRequest(self, url, navType, isMainFrame):
-        """설명서 또는 외부 링크 클릭 시 기본 시스템 브라우저(Chrome/Edge 등)로 연결"""
-        url_str = url.toString()
-        if "manual.html" in url_str:
-            import webbrowser
-            webbrowser.open(url_str)
-            return False
-        return super().acceptNavigationRequest(url, navType, isMainFrame)
-
-    def createWindow(self, windowType):
-        """target='_blank' 또는 window.open 링크 요청 시 시스템 기본 브라우저로 안전하게 팝업"""
-        import webbrowser
-        class ExternalLinkPage(QWebEnginePage):
-            def acceptNavigationRequest(self, url, navType, isMainFrame):
-                webbrowser.open(url.toString())
-                return False
-        self._temp_ext_page = ExternalLinkPage(self)
-        return self._temp_ext_page
-
-    def _grant_permission(self, origin, feature):
-        self.setFeaturePermission(origin, feature, QWebEnginePage.PermissionGrantedByUser)
-
-    def javaScriptAlert(self, securityOrigin, msg):
-        try:
-            QMessageBox.information(self.view(), "Google AI Studio", str(msg))
-        except Exception:
-            pass
-
-    def javaScriptConfirm(self, securityOrigin, msg):
-        try:
-            result = QMessageBox.question(
-                self.view(),
-                "확인",
-                str(msg),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes
-            )
-            return result == QMessageBox.Yes
-        except Exception:
-            return True
-
-    def javaScriptPrompt(self, securityOrigin, msg, defaultValue, *args):
-        try:
-            text, ok = QInputDialog.getText(
-                self.view(),
-                "입력",
-                str(msg),
-                text=str(defaultValue or "")
-            )
-            # args가 있는 경우(PyQt5 C++ result 포인터 전달형)
-            if args and hasattr(args[0], 'setValue'):
-                args[0].setValue(text if ok else "")
-                return ok
-            return ok, text
-        except Exception as prompt_err:
-            print(f"javaScriptPrompt notice: {prompt_err}")
-            return False, ""
-
-    def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
-        # 자바스크립트 오류 로그 추적
-        if level >= 2:  # 2: Error
-            print(f"[JS ERROR] {sourceID}:{lineNumber} -> {message}")
-
-
-class DevToolsWindow(QMainWindow):
-    """F12 개발자 도구 전용 창"""
-    def __init__(self, target_page, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("개발자 도구 (DevTools) - Google AI Studio")
-        self.resize(1000, 600)
-        self.devtools_view = QWebEngineView()
-        target_page.setDevToolsPage(self.devtools_view.page())
-        self.setCentralWidget(self.devtools_view)
-
-    def closeEvent(self, event):
-        self.hide()
-        event.ignore()
-
-
 THEME_TITLEBAR_COLORS = {
     "dark": {"is_dark": True, "bg": "#1e2024", "text": "#f8fafc", "border": "#3c4046"},
     "midnight": {"is_dark": True, "bg": "#0f172a", "text": "#ffffff", "border": "#334155"},
@@ -256,7 +170,297 @@ def apply_dark_titlebar(window, bg_hex="#1e2024", text_hex="#f8fafc", border_hex
         border_color = c_int(hex_to_colorref(border_hex))
         dwm.DwmSetWindowAttribute(hwnd, 34, byref(border_color), ctypes.sizeof(border_color))
     except Exception as e:
-        print(f"Titlebar decoration notice: {e}")
+        pass
+
+
+def get_current_theme_info(widget):
+    window = widget.window() if (widget and hasattr(widget, "window")) else widget
+    theme = getattr(window, "current_theme", "dark") if window else "dark"
+    cfg = THEME_TITLEBAR_COLORS.get(theme, THEME_TITLEBAR_COLORS.get("dark", {}))
+    return theme, cfg
+
+
+def show_styled_message_box(parent, icon, title, msg, buttons, default_button=None):
+    """현재 테마(다크/라이트)에 맞춰 가독성 100% 보장하는 네이티브 모달 다이얼로그"""
+    mb = QMessageBox(icon, title, str(msg), buttons, parent)
+    if default_button:
+        mb.setDefaultButton(default_button)
+
+    theme, cfg = get_current_theme_info(parent)
+    is_dark = cfg.get("is_dark", True)
+
+    # 버튼 텍스트 한글화
+    btn_yes = mb.button(QMessageBox.Yes)
+    if btn_yes: btn_yes.setText("확인 (예)")
+    btn_no = mb.button(QMessageBox.No)
+    if btn_no: btn_no.setText("취소 (아니오)")
+    btn_ok = mb.button(QMessageBox.Ok)
+    if btn_ok: btn_ok.setText("확인")
+    btn_cancel = mb.button(QMessageBox.Cancel)
+    if btn_cancel: btn_cancel.setText("취소")
+
+    if is_dark:
+        bg = cfg.get("bg", "#1e2024")
+        text = cfg.get("text", "#f8fafc")
+        border = cfg.get("border", "#3c4046")
+        mb.setStyleSheet(f"""
+            QMessageBox {{
+                background-color: {bg};
+            }}
+            QLabel {{
+                color: {text} !important;
+                font-size: 13px;
+                font-family: 'Segoe UI', 'Pretendard', sans-serif;
+                min-width: 320px;
+                line-height: 1.4;
+            }}
+            QPushButton {{
+                background-color: #272a30;
+                color: #f8fafc !important;
+                border: 1px solid {border};
+                border-radius: 7px;
+                padding: 7px 20px;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 75px;
+            }}
+            QPushButton:hover {{
+                background-color: #3b82f6;
+                border-color: #60a5fa;
+                color: #ffffff !important;
+            }}
+            QPushButton:pressed {{
+                background-color: #1d4ed8;
+            }}
+        """)
+        apply_dark_titlebar(mb, bg_hex=bg, text_hex=text, border_hex=border, is_dark=True)
+    else:
+        bg = cfg.get("bg", "#ffffff")
+        text = cfg.get("text", "#0f172a")
+        border = cfg.get("border", "#cbd5e1")
+        mb.setStyleSheet(f"""
+            QMessageBox {{
+                background-color: {bg};
+            }}
+            QLabel {{
+                color: {text} !important;
+                font-size: 13px;
+                font-family: 'Segoe UI', 'Pretendard', sans-serif;
+                min-width: 320px;
+                line-height: 1.4;
+            }}
+            QPushButton {{
+                background-color: #f8fafc;
+                color: {text} !important;
+                border: 1px solid {border};
+                border-radius: 7px;
+                padding: 7px 20px;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 75px;
+            }}
+            QPushButton:hover {{
+                background-color: #3b82f6;
+                border-color: #2563eb;
+                color: #ffffff !important;
+            }}
+            QPushButton:pressed {{
+                background-color: #1d4ed8;
+            }}
+        """)
+        apply_dark_titlebar(mb, bg_hex=bg, text_hex=text, border_hex=border, is_dark=False)
+
+    return mb.exec_()
+
+
+def show_styled_input_dialog(parent, title, msg, default_value=""):
+    """현재 테마에 맞춘 프롬프트 입력 다이얼로그"""
+    dlg = QInputDialog(parent)
+    dlg.setWindowTitle(title)
+    dlg.setLabelText(str(msg))
+    dlg.setTextValue(str(default_value or ""))
+    dlg.setOkButtonText("확인")
+    dlg.setCancelButtonText("취소")
+
+    theme, cfg = get_current_theme_info(parent)
+    is_dark = cfg.get("is_dark", True)
+
+    if is_dark:
+        bg = cfg.get("bg", "#1e2024")
+        text = cfg.get("text", "#f8fafc")
+        border = cfg.get("border", "#3c4046")
+        dlg.setStyleSheet(f"""
+            QInputDialog {{
+                background-color: {bg};
+            }}
+            QLabel {{
+                color: {text} !important;
+                font-size: 13px;
+                font-family: 'Segoe UI', 'Pretendard', sans-serif;
+            }}
+            QLineEdit {{
+                background-color: #121316;
+                color: #f8fafc !important;
+                border: 1px solid {border};
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }}
+            QLineEdit:focus {{
+                border-color: #3b82f6;
+            }}
+            QPushButton {{
+                background-color: #272a30;
+                color: #f8fafc !important;
+                border: 1px solid {border};
+                border-radius: 7px;
+                padding: 6px 18px;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 70px;
+            }}
+            QPushButton:hover {{
+                background-color: #3b82f6;
+                color: #ffffff !important;
+            }}
+        """)
+        apply_dark_titlebar(dlg, bg_hex=bg, text_hex=text, border_hex=border, is_dark=True)
+    else:
+        bg = cfg.get("bg", "#ffffff")
+        text = cfg.get("text", "#0f172a")
+        border = cfg.get("border", "#cbd5e1")
+        dlg.setStyleSheet(f"""
+            QInputDialog {{
+                background-color: {bg};
+            }}
+            QLabel {{
+                color: {text} !important;
+                font-size: 13px;
+                font-family: 'Segoe UI', 'Pretendard', sans-serif;
+            }}
+            QLineEdit {{
+                background-color: #ffffff;
+                color: {text} !important;
+                border: 1px solid {border};
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }}
+            QLineEdit:focus {{
+                border-color: #3b82f6;
+            }}
+            QPushButton {{
+                background-color: #f8fafc;
+                color: {text} !important;
+                border: 1px solid {border};
+                border-radius: 7px;
+                padding: 6px 18px;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 70px;
+            }}
+            QPushButton:hover {{
+                background-color: #3b82f6;
+                color: #ffffff !important;
+            }}
+        """)
+        apply_dark_titlebar(dlg, bg_hex=bg, text_hex=text, border_hex=border, is_dark=False)
+
+    ok = dlg.exec_() == QInputDialog.Accepted
+    return ok, dlg.textValue()
+
+
+class CustomWebEnginePage(QWebEnginePage):
+    """자바스크립트 alert, confirm, prompt를 네이티브 Qt 다이얼로그로 안전하게 처리 및 콘솔 에러 추적"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 클립보드 / 미디어 등 권한 요청 시 자동 허용
+        self.featurePermissionRequested.connect(self._grant_permission)
+
+    def acceptNavigationRequest(self, url, navType, isMainFrame):
+        """설명서 또는 외부 링크 클릭 시 기본 시스템 브라우저(Chrome/Edge 등)로 연결"""
+        url_str = url.toString()
+        if "manual.html" in url_str:
+            import webbrowser
+            webbrowser.open(url_str)
+            return False
+        return super().acceptNavigationRequest(url, navType, isMainFrame)
+
+    def createWindow(self, windowType):
+        """target='_blank' 또는 window.open 링크 요청 시 시스템 기본 브라우저로 안전하게 팝업"""
+        import webbrowser
+        class ExternalLinkPage(QWebEnginePage):
+            def acceptNavigationRequest(self, url, navType, isMainFrame):
+                webbrowser.open(url.toString())
+                return False
+        self._temp_ext_page = ExternalLinkPage(self)
+        return self._temp_ext_page
+
+    def _grant_permission(self, origin, feature):
+        self.setFeaturePermission(origin, feature, QWebEnginePage.PermissionGrantedByUser)
+
+    def javaScriptAlert(self, securityOrigin, msg):
+        try:
+            show_styled_message_box(
+                self.view(),
+                QMessageBox.Information,
+                "Google AI Studio",
+                str(msg),
+                QMessageBox.Ok
+            )
+        except Exception as e:
+            print(f"javaScriptAlert notice: {e}")
+
+    def javaScriptConfirm(self, securityOrigin, msg):
+        try:
+            res = show_styled_message_box(
+                self.view(),
+                QMessageBox.Question,
+                "확인",
+                str(msg),
+                QMessageBox.Yes | QMessageBox.No,
+                default_button=QMessageBox.Yes
+            )
+            return res == QMessageBox.Yes
+        except Exception as e:
+            print(f"javaScriptConfirm notice: {e}")
+            return True
+
+    def javaScriptPrompt(self, securityOrigin, msg, defaultValue, *args):
+        try:
+            ok, text = show_styled_input_dialog(
+                self.view(),
+                "입력",
+                str(msg),
+                defaultValue
+            )
+            if args and hasattr(args[0], 'setValue'):
+                args[0].setValue(text if ok else "")
+                return ok
+            return ok, text
+        except Exception as prompt_err:
+            print(f"javaScriptPrompt notice: {prompt_err}")
+            return False, ""
+
+    def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
+        # 자바스크립트 오류 로그 추적
+        if level >= 2:  # 2: Error
+            print(f"[JS ERROR] {sourceID}:{lineNumber} -> {message}")
+
+
+class DevToolsWindow(QMainWindow):
+    """F12 개발자 도구 전용 창"""
+    def __init__(self, target_page, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("개발자 도구 (DevTools) - Google AI Studio")
+        self.resize(1000, 600)
+        self.devtools_view = QWebEngineView()
+        target_page.setDevToolsPage(self.devtools_view.page())
+        self.setCentralWidget(self.devtools_view)
+
+    def closeEvent(self, event):
+        self.hide()
+        event.ignore()
 
 
 def update_window_theme(window, theme_name):
