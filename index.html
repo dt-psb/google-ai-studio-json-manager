@@ -1267,6 +1267,10 @@
           <span>검색 세션</span>
           <span id="headerSearchMatchBadge" class="hidden px-1.5 py-0.2 rounded-full bg-emerald-600 text-white text-[10px] font-bold">0</span>
         </button>
+        <button onclick="switchMainView('compare')" id="headerTabBtnCompare" class="px-3 py-1 rounded-md text-xs font-medium text-google-textSecondary hover:text-white bg-transparent flex items-center space-x-1.5 transition cursor-pointer" title="두 JSON 대화를 나란히 펼쳐놓고 실시간 비교 및 수정 (Compare Mode)">
+          <i data-lucide="columns-2" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>대화 비교</span>
+        </button>
       </div>
 
       <!-- Quick Stats -->
@@ -1462,18 +1466,7 @@
             <button onclick="jumpToChunkByOffset(1)" class="p-0.5 rounded bg-transparent hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="다음 청크"><i data-lucide="chevron-down" class="w-3 h-3"></i></button>
           </div>
 
-          <!-- Quick Add Chunk Button Group -->
-          <div class="flex items-center space-x-0.5 bg-google-cardDark p-0.5 rounded-lg border border-google-borderDark">
-            <button onclick="addNewChunk('user')" class="px-2 py-0.5 rounded bg-transparent hover:bg-blue-600/30 text-blue-400 font-medium flex items-center space-x-1 transition text-[11px]" title="새 User 프롬프트 추가">
-              <i data-lucide="plus" class="w-3 h-3"></i><span>User</span>
-            </button>
-            <button onclick="addNewChunk('model')" class="px-2 py-0.5 rounded bg-transparent hover:bg-emerald-600/30 text-emerald-400 font-medium flex items-center space-x-1 transition text-[11px]" title="새 Model 응답 추가">
-              <i data-lucide="plus" class="w-3 h-3"></i><span>Model</span>
-            </button>
-            <button onclick="addNewChunk('thought')" class="px-2 py-0.5 rounded bg-transparent hover:bg-purple-600/30 text-purple-400 font-medium flex items-center space-x-1 transition text-[11px]" title="새 Thinking 추가">
-              <i data-lucide="plus" class="w-3 h-3"></i><span>Thought</span>
-            </button>
-          </div>
+
 
           <!-- Right Side Panel Toggle Button -->
           <button onclick="toggleSidePanel()" class="px-2 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary border border-google-borderDark flex items-center space-x-1 transition text-[11px] shadow-sm" title="설정 & 도구 패널 토글">
@@ -1853,6 +1846,128 @@
               실시간 렉 없이 편안하게 타이핑한 뒤 검색할 수 있습니다.<br>
               검색 범위를 <strong>[현재 대화]</strong>, <strong>[세계관 내]</strong>, <strong>[전체 보관함]</strong> 중 원하는 대로 지정해보세요.
             </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Full-Page Compare Mode Session (대화 비교 모드 세션) -->
+      <div id="compareViewContainer" class="flex-1 flex flex-col h-full bg-google-bgDark overflow-hidden min-w-0 hidden">
+        <!-- Top Toolbar -->
+        <div class="border-b border-google-borderDark px-4 py-2.5 bg-google-surfaceDark/95 backdrop-blur flex-shrink-0 flex items-center justify-between gap-3 z-10 shadow-sm">
+          <div class="flex items-center space-x-3 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 flex-shrink-0">
+              <i data-lucide="columns-2" class="w-4 h-4"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                <h2 class="text-xs font-bold text-google-textPrimary whitespace-nowrap">대화 비교 (Compare Mode)</h2>
+                <span id="compareDiffSummaryBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/60 truncate max-w-xs sm:max-w-md">
+                  비교할 두 대화를 선택하세요
+                </span>
+              </div>
+              <p class="text-[10px] text-google-textSecondary hidden sm:block truncate">두 대화를 좌우로 나란히 놓고 내용 비교, 개별 편집 및 실시간 저장</p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 flex-shrink-0">
+            <!-- Diff Highlight Toggle -->
+            <button id="btnCompareDiffHighlight" onclick="toggleCompareDiffHighlight()" class="px-2.5 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 border border-amber-500/40 text-amber-300 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer" title="청크별 일치/분기점 하이라이트 켜기/끄기">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span class="hidden md:inline">차이점 강조</span>
+              <span id="badgeCompareDiffHighlight" class="px-1.5 py-0.2 rounded text-[10px] font-mono bg-amber-500/20 font-bold">ON</span>
+            </button>
+
+            <!-- Sync Scroll Toggle -->
+            <button id="btnCompareSyncScroll" onclick="toggleCompareSyncScroll()" class="px-2.5 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 border border-blue-500/40 text-blue-300 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer" title="좌/우 창 동시 스크롤 연동 켜기/끄기">
+              <i data-lucide="link-2" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span class="hidden md:inline">동시 스크롤</span>
+              <span id="badgeCompareSyncScroll" class="px-1.5 py-0.2 rounded text-[10px] font-mono bg-blue-500/20 font-bold">ON</span>
+            </button>
+
+            <!-- Swap Columns -->
+            <button onclick="swapComparePanes()" class="p-1.5 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 border border-google-borderDark text-google-textSecondary hover:text-white transition cursor-pointer" title="좌/우 대화 파일 위치 맞바꾸기">
+              <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <!-- Refresh -->
+            <button onclick="refreshComparePanes()" class="p-1.5 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 border border-google-borderDark text-google-textSecondary hover:text-white transition cursor-pointer" title="비교 뷰 새로고침">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dual Pane Split View Container -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0 divide-y md:divide-y-0 md:divide-x divide-google-borderDark">
+          <!-- Pane A (Left) -->
+          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40" id="comparePaneColA">
+            <!-- Header A -->
+            <div class="h-11 border-b border-google-borderDark px-3 py-1.5 bg-google-surfaceDark/80 flex items-center justify-between gap-2 flex-shrink-0">
+              <div class="flex items-center space-x-2 min-w-0 flex-1">
+                <span class="w-5 h-5 rounded-md bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0">A</span>
+                <select id="compareSelectFileA" onchange="onCompareSelectFileChanged('A', this.value)" class="bg-google-cardDark text-google-textPrimary text-xs rounded-lg px-2 py-1 border border-google-borderDark focus:outline-none focus:border-blue-500 font-mono max-w-[210px] sm:max-w-xs truncate cursor-pointer">
+                  <!-- Dynamically populated -->
+                </select>
+                <label class="cursor-pointer p-1 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-white border border-google-borderDark transition flex-shrink-0" title="로컬 JSON 파일 불러오기">
+                  <i data-lucide="upload" class="w-3 h-3"></i>
+                  <input type="file" id="compareFileInputA" accept=".json" class="hidden" onchange="handleCompareFileUpload(event, 'A')">
+                </label>
+                <span id="compareStatsA" class="text-[10px] font-mono text-google-textSecondary hidden lg:inline flex-shrink-0">0개 청크</span>
+                <span id="compareDirtyBadgeA" class="hidden px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 flex-shrink-0">수정됨</span>
+              </div>
+
+              <div class="flex items-center space-x-1.5 flex-shrink-0">
+                <div class="flex items-center space-x-0.5 bg-google-cardDark p-0.5 rounded-lg border border-google-borderDark">
+                  <button onclick="addCompareChunk('A', 'user')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-400 hover:bg-blue-600/20 transition cursor-pointer" title="새 User 청크 추가">+User</button>
+                  <button onclick="addCompareChunk('A', 'model')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-emerald-400 hover:bg-emerald-600/20 transition cursor-pointer" title="새 Model 청크 추가">+Model</button>
+                  <button onclick="addCompareChunk('A', 'thought')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-purple-400 hover:bg-purple-600/20 transition cursor-pointer" title="새 Thought 청크 추가">+Thought</button>
+                </div>
+                <button onclick="saveComparePane('A')" id="btnCompareSaveA" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center space-x-1 shadow transition cursor-pointer" title="A 파일 저장 (Ctrl+S)">
+                  <i data-lucide="save" class="w-3 h-3"></i>
+                  <span>저장</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable Feed A -->
+            <div id="compareFeedA" onscroll="handleCompareScroll('A')" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 select-text min-h-0">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Pane B (Right) -->
+          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40" id="comparePaneColB">
+            <!-- Header B -->
+            <div class="h-11 border-b border-google-borderDark px-3 py-1.5 bg-google-surfaceDark/80 flex items-center justify-between gap-2 flex-shrink-0">
+              <div class="flex items-center space-x-2 min-w-0 flex-1">
+                <span class="w-5 h-5 rounded-md bg-purple-600/20 border border-purple-500/40 text-purple-400 flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0">B</span>
+                <select id="compareSelectFileB" onchange="onCompareSelectFileChanged('B', this.value)" class="bg-google-cardDark text-google-textPrimary text-xs rounded-lg px-2 py-1 border border-google-borderDark focus:outline-none focus:border-purple-500 font-mono max-w-[210px] sm:max-w-xs truncate cursor-pointer">
+                  <!-- Dynamically populated -->
+                </select>
+                <label class="cursor-pointer p-1 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-white border border-google-borderDark transition flex-shrink-0" title="로컬 JSON 파일 불러오기">
+                  <i data-lucide="upload" class="w-3 h-3"></i>
+                  <input type="file" id="compareFileInputB" accept=".json" class="hidden" onchange="handleCompareFileUpload(event, 'B')">
+                </label>
+                <span id="compareStatsB" class="text-[10px] font-mono text-google-textSecondary hidden lg:inline flex-shrink-0">0개 청크</span>
+                <span id="compareDirtyBadgeB" class="hidden px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 flex-shrink-0">수정됨</span>
+              </div>
+
+              <div class="flex items-center space-x-1.5 flex-shrink-0">
+                <div class="flex items-center space-x-0.5 bg-google-cardDark p-0.5 rounded-lg border border-google-borderDark">
+                  <button onclick="addCompareChunk('B', 'user')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-400 hover:bg-blue-600/20 transition cursor-pointer" title="새 User 청크 추가">+User</button>
+                  <button onclick="addCompareChunk('B', 'model')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-emerald-400 hover:bg-emerald-600/20 transition cursor-pointer" title="새 Model 청크 추가">+Model</button>
+                  <button onclick="addCompareChunk('B', 'thought')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-purple-400 hover:bg-purple-600/20 transition cursor-pointer" title="새 Thought 청크 추가">+Thought</button>
+                </div>
+                <button onclick="saveComparePane('B')" id="btnCompareSaveB" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center space-x-1 shadow transition cursor-pointer" title="B 파일 저장 (Ctrl+S)">
+                  <i data-lucide="save" class="w-3 h-3"></i>
+                  <span>저장</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable Feed B -->
+            <div id="compareFeedB" onscroll="handleCompareScroll('B')" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 select-text min-h-0">
+              <!-- Dynamically populated -->
+            </div>
           </div>
         </div>
       </div>
@@ -3147,29 +3262,31 @@
       localStorage.setItem('ais_system_instruction_collapsed', isSystemInstructionCollapsed);
     }
 
-    // 상단 메인 뷰 전환: 'feed' (본문 대화창) | 'branchTree' (대화 계통도 트리 맵) | 'search' (검색 세션)
+    // 상단 메인 뷰 전환: 'feed' (본문 대화창) | 'branchTree' (대화 계통도 트리 맵) | 'search' (검색 세션) | 'compare' (대화 비교 모드)
     async function switchMainView(viewMode) {
       currentMainView = viewMode;
       const feedContainer = document.getElementById('feedViewContainer');
       const treeContainer = document.getElementById('branchTreeViewContainer');
       const searchContainer = document.getElementById('searchSessionViewContainer');
+      const compareContainer = document.getElementById('compareViewContainer');
 
       const headBtnFeed = document.getElementById('headerTabBtnFeed');
       const headBtnTree = document.getElementById('headerTabBtnBranchTree');
       const headBtnSearch = document.getElementById('headerTabBtnSearch');
-
-
+      const headBtnCompare = document.getElementById('headerTabBtnCompare');
 
       // 1. 모든 컨테이너 숨김
       feedContainer?.classList.add('hidden');
       treeContainer?.classList.add('hidden');
       searchContainer?.classList.add('hidden');
+      compareContainer?.classList.add('hidden');
 
       // 2. 헤더 버튼 스타일 초기화 (기본 비활성)
       const inactiveHeadClass = 'px-3 py-1 rounded-md text-xs font-medium text-google-textSecondary hover:text-white bg-transparent flex items-center space-x-1.5 transition cursor-pointer';
       if (headBtnFeed) headBtnFeed.className = inactiveHeadClass;
       if (headBtnTree) headBtnTree.className = inactiveHeadClass;
       if (headBtnSearch) headBtnSearch.className = inactiveHeadClass;
+      if (headBtnCompare) headBtnCompare.className = inactiveHeadClass;
 
       // if (btnFeed) btnFeed.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-google-textSecondary hover:text-white flex items-center space-x-1.5 transition';
       // if (btnTree) btnTree.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-google-textSecondary hover:text-white bg-transparent flex items-center space-x-1.5 transition';
@@ -3202,6 +3319,10 @@
         if (sInput) {
           setTimeout(() => sInput.focus(), 80);
         }
+      } else if (viewMode === 'compare') {
+        compareContainer?.classList.remove('hidden');
+        if (headBtnCompare) headBtnCompare.className = 'px-3 py-1 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition bg-amber-600 text-white shadow cursor-pointer';
+        await initCompareView();
       } else {
         feedContainer?.classList.remove('hidden');
         if (headBtnFeed) headBtnFeed.className = 'px-3 py-1 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition bg-blue-600 text-white shadow cursor-pointer';
@@ -5979,17 +6100,25 @@
       }
     });
 
-    // Alt+P: Pending Input 접기/펼치기 토글
+    // Alt+P: Pending Input 접기/펼치기 토글 & Ctrl+S: 즉시 저장
     window.addEventListener('keydown', (e) => {
       if (e.altKey && (e.key === 'p' || e.key === 'P' || e.key === 'ㅔ')) {
         e.preventDefault();
         togglePendingInputCollapse();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'ㄴ')) {
+        e.preventDefault();
+        saveDirectOrDownload();
       }
     });
 
     window.addEventListener('hashchange', () => {
       if (window.location.hash === '#tree') {
         switchMainView('branchTree');
+      } else if (window.location.hash === '#compare') {
+        switchMainView('compare');
+      } else if (window.location.hash === '#search') {
+        switchMainView('search');
       } else if (window.location.hash === '#feed') {
         switchMainView('feed');
       }
@@ -9341,6 +9470,911 @@
       } catch(_) {}
     }
 
+    // ==========================================================================
+    // 대화 비교 세션 (Compare Mode - Side-by-Side Dual Pane Editor & Diff Engine)
+    // ==========================================================================
+    let compareDataA = null;
+    let compareFilePathA = '';
+    let compareFileNameA = '';
+    let compareIsDirtyA = false;
+    let compareEditingIndicesA = new Set();
+
+    let compareDataB = null;
+    let compareFilePathB = '';
+    let compareFileNameB = '';
+    let compareIsDirtyB = false;
+    let compareEditingIndicesB = new Set();
+
+    let isCompareSyncScroll = true;
+    let isCompareDiffHighlight = true;
+    let isSyncingScrollA = false;
+    let isSyncingScrollB = false;
+
+    // Helper: 보관함 및 계통도에서 모든 파일 목록 수집
+    function getAllStorageFilesList(node = storageTreeData?.tree, list = []) {
+      if (!node) return list;
+      if (Array.isArray(node.files)) {
+        node.files.forEach(f => {
+          list.push({
+            name: f.name,
+            path: f.path || f.rel_path,
+            rel_path: f.rel_path || f.path
+          });
+        });
+      }
+      if (Array.isArray(node.folders)) {
+        node.folders.forEach(sub => getAllStorageFilesList(sub, list));
+      }
+      return list;
+    }
+
+    function getAllFilesForCompare() {
+      const map = new Map();
+      if (branchData?.families) {
+        branchData.families.forEach(fam => {
+          fam.files.forEach(f => {
+            const key = (f.rel_path || f.full_path || f.name).replace(/\\/g, '/');
+            if (!map.has(key)) {
+              map.set(key, {
+                name: f.name,
+                rel_path: f.rel_path || f.name,
+                full_path: f.full_path || f.rel_path,
+                total_chunks: f.total_chunks
+              });
+            }
+          });
+        });
+      }
+      const treeFiles = getAllStorageFilesList();
+      treeFiles.forEach(f => {
+        const key = (f.rel_path || f.path || f.name).replace(/\\/g, '/');
+        if (!map.has(key)) {
+          map.set(key, {
+            name: f.name,
+            rel_path: f.rel_path || f.path,
+            full_path: f.path,
+            total_chunks: null
+          });
+        }
+      });
+      return Array.from(map.values()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+
+    // 비교 모드 초기화
+    async function initCompareView(forceReload = false) {
+      // 1. 드롭다운 파일 목록 생성
+      populateCompareSelects();
+
+      // 2. Pane A 초기화 (현재 열린 activeFilePath와 currentData를 기본으로 설정)
+      if (!compareDataA || forceReload || (activeFilePath && compareFilePathA !== activeFilePath)) {
+        if (currentData && currentData.chunkedPrompt) {
+          compareDataA = JSON.parse(JSON.stringify(currentData));
+          compareFilePathA = activeFilePath || currentFileName || '대화_A.json';
+          compareFileNameA = currentFileName || '대화_A.json';
+          compareIsDirtyA = false;
+        } else if (activeFilePath) {
+          try {
+            const res = await fetch(`/api/file?path=${encodeURIComponent(activeFilePath)}`);
+            if (res.ok) {
+              compareDataA = await res.json();
+              compareFilePathA = activeFilePath;
+              compareFileNameA = currentFileName || activeFilePath.split('/').pop();
+              compareIsDirtyA = false;
+            }
+          } catch (_) {}
+        }
+      }
+
+      // 3. Pane B 초기화 (비어있는 경우 자동으로 연관된 부모/자식 또는 두 번째 파일 선택)
+      if (!compareDataB || forceReload) {
+        const allFiles = getAllFilesForCompare();
+        let targetBFile = null;
+
+        // 조상/부모가 있으면 최우선 추천
+        const lineage = branchData?.active_lineage;
+        if (lineage?.has_parent && lineage.ancestors?.length > 0) {
+          const parentRel = lineage.ancestors[0].rel_path;
+          targetBFile = allFiles.find(f => f.rel_path === parentRel || f.name === lineage.ancestors[0].name);
+        }
+
+        // 부모가 없으면 A가 아닌 첫 번째 다른 파일 추천
+        if (!targetBFile) {
+          targetBFile = allFiles.find(f => f.rel_path !== compareFilePathA && f.name !== compareFileNameA);
+        }
+
+        if (targetBFile) {
+          try {
+            const res = await fetch(`/api/file?path=${encodeURIComponent(targetBFile.rel_path)}`);
+            if (res.ok) {
+              compareDataB = await res.json();
+              compareFilePathB = targetBFile.rel_path;
+              compareFileNameB = targetBFile.name;
+              compareIsDirtyB = false;
+            }
+          } catch (_) {}
+        } else if (!compareDataB) {
+          // B에 복사본으로 초기화 (동일 대화에서 분기 비교 가능)
+          if (compareDataA) {
+            compareDataB = JSON.parse(JSON.stringify(compareDataA));
+            compareFilePathB = compareFilePathA;
+            compareFileNameB = compareFileNameA;
+            compareIsDirtyB = false;
+          }
+        }
+      }
+
+      // 4. 셀렉트 박스 선택값 갱신
+      updateCompareSelectValues();
+
+      // 5. 렌더링
+      renderComparePanes();
+    }
+
+    function populateCompareSelects() {
+      const selectA = document.getElementById('compareSelectFileA');
+      const selectB = document.getElementById('compareSelectFileB');
+      if (!selectA || !selectB) return;
+
+      const allFiles = getAllFilesForCompare();
+      let optionsHtml = '';
+
+      allFiles.forEach(f => {
+        const chunkInfo = f.total_chunks != null ? ` (${f.total_chunks}개 청크)` : '';
+        optionsHtml += `<option value="${escapeHtml(f.rel_path)}">${escapeHtml(f.name)}${chunkInfo}</option>`;
+      });
+
+      optionsHtml += `<option value="__custom_upload__">📁 로컬 JSON 파일 불러오기...</option>`;
+
+      selectA.innerHTML = optionsHtml;
+      selectB.innerHTML = optionsHtml;
+    }
+
+    function updateCompareSelectValues() {
+      const selectA = document.getElementById('compareSelectFileA');
+      const selectB = document.getElementById('compareSelectFileB');
+      if (selectA && compareFilePathA) {
+        selectA.value = compareFilePathA;
+        if (!selectA.value && selectA.options.length > 0) {
+          for (let opt of selectA.options) {
+            if (opt.textContent.startsWith(compareFileNameA)) {
+              selectA.value = opt.value;
+              break;
+            }
+          }
+        }
+      }
+      if (selectB && compareFilePathB) {
+        selectB.value = compareFilePathB;
+        if (!selectB.value && selectB.options.length > 0) {
+          for (let opt of selectB.options) {
+            if (opt.textContent.startsWith(compareFileNameB)) {
+              selectB.value = opt.value;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    async function onCompareSelectFileChanged(pane, val) {
+      if (val === '__custom_upload__') {
+        const input = document.getElementById(`compareFileInput${pane}`);
+        if (input) input.click();
+        return;
+      }
+      try {
+        const res = await fetch(`/api/file?path=${encodeURIComponent(val)}`);
+        if (!res.ok) throw new Error('파일 읽기 실패');
+        const json = await res.json();
+        const fName = val.split('/').pop().split('\\').pop();
+
+        if (pane === 'A') {
+          compareDataA = json;
+          compareFilePathA = val;
+          compareFileNameA = fName;
+          compareIsDirtyA = false;
+          compareEditingIndicesA.clear();
+          document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+        } else {
+          compareDataB = json;
+          compareFilePathB = val;
+          compareFileNameB = fName;
+          compareIsDirtyB = false;
+          compareEditingIndicesB.clear();
+          document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+        }
+        renderComparePanes();
+        showToast(`[${pane}] '${fName}' 로드 완료!`, 'folder-open');
+      } catch (err) {
+        showToast(`대화 파일 불러오기 오류: ${err.message}`, 'alert-circle');
+      }
+    }
+
+    function handleCompareFileUpload(event, pane) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || typeof parsed !== 'object') throw new Error('올바른 JSON이 아닙니다.');
+          if (pane === 'A') {
+            compareDataA = parsed;
+            compareFilePathA = file.name;
+            compareFileNameA = file.name;
+            compareIsDirtyA = false;
+            compareEditingIndicesA.clear();
+            document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+          } else {
+            compareDataB = parsed;
+            compareFilePathB = file.name;
+            compareFileNameB = file.name;
+            compareIsDirtyB = false;
+            compareEditingIndicesB.clear();
+            document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+          }
+          populateCompareSelects();
+          updateCompareSelectValues();
+          renderComparePanes();
+          showToast(`[${pane}] '${file.name}' 업로드 로드 완료!`, 'upload');
+        } catch (err) {
+          showToast(`파일 파싱 오류: ${err.message}`, 'alert-circle');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // LCP 및 청크별 Diff 계산
+    function computeCompareDiffStats(chunksA, chunksB) {
+      const lenA = chunksA.length;
+      const lenB = chunksB.length;
+      const minLen = Math.min(lenA, lenB);
+
+      let lcp = 0;
+      while (lcp < minLen) {
+        const a = chunksA[lcp];
+        const b = chunksB[lcp];
+        const roleA = a.role || 'user';
+        const roleB = b.role || 'user';
+        const isThA = !!a.isThought;
+        const isThB = !!b.isThought;
+
+        const roleMatch = (roleA === roleB) && (isThA === isThB);
+        const textMatch = ((a.text || '').trim() === (b.text || '').trim());
+
+        if (roleMatch && textMatch) {
+          lcp++;
+        } else {
+          break;
+        }
+      }
+
+      const statusA = [];
+      const statusB = [];
+
+      for (let i = 0; i < lenA; i++) {
+        if (i < lcp) {
+          statusA.push('identical');
+        } else if (i === lcp) {
+          statusA.push('diverge_point');
+        } else if (i < lenB) {
+          statusA.push('different');
+        } else {
+          statusA.push('extra');
+        }
+      }
+
+      for (let i = 0; i < lenB; i++) {
+        if (i < lcp) {
+          statusB.push('identical');
+        } else if (i === lcp) {
+          statusB.push('diverge_point');
+        } else if (i < lenA) {
+          statusB.push('different');
+        } else {
+          statusB.push('extra');
+        }
+      }
+
+      return { lcp, lenA, lenB, statusA, statusB };
+    }
+
+    // 비교 뷰 전체 렌더링
+    function renderComparePanes() {
+      const chunksA = compareDataA?.chunkedPrompt?.chunks || [];
+      const chunksB = compareDataB?.chunkedPrompt?.chunks || [];
+
+      // 통계 뱃지
+      const statsA = document.getElementById('compareStatsA');
+      const statsB = document.getElementById('compareStatsB');
+      if (statsA) statsA.textContent = `${chunksA.length}개 청크`;
+      if (statsB) statsB.textContent = `${chunksB.length}개 청크`;
+
+      // Diff 계산
+      const diff = computeCompareDiffStats(chunksA, chunksB);
+      const summaryBadge = document.getElementById('compareDiffSummaryBadge');
+
+      if (summaryBadge) {
+        if (!compareDataA && !compareDataB) {
+          summaryBadge.textContent = '비교할 대화를 선택하세요';
+          summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700';
+        } else if (diff.lenA > 0 && diff.lenB > 0 && diff.lcp === diff.lenA && diff.lcp === diff.lenB) {
+          summaryBadge.textContent = `✓ 모든 청크 100% 동일 (${diff.lenA}개 일치)`;
+          summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-700/80';
+        } else if (diff.lcp > 0) {
+          summaryBadge.textContent = `#1 ~ #${diff.lcp} 공통 일치 (${diff.lcp}개) • #${diff.lcp + 1}번부터 분기`;
+          summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/80';
+        } else {
+          summaryBadge.textContent = `시작 프롬프트부터 서로 다른 대화입니다`;
+          summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-purple-950/80 text-purple-300 border border-purple-800/80';
+        }
+      }
+
+      // 좌우 피드 렌더링
+      renderCompareFeed('A', chunksA, diff.statusA);
+      renderCompareFeed('B', chunksB, diff.statusB);
+
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // 개별 피드 렌더링 (A 또는 B)
+    function renderCompareFeed(pane, chunks, statuses) {
+      const feed = document.getElementById(`compareFeed${pane}`);
+      if (!feed) return;
+
+      if (!chunks || chunks.length === 0) {
+        feed.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-16 px-4 text-center select-none text-google-textSecondary">
+            <div class="w-12 h-12 rounded-xl bg-google-cardDark border border-google-borderDark flex items-center justify-center mb-3">
+              <i data-lucide="message-square-dashed" class="w-6 h-6 opacity-40"></i>
+            </div>
+            <p class="text-xs font-semibold text-google-textPrimary mb-1">대화가 비어 있습니다</p>
+            <p class="text-[11px] opacity-75 mb-3">상단 셀렉트에서 대화를 선택하거나 새 청크를 추가하세요.</p>
+            <div class="flex items-center space-x-1.5">
+              <button onclick="addCompareChunk('${pane}', 'user')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium cursor-pointer">+ User 추가</button>
+              <button onclick="addCompareChunk('${pane}', 'model')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium cursor-pointer">+ Model 추가</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const otherPane = (pane === 'A') ? 'B' : 'A';
+      const editingSet = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
+
+      let html = '';
+
+      // 맨 위 삽입 바
+      html += `
+        <div class="group py-1 flex items-center justify-center opacity-40 hover:opacity-100 transition">
+          <div class="flex items-center space-x-1 bg-google-cardDark/80 border border-google-borderDark px-2 py-0.5 rounded-full text-[10px]">
+            <span class="text-google-textSecondary font-semibold mr-1">맨 위 삽입:</span>
+            <button onclick="insertCompareChunkAt('${pane}', 0, 'user')" class="text-blue-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-blue-600/30 transition cursor-pointer">+User</button>
+            <button onclick="insertCompareChunkAt('${pane}', 0, 'model')" class="text-emerald-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-emerald-600/30 transition cursor-pointer">+Model</button>
+            <button onclick="insertCompareChunkAt('${pane}', 0, 'thought')" class="text-purple-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-purple-600/30 transition cursor-pointer">+Thought</button>
+          </div>
+        </div>
+      `;
+
+      chunks.forEach((chunk, i) => {
+        const isThought = !!chunk.isThought;
+        const role = chunk.role || 'user';
+        const isUser = (role === 'user' && !isThought);
+        const isModel = (role === 'model' && !isThought);
+        const isEditing = editingSet.has(i);
+
+        const status = statuses?.[i] || 'different';
+
+        // Diff 스타일
+        let diffBorderClass = '';
+        let diffTagHtml = '';
+
+        if (isCompareDiffHighlight) {
+          if (status === 'identical') {
+            diffBorderClass = 'border-l-4 border-l-emerald-500/80';
+            diffTagHtml = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-medium bg-emerald-950/70 text-emerald-300 border border-emerald-800/60">✓ 일치</span>`;
+          } else if (status === 'diverge_point') {
+            diffBorderClass = 'border-l-4 border-l-amber-500 ring-1 ring-amber-500/30 shadow-md';
+            diffTagHtml = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-600 animate-pulse">⚡ 첫 분기점</span>`;
+          } else if (status === 'different') {
+            diffBorderClass = 'border-l-4 border-l-purple-500/70';
+            diffTagHtml = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-medium bg-purple-950/70 text-purple-300 border border-purple-800/60">✎ 내용 다름</span>`;
+          } else {
+            diffBorderClass = 'border-l-4 border-l-blue-500/70';
+            diffTagHtml = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-medium bg-blue-950/70 text-blue-300 border border-blue-800/60">+ 추가 청크</span>`;
+          }
+        }
+
+        // 역할 뱃지 스타일
+        let roleBadgeClass = 'bg-blue-950/70 text-blue-300 border border-blue-800';
+        let roleIcon = 'user';
+        let roleLabel = 'USER';
+        if (isThought) {
+          roleBadgeClass = 'bg-purple-950/70 text-purple-300 border border-purple-800';
+          roleIcon = 'brain';
+          roleLabel = 'THOUGHT';
+        } else if (isModel) {
+          roleBadgeClass = 'bg-emerald-950/70 text-emerald-300 border border-emerald-800';
+          roleIcon = 'bot';
+          roleLabel = 'MODEL';
+        }
+
+        const charCount = (chunk.text || '').length;
+        const tokCount = chunk.tokenCount || Math.max(1, Math.round(charCount / 3.2));
+
+        html += `
+          <div class="rounded-xl border border-google-borderDark bg-google-surfaceDark overflow-hidden shadow-sm transition-all ${diffBorderClass}" id="compareCard_${pane}_${i}">
+            <!-- Card Header -->
+            <div class="px-3 py-2 bg-google-cardDark/60 border-b border-google-borderDark/60 flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center space-x-2 min-w-0 flex-wrap gap-y-1">
+                <!-- Role selector -->
+                <button onclick="cycleCompareChunkRole('${pane}', ${i})" class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono flex items-center space-x-1 cursor-pointer hover:brightness-125 transition ${roleBadgeClass}" title="클릭하여 역할 변경 (User ➔ Model ➔ Thought)">
+                  <i data-lucide="${roleIcon}" class="w-3 h-3"></i>
+                  <span>${roleLabel}</span>
+                </button>
+
+                <span class="text-[11px] font-mono font-bold text-google-textPrimary">#${i + 1}</span>
+
+                ${diffTagHtml}
+
+                <span class="text-[10px] font-mono text-google-textSecondary hidden sm:inline">${charCount.toLocaleString()}자 • ${tokCount} tok</span>
+              </div>
+
+              <!-- Card Actions -->
+              <div class="flex items-center space-x-1 flex-shrink-0">
+                <!-- Toggle Edit/Preview -->
+                <button onclick="toggleCompareChunkEdit('${pane}', ${i})" class="px-2 py-0.5 rounded-lg bg-google-cardDark hover:bg-zinc-700/80 border border-google-borderDark text-[11px] text-google-textSecondary hover:text-white font-medium flex items-center space-x-1 transition cursor-pointer" title="${isEditing ? '미리보기 완료' : '내용 직접 편집'}">
+                  <i data-lucide="${isEditing ? 'check' : 'pencil'}" class="w-3 h-3 ${isEditing ? 'text-emerald-400' : ''}"></i>
+                  <span class="${isEditing ? 'text-emerald-400 font-bold' : ''}">${isEditing ? '완료' : '수정'}</span>
+                </button>
+
+                <!-- Copy to opposite pane -->
+                <button onclick="copyCompareChunkToOther('${pane}', ${i})" class="p-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/80 border border-google-borderDark text-google-textSecondary hover:text-${pane === 'A' ? 'purple-300' : 'blue-300'} transition cursor-pointer" title="이 청크를 상대방(${otherPane}) 대화의 동일 위치에 복사 삽입">
+                  <i data-lucide="${pane === 'A' ? 'arrow-right-circle' : 'arrow-left-circle'}" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <!-- Copy text -->
+                <button onclick="copyCompareChunkText('${pane}', ${i})" class="p-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/80 border border-google-borderDark text-google-textSecondary hover:text-white transition cursor-pointer" title="클립보드로 복사">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <!-- Delete chunk -->
+                <button onclick="deleteCompareChunk('${pane}', ${i})" class="p-1 rounded-lg bg-google-cardDark hover:bg-rose-950/60 border border-google-borderDark text-google-textSecondary hover:text-rose-400 transition cursor-pointer" title="청크 삭제">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-3 text-xs leading-relaxed">
+              ${isEditing ? `
+                <div class="space-y-2">
+                  <textarea class="w-full bg-google-cardDark text-google-textPrimary p-2.5 rounded-lg border border-google-borderDark focus:outline-none focus:border-blue-500 text-xs leading-relaxed font-mono resize-y min-h-[140px]"
+                            oninput="updateCompareChunkText('${pane}', ${i}, this.value)"
+                            onkeydown="if(event.ctrlKey && event.key==='Enter'){ event.preventDefault(); toggleCompareChunkEdit('${pane}', ${i}); }">${escapeHtml(chunk.text || '')}</textarea>
+                  <div class="flex items-center justify-between text-[10px] text-google-textSecondary px-1">
+                    <span>Ctrl + Enter로 편집 완료</span>
+                    <button onclick="toggleCompareChunkEdit('${pane}', ${i})" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer">완료</button>
+                  </div>
+                </div>
+              ` : `
+                <div class="markdown-body select-text overflow-x-auto whitespace-pre-wrap break-words max-h-[500px] overflow-y-auto">${renderMarkdown(chunk.text || '')}</div>
+              `}
+            </div>
+          </div>
+
+          <!-- Gap Insert Divider -->
+          <div class="group py-1 flex items-center justify-center opacity-30 hover:opacity-100 transition">
+            <div class="flex items-center space-x-1 bg-google-cardDark/80 border border-google-borderDark px-2 py-0.5 rounded-full text-[10px]">
+              <span class="text-google-textSecondary font-semibold mr-1">#${i + 2}에 삽입:</span>
+              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'user')" class="text-blue-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-blue-600/30 transition cursor-pointer">+User</button>
+              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'model')" class="text-emerald-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-emerald-600/30 transition cursor-pointer">+Model</button>
+              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'thought')" class="text-purple-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-purple-600/30 transition cursor-pointer">+Thought</button>
+            </div>
+          </div>
+        `;
+      });
+
+      feed.innerHTML = html;
+    }
+
+    // 청크 텍스트 수정 핸들러
+    function updateCompareChunkText(pane, index, newText) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      const chunk = data?.chunkedPrompt?.chunks?.[index];
+      if (!chunk) return;
+
+      chunk.text = newText;
+      if (chunk.parts && chunk.parts.length > 0) {
+        if (chunk.isThought) {
+          chunk.parts = [{ text: newText, thought: true }];
+        } else {
+          const sig = chunk.parts.find(p => p.thoughtSignature);
+          chunk.parts = sig ? [{ text: newText }, sig] : [{ text: newText }];
+        }
+      } else {
+        chunk.parts = chunk.isThought ? [{ text: newText, thought: true }] : [{ text: newText }];
+      }
+      chunk.tokenCount = Math.max(1, Math.round(newText.length / 3.2));
+
+      // Dirty 표시
+      if (pane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+        // 현재 활성 파일과 동일한 경우 currentData도 함께 실시간 동기화
+        if (compareFilePathA === activeFilePath && currentData?.chunkedPrompt?.chunks?.[index]) {
+          currentData.chunkedPrompt.chunks[index].text = newText;
+          currentData.chunkedPrompt.chunks[index].tokenCount = chunk.tokenCount;
+        }
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      // Diff 뱃지만 디바운스 갱신
+      debounceUpdateCompareDiff();
+    }
+
+    let _compareDiffTimer = null;
+    function debounceUpdateCompareDiff() {
+      clearTimeout(_compareDiffTimer);
+      _compareDiffTimer = setTimeout(() => {
+        const chunksA = compareDataA?.chunkedPrompt?.chunks || [];
+        const chunksB = compareDataB?.chunkedPrompt?.chunks || [];
+        const diff = computeCompareDiffStats(chunksA, chunksB);
+        const summaryBadge = document.getElementById('compareDiffSummaryBadge');
+        if (summaryBadge) {
+          if (diff.lenA > 0 && diff.lenB > 0 && diff.lcp === diff.lenA && diff.lcp === diff.lenB) {
+            summaryBadge.textContent = `✓ 모든 청크 100% 동일 (${diff.lenA}개 일치)`;
+            summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-700/80';
+          } else if (diff.lcp > 0) {
+            summaryBadge.textContent = `#1 ~ #${diff.lcp} 공통 일치 (${diff.lcp}개) • #${diff.lcp + 1}번부터 분기`;
+            summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/80';
+          } else {
+            summaryBadge.textContent = `시작 프롬프트부터 서로 다른 대화입니다`;
+            summaryBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-purple-950/80 text-purple-300 border border-purple-800/80';
+          }
+        }
+      }, 300);
+    }
+
+    // 편집 모드 토글
+    function toggleCompareChunkEdit(pane, index) {
+      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
+      if (set.has(index)) {
+        set.delete(index);
+      } else {
+        set.add(index);
+      }
+      renderComparePanes();
+    }
+
+    // 청크 역할 순환 변경 (User ➔ Model ➔ Thought ➔ User)
+    function cycleCompareChunkRole(pane, index) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      const chunk = data?.chunkedPrompt?.chunks?.[index];
+      if (!chunk) return;
+
+      if (!chunk.isThought && chunk.role === 'user') {
+        chunk.role = 'model';
+        chunk.isThought = false;
+      } else if (!chunk.isThought && chunk.role === 'model') {
+        chunk.role = 'model';
+        chunk.isThought = true;
+      } else {
+        chunk.role = 'user';
+        chunk.isThought = false;
+      }
+
+      if (pane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+        if (compareFilePathA === activeFilePath && currentData?.chunkedPrompt?.chunks?.[index]) {
+          currentData.chunkedPrompt.chunks[index].role = chunk.role;
+          currentData.chunkedPrompt.chunks[index].isThought = chunk.isThought;
+        }
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      renderComparePanes();
+    }
+
+    // 청크 추가
+    function addCompareChunk(pane, role) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      if (!data) return;
+      if (!data.chunkedPrompt) data.chunkedPrompt = { chunks: [] };
+      if (!Array.isArray(data.chunkedPrompt.chunks)) data.chunkedPrompt.chunks = [];
+
+      const isThought = (role === 'thought');
+      const realRole = isThought ? 'model' : role;
+      const newChunk = {
+        role: realRole,
+        isThought: isThought,
+        text: '',
+        parts: isThought ? [{ text: '', thought: true }] : [{ text: '' }],
+        tokenCount: 0
+      };
+
+      data.chunkedPrompt.chunks.push(newChunk);
+      const newIdx = data.chunkedPrompt.chunks.length - 1;
+      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
+      set.add(newIdx);
+
+      if (pane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      renderComparePanes();
+
+      // 스크롤 맨 아래로 이동
+      setTimeout(() => {
+        const feed = document.getElementById(`compareFeed${pane}`);
+        if (feed) feed.scrollTop = feed.scrollHeight;
+      }, 50);
+    }
+
+    // 특정 위치에 청크 삽입
+    function insertCompareChunkAt(pane, atIndex, role) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      if (!data) return;
+      if (!data.chunkedPrompt) data.chunkedPrompt = { chunks: [] };
+      if (!Array.isArray(data.chunkedPrompt.chunks)) data.chunkedPrompt.chunks = [];
+
+      const isThought = (role === 'thought');
+      const realRole = isThought ? 'model' : role;
+      const newChunk = {
+        role: realRole,
+        isThought: isThought,
+        text: '',
+        parts: isThought ? [{ text: '', thought: true }] : [{ text: '' }],
+        tokenCount: 0
+      };
+
+      data.chunkedPrompt.chunks.splice(atIndex, 0, newChunk);
+      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
+      set.clear();
+      set.add(atIndex);
+
+      if (pane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      renderComparePanes();
+    }
+
+    // 청크 삭제
+    async function deleteCompareChunk(pane, index) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      const chunk = data?.chunkedPrompt?.chunks?.[index];
+      if (!chunk) return;
+
+      const ok = await showConfirmDialog(`[${pane}] #${index + 1} 청크를 삭제하시겠습니까?`, '청크 삭제 확인');
+      if (!ok) return;
+
+      data.chunkedPrompt.chunks.splice(index, 1);
+      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
+      set.delete(index);
+
+      if (pane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+        if (compareFilePathA === activeFilePath && currentData?.chunkedPrompt?.chunks) {
+          currentData.chunkedPrompt.chunks.splice(index, 1);
+        }
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      renderComparePanes();
+      showToast(`[${pane}] #${index + 1} 청크가 삭제되었습니다.`, 'trash-2');
+    }
+
+    // 상대방 창으로 청크 복사
+    function copyCompareChunkToOther(fromPane, index) {
+      const srcData = (fromPane === 'A') ? compareDataA : compareDataB;
+      const dstData = (fromPane === 'A') ? compareDataB : compareDataA;
+      const dstPane = (fromPane === 'A') ? 'B' : 'A';
+
+      const srcChunk = srcData?.chunkedPrompt?.chunks?.[index];
+      if (!srcChunk || !dstData) return;
+
+      if (!dstData.chunkedPrompt) dstData.chunkedPrompt = { chunks: [] };
+      if (!Array.isArray(dstData.chunkedPrompt.chunks)) dstData.chunkedPrompt.chunks = [];
+
+      const cloned = JSON.parse(JSON.stringify(srcChunk));
+      // 같은 위치에 삽입, 범위 초과 시 맨 뒤에 추가
+      const insertIdx = Math.min(index, dstData.chunkedPrompt.chunks.length);
+      dstData.chunkedPrompt.chunks.splice(insertIdx, 0, cloned);
+
+      if (dstPane === 'A') {
+        compareIsDirtyA = true;
+        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
+      } else {
+        compareIsDirtyB = true;
+        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
+      }
+
+      renderComparePanes();
+      showToast(`[${fromPane}] #${index + 1} 청크가 [${dstPane}] #${insertIdx + 1} 위치로 복사되었습니다!`, 'arrow-right-circle');
+    }
+
+    // 클립보드 복사
+    function copyCompareChunkText(pane, index) {
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      const chunk = data?.chunkedPrompt?.chunks?.[index];
+      if (!chunk || !chunk.text) {
+        showToast('복사할 텍스트가 없습니다.', 'alert-circle');
+        return;
+      }
+      navigator.clipboard.writeText(chunk.text).then(() => {
+        showToast(`[${pane}] #${index + 1} 청크 텍스트가 클립보드에 복사되었습니다!`, 'copy');
+      }).catch(err => {
+        showToast('클립보드 복사 실패: ' + err, 'alert-circle');
+      });
+    }
+
+    // 저장 함수 (A 또는 B)
+    async function saveComparePane(pane) {
+      const isA = (pane === 'A');
+      const targetData = isA ? compareDataA : compareDataB;
+      const targetPath = isA ? compareFilePathA : compareFilePathB;
+      const targetName = isA ? compareFileNameA : compareFileNameB;
+
+      if (!targetData) {
+        showToast(`[${pane}] 저장할 대화 데이터가 없습니다.`, 'alert-circle');
+        return;
+      }
+
+      const saveTarget = targetPath || targetName || (isA ? 'compare_session_a.json' : 'compare_session_b.json');
+      const btn = document.getElementById(`btnCompareSave${pane}`);
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: saveTarget,
+            filename: targetName || saveTarget,
+            data: targetData
+          })
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          showToast(`🎉 [${pane}] '${saveTarget}' 저장 완료!`, 'check-check');
+          if (isA) {
+            compareIsDirtyA = false;
+            document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+            if (targetPath === activeFilePath) {
+              currentData = JSON.parse(JSON.stringify(compareDataA));
+              renderChunks();
+            }
+          } else {
+            compareIsDirtyB = false;
+            document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+          }
+          loadStorageTree();
+        } else {
+          throw new Error(result.error || '저장 처리 실패');
+        }
+      } catch (err) {
+        showToast(`저장 오류: ${err.message}`, 'alert-circle');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // 좌우 컬럼 맞바꾸기
+    function swapComparePanes() {
+      const tmpData = compareDataA;
+      compareDataA = compareDataB;
+      compareDataB = tmpData;
+
+      const tmpPath = compareFilePathA;
+      compareFilePathA = compareFilePathB;
+      compareFilePathB = tmpPath;
+
+      const tmpName = compareFileNameA;
+      compareFileNameA = compareFileNameB;
+      compareFileNameB = tmpName;
+
+      const tmpDirty = compareIsDirtyA;
+      compareIsDirtyA = compareIsDirtyB;
+      compareIsDirtyB = tmpDirty;
+
+      const tmpEditing = compareEditingIndicesA;
+      compareEditingIndicesA = compareEditingIndicesB;
+      compareEditingIndicesB = tmpEditing;
+
+      document.getElementById('compareDirtyBadgeA')?.classList.toggle('hidden', !compareIsDirtyA);
+      document.getElementById('compareDirtyBadgeB')?.classList.toggle('hidden', !compareIsDirtyB);
+
+      updateCompareSelectValues();
+      renderComparePanes();
+      showToast('좌우 대화 위치를 서로 맞바꾸었습니다.', 'arrow-left-right');
+    }
+
+    // 차이점 강조 토글
+    function toggleCompareDiffHighlight() {
+      isCompareDiffHighlight = !isCompareDiffHighlight;
+      const badge = document.getElementById('badgeCompareDiffHighlight');
+      if (badge) {
+        badge.textContent = isCompareDiffHighlight ? 'ON' : 'OFF';
+        badge.className = isCompareDiffHighlight
+          ? 'px-1.5 py-0.2 rounded text-[10px] font-mono bg-amber-500/20 font-bold'
+          : 'px-1.5 py-0.2 rounded text-[10px] font-mono bg-zinc-700/50 text-zinc-400';
+      }
+      renderComparePanes();
+      showToast(`차이점 강조 표시: ${isCompareDiffHighlight ? '켜짐' : '꺼짐'}`, 'sparkles');
+    }
+
+    // 동시 스크롤 토글
+    function toggleCompareSyncScroll() {
+      isCompareSyncScroll = !isCompareSyncScroll;
+      const badge = document.getElementById('badgeCompareSyncScroll');
+      if (badge) {
+        badge.textContent = isCompareSyncScroll ? 'ON' : 'OFF';
+        badge.className = isCompareSyncScroll
+          ? 'px-1.5 py-0.2 rounded text-[10px] font-mono bg-blue-500/20 font-bold'
+          : 'px-1.5 py-0.2 rounded text-[10px] font-mono bg-zinc-700/50 text-zinc-400';
+      }
+      showToast(`동시 스크롤 연동: ${isCompareSyncScroll ? '켜짐' : '꺼짐'}`, 'link-2');
+    }
+
+    // 동시 스크롤 이벤트 핸들러
+    function handleCompareScroll(sourcePane) {
+      if (!isCompareSyncScroll) return;
+      if (sourcePane === 'A' && isSyncingScrollB) return;
+      if (sourcePane === 'B' && isSyncingScrollA) return;
+
+      const feedA = document.getElementById('compareFeedA');
+      const feedB = document.getElementById('compareFeedB');
+      if (!feedA || !feedB) return;
+
+      if (sourcePane === 'A') {
+        isSyncingScrollA = true;
+        const maxScrollA = feedA.scrollHeight - feedA.clientHeight;
+        if (maxScrollA > 0) {
+          const ratio = feedA.scrollTop / maxScrollA;
+          const maxScrollB = feedB.scrollHeight - feedB.clientHeight;
+          feedB.scrollTop = ratio * maxScrollB;
+        }
+        setTimeout(() => { isSyncingScrollA = false; }, 40);
+      } else {
+        isSyncingScrollB = true;
+        const maxScrollB = feedB.scrollHeight - feedB.clientHeight;
+        if (maxScrollB > 0) {
+          const ratio = feedB.scrollTop / maxScrollB;
+          const maxScrollA = feedA.scrollHeight - feedA.clientHeight;
+          feedA.scrollTop = ratio * maxScrollA;
+        }
+        setTimeout(() => { isSyncingScrollB = false; }, 40);
+      }
+    }
+
+    // 비교 뷰 새로고침
+    async function refreshComparePanes() {
+      showToast('대화 데이터를 새로고침합니다...', 'refresh-cw');
+      await initCompareView(true);
+      showToast('대화 비교 뷰가 갱신되었습니다.', 'check');
+    }
+
     // --- 사이드바 미니 검색 컨트롤러 ---
     async function executeSearch() {
       const input = document.getElementById('chunkSearchInput');
@@ -9761,6 +10795,22 @@
     }
 
     async function saveDirectOrDownload() {
+      if (currentMainView === 'compare') {
+        if (compareIsDirtyA && compareIsDirtyB) {
+          await saveComparePane('A');
+          await saveComparePane('B');
+          return;
+        } else if (compareIsDirtyB) {
+          await saveComparePane('B');
+          return;
+        } else if (compareIsDirtyA) {
+          await saveComparePane('A');
+          return;
+        } else {
+          await saveComparePane('A');
+          return;
+        }
+      }
       if (isServerMode) {
         try {
           const saveTarget = activeFilePath || currentFileName;
