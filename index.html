@@ -1899,28 +1899,47 @@
         <!-- Dual Pane Split View Container -->
         <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0 divide-y md:divide-y-0 md:divide-x divide-google-borderDark">
           <!-- Pane A (Left) -->
-          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40" id="comparePaneColA">
+          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40 relative" id="comparePaneColA"
+               ondragover="handleComparePaneDragOver(event, 'A')"
+               ondragleave="handleComparePaneDragLeave(event, 'A')"
+               ondrop="handleComparePaneDrop(event, 'A')">
+            <!-- Drop indicator overlay -->
+            <div id="compareDropOverlayA" class="hidden absolute inset-0 bg-blue-950/90 backdrop-blur-sm border-2 border-dashed border-blue-400 z-40 flex flex-col items-center justify-center pointer-events-none text-blue-200 p-6 space-y-2">
+              <i data-lucide="file-down" class="w-12 h-12 text-blue-400 animate-bounce"></i>
+              <p class="text-sm font-bold text-white">이곳에 놓아 [A 대화]로 열기</p>
+              <p class="text-xs text-blue-300 opacity-80">보관함 파일 또는 PC의 .json 파일</p>
+            </div>
+
             <!-- Header A -->
             <div class="h-11 border-b border-google-borderDark px-3 py-1.5 bg-google-surfaceDark/80 flex items-center justify-between gap-2 flex-shrink-0">
               <div class="flex items-center space-x-2 min-w-0 flex-1">
                 <span class="w-5 h-5 rounded-md bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0">A</span>
-                <select id="compareSelectFileA" onchange="onCompareSelectFileChanged('A', this.value)" class="bg-google-cardDark text-google-textPrimary text-xs rounded-lg px-2 py-1 border border-google-borderDark focus:outline-none focus:border-blue-500 font-mono max-w-[210px] sm:max-w-xs truncate cursor-pointer">
-                  <!-- Dynamically populated -->
-                </select>
-                <label class="cursor-pointer p-1 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-white border border-google-borderDark transition flex-shrink-0" title="로컬 JSON 파일 불러오기">
-                  <i data-lucide="upload" class="w-3 h-3"></i>
-                  <input type="file" id="compareFileInputA" accept=".json" class="hidden" onchange="handleCompareFileUpload(event, 'A')">
-                </label>
+                <!-- File Pill Clickable to Open Storage Picker -->
+                <div onclick="openStoragePickerModal('A')" class="flex items-center space-x-1.5 bg-google-cardDark px-2 py-1 rounded-lg border border-google-borderDark hover:border-blue-500 cursor-pointer transition min-w-0 max-w-[170px] sm:max-w-xs group" title="클릭하여 보관함에서 대화 선택 (또는 보관함 사이드바에서 드래그)">
+                  <i data-lucide="file-json" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
+                  <span id="compareFileNameDisplayA" class="truncate font-mono text-[11px] font-semibold text-google-textPrimary group-hover:text-blue-300">대화 A를 선택하세요</span>
+                </div>
+                <button onclick="openStoragePickerModal('A')" class="px-2 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-medium flex items-center space-x-1 transition cursor-pointer flex-shrink-0" title="JSON 보관함에서 대화 선택">
+                  <i data-lucide="folder-search" class="w-3 h-3"></i>
+                  <span class="hidden sm:inline">보관함</span>
+                </button>
                 <span id="compareStatsA" class="text-[10px] font-mono text-google-textSecondary hidden lg:inline flex-shrink-0">0개 청크</span>
                 <span id="compareDirtyBadgeA" class="hidden px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 flex-shrink-0">수정됨</span>
               </div>
 
               <div class="flex items-center space-x-1.5 flex-shrink-0">
-                <div class="flex items-center space-x-0.5 bg-google-cardDark p-0.5 rounded-lg border border-google-borderDark">
-                  <button onclick="addCompareChunk('A', 'user')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-400 hover:bg-blue-600/20 transition cursor-pointer" title="새 User 청크 추가">+User</button>
-                  <button onclick="addCompareChunk('A', 'model')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-emerald-400 hover:bg-emerald-600/20 transition cursor-pointer" title="새 Model 청크 추가">+Model</button>
-                  <button onclick="addCompareChunk('A', 'thought')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-purple-400 hover:bg-purple-600/20 transition cursor-pointer" title="새 Thought 청크 추가">+Thought</button>
+                <!-- Direct Chunk Number Jump Control -->
+                <div class="flex items-center space-x-1 bg-google-cardDark px-1.5 py-0.5 rounded-lg border border-google-borderDark text-[11px] flex-shrink-0" title="청크 번호 입력 후 Enter (또는 화살표 클릭)로 해당 청크로 바로 이동">
+                  <span class="text-[10px] text-google-textSecondary font-mono font-bold">#</span>
+                  <input type="number" id="compareJumpInputA" min="1" placeholder="1"
+                         onkeydown="if(event.key==='Enter') jumpCompareChunk('A', this.value)"
+                         class="w-9 sm:w-11 bg-transparent text-center font-mono text-google-textPrimary focus:outline-none focus:text-blue-400 text-xs py-0.5">
+                  <span id="compareMaxChunkBadgeA" class="text-[10px] text-google-textSecondary font-mono pr-0.5">/ 0</span>
+                  <button onclick="stepCompareChunk('A', -1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="이전 청크"><i data-lucide="chevron-up" class="w-3 h-3"></i></button>
+                  <button onclick="stepCompareChunk('A', 1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="다음 청크"><i data-lucide="chevron-down" class="w-3 h-3"></i></button>
                 </div>
+
+                <!-- Save button -->
                 <button onclick="saveComparePane('A')" id="btnCompareSaveA" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center space-x-1 shadow transition cursor-pointer" title="A 파일 저장 (Ctrl+S)">
                   <i data-lucide="save" class="w-3 h-3"></i>
                   <span>저장</span>
@@ -1935,28 +1954,47 @@
           </div>
 
           <!-- Pane B (Right) -->
-          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40" id="comparePaneColB">
+          <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-google-bgDark/40 relative" id="comparePaneColB"
+               ondragover="handleComparePaneDragOver(event, 'B')"
+               ondragleave="handleComparePaneDragLeave(event, 'B')"
+               ondrop="handleComparePaneDrop(event, 'B')">
+            <!-- Drop indicator overlay -->
+            <div id="compareDropOverlayB" class="hidden absolute inset-0 bg-purple-950/90 backdrop-blur-sm border-2 border-dashed border-purple-400 z-40 flex flex-col items-center justify-center pointer-events-none text-purple-200 p-6 space-y-2">
+              <i data-lucide="file-down" class="w-12 h-12 text-purple-400 animate-bounce"></i>
+              <p class="text-sm font-bold text-white">이곳에 놓아 [B 대화]로 열기</p>
+              <p class="text-xs text-purple-300 opacity-80">보관함 파일 또는 PC의 .json 파일</p>
+            </div>
+
             <!-- Header B -->
             <div class="h-11 border-b border-google-borderDark px-3 py-1.5 bg-google-surfaceDark/80 flex items-center justify-between gap-2 flex-shrink-0">
               <div class="flex items-center space-x-2 min-w-0 flex-1">
                 <span class="w-5 h-5 rounded-md bg-purple-600/20 border border-purple-500/40 text-purple-400 flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0">B</span>
-                <select id="compareSelectFileB" onchange="onCompareSelectFileChanged('B', this.value)" class="bg-google-cardDark text-google-textPrimary text-xs rounded-lg px-2 py-1 border border-google-borderDark focus:outline-none focus:border-purple-500 font-mono max-w-[210px] sm:max-w-xs truncate cursor-pointer">
-                  <!-- Dynamically populated -->
-                </select>
-                <label class="cursor-pointer p-1 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-white border border-google-borderDark transition flex-shrink-0" title="로컬 JSON 파일 불러오기">
-                  <i data-lucide="upload" class="w-3 h-3"></i>
-                  <input type="file" id="compareFileInputB" accept=".json" class="hidden" onchange="handleCompareFileUpload(event, 'B')">
-                </label>
+                <!-- File Pill Clickable to Open Storage Picker -->
+                <div onclick="openStoragePickerModal('B')" class="flex items-center space-x-1.5 bg-google-cardDark px-2 py-1 rounded-lg border border-google-borderDark hover:border-purple-500 cursor-pointer transition min-w-0 max-w-[170px] sm:max-w-xs group" title="클릭하여 보관함에서 대화 선택 (또는 보관함 사이드바에서 드래그)">
+                  <i data-lucide="file-json" class="w-3.5 h-3.5 text-purple-400 flex-shrink-0"></i>
+                  <span id="compareFileNameDisplayB" class="truncate font-mono text-[11px] font-semibold text-google-textPrimary group-hover:text-purple-300">대화 B를 선택하세요</span>
+                </div>
+                <button onclick="openStoragePickerModal('B')" class="px-2 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 text-purple-300 hover:text-white border border-purple-500/40 text-[11px] font-medium flex items-center space-x-1 transition cursor-pointer flex-shrink-0" title="JSON 보관함에서 대화 선택">
+                  <i data-lucide="folder-search" class="w-3 h-3"></i>
+                  <span class="hidden sm:inline">보관함</span>
+                </button>
                 <span id="compareStatsB" class="text-[10px] font-mono text-google-textSecondary hidden lg:inline flex-shrink-0">0개 청크</span>
                 <span id="compareDirtyBadgeB" class="hidden px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 flex-shrink-0">수정됨</span>
               </div>
 
               <div class="flex items-center space-x-1.5 flex-shrink-0">
-                <div class="flex items-center space-x-0.5 bg-google-cardDark p-0.5 rounded-lg border border-google-borderDark">
-                  <button onclick="addCompareChunk('B', 'user')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-400 hover:bg-blue-600/20 transition cursor-pointer" title="새 User 청크 추가">+User</button>
-                  <button onclick="addCompareChunk('B', 'model')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-emerald-400 hover:bg-emerald-600/20 transition cursor-pointer" title="새 Model 청크 추가">+Model</button>
-                  <button onclick="addCompareChunk('B', 'thought')" class="px-1.5 py-0.5 rounded text-[10px] font-medium text-purple-400 hover:bg-purple-600/20 transition cursor-pointer" title="새 Thought 청크 추가">+Thought</button>
+                <!-- Direct Chunk Number Jump Control -->
+                <div class="flex items-center space-x-1 bg-google-cardDark px-1.5 py-0.5 rounded-lg border border-google-borderDark text-[11px] flex-shrink-0" title="청크 번호 입력 후 Enter (또는 화살표 클릭)로 해당 청크로 바로 이동">
+                  <span class="text-[10px] text-google-textSecondary font-mono font-bold">#</span>
+                  <input type="number" id="compareJumpInputB" min="1" placeholder="1"
+                         onkeydown="if(event.key==='Enter') jumpCompareChunk('B', this.value)"
+                         class="w-9 sm:w-11 bg-transparent text-center font-mono text-google-textPrimary focus:outline-none focus:text-purple-400 text-xs py-0.5">
+                  <span id="compareMaxChunkBadgeB" class="text-[10px] text-google-textSecondary font-mono pr-0.5">/ 0</span>
+                  <button onclick="stepCompareChunk('B', -1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="이전 청크"><i data-lucide="chevron-up" class="w-3 h-3"></i></button>
+                  <button onclick="stepCompareChunk('B', 1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="다음 청크"><i data-lucide="chevron-down" class="w-3 h-3"></i></button>
                 </div>
+
+                <!-- Save button -->
                 <button onclick="saveComparePane('B')" id="btnCompareSaveB" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center space-x-1 shadow transition cursor-pointer" title="B 파일 저장 (Ctrl+S)">
                   <i data-lucide="save" class="w-3 h-3"></i>
                   <span>저장</span>
@@ -2920,6 +2958,80 @@
     </button>
   </div>
 
+  <!-- Compare Storage File Picker Modal (보관함 파일 선택 모달) -->
+  <div id="compareStoragePickerModal" class="hidden fixed inset-0 z-[99990] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-google-surfaceDark border border-google-borderDark rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-chunk-enter">
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 border-b border-google-borderDark flex items-center justify-between bg-google-cardDark/60 flex-shrink-0">
+        <div class="flex items-center space-x-2">
+          <div id="comparePickerBadge" class="w-6 h-6 rounded-md bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-xs font-bold font-mono">A</div>
+          <h3 id="comparePickerTitle" class="text-sm font-bold text-google-textPrimary">[A 대화]로 열 보관함 파일 선택</h3>
+        </div>
+        <button onclick="closeStoragePickerModal()" class="p-1 rounded-lg hover:bg-google-cardDark text-google-textSecondary hover:text-white transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Search & Hint -->
+      <div class="p-3 border-b border-google-borderDark bg-google-bgDark/40 flex-shrink-0 space-y-2">
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-google-textSecondary"></i>
+          <input type="text" id="comparePickerSearchInput" oninput="filterStoragePickerList(this.value)" placeholder="보관함 대화 파일 검색..." class="w-full bg-google-cardDark text-google-textPrimary pl-9 pr-3 py-2 rounded-xl border border-google-borderDark text-xs focus:outline-none focus:border-blue-500 font-mono shadow-inner">
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-google-textSecondary px-1">
+          <span>💡 보관함 사이드바에서 파일을 직접 좌/우 창으로 드래그 앤 드롭해도 됩니다.</span>
+          <label class="cursor-pointer text-blue-400 hover:text-blue-300 hover:underline flex items-center space-x-1 font-medium flex-shrink-0">
+            <i data-lucide="upload" class="w-3 h-3"></i>
+            <span>PC 파일 열기</span>
+            <input type="file" id="modalLocalFileInput" accept=".json" class="hidden" onchange="handleModalLocalFileUpload(event)">
+          </label>
+        </div>
+      </div>
+
+      <!-- File List -->
+      <div id="comparePickerFileList" class="flex-1 overflow-y-auto p-3 space-y-1.5 min-h-[220px]">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare Choose Target Modal (사이드바 파일 클릭 시 A 또는 B 선택 다이얼로그) -->
+  <div id="compareChooseTargetModal" class="hidden fixed inset-0 z-[99995] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-google-surfaceDark border border-google-borderDark rounded-2xl w-full max-w-sm shadow-2xl p-5 space-y-4 animate-modal-enter">
+      <div class="flex items-start space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="columns-2" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="text-sm font-bold text-google-textPrimary">대화 비교 파일 열기</h3>
+          <p id="compareChooseTargetFileName" class="text-xs text-google-textSecondary font-mono truncate mt-0.5 font-medium">선택한 파일</p>
+          <p class="text-[11px] text-google-textSecondary/80 mt-1">이 파일을 비교 모드의 어느 창으로 여시겠습니까?</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="confirmChooseTarget('A')" class="px-3 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow transition cursor-pointer">
+          <span class="w-4 h-4 rounded bg-blue-900/60 flex items-center justify-center text-[10px] font-mono">A</span>
+          <span>좌측 [A]로 열기</span>
+        </button>
+        <button type="button" onclick="confirmChooseTarget('B')" class="px-3 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow transition cursor-pointer">
+          <span class="w-4 h-4 rounded bg-purple-900/60 flex items-center justify-center text-[10px] font-mono">B</span>
+          <span>우측 [B]로 열기</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-google-borderDark/60 text-xs">
+        <button type="button" onclick="confirmChooseTarget('feed')" class="text-google-textSecondary hover:text-white transition cursor-pointer flex items-center space-x-1">
+          <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+          <span>일반 피드로 열기</span>
+        </button>
+        <button type="button" onclick="closeChooseTargetModal()" class="text-zinc-400 hover:text-white transition cursor-pointer">
+          취소
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Global In-App Confirm Dialog (화면 검은색 먹통 방지 및 완전한 인앱 모달) -->
   <div id="globalConfirmModal" class="hidden fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4">
     <div class="bg-google-surfaceDark border border-google-borderDark rounded-2xl max-w-md w-full shadow-2xl overflow-hidden p-5 space-y-4 animate-modal-enter">
@@ -3490,13 +3602,25 @@
         }`;
         fileRow.style.paddingLeft = `${depth * 12 + 16}px`;
 
+        // 드래그 앤 드롭 지원 (대화 비교 좌/우 창으로 직접 드래그)
+        fileRow.draggable = true;
+        fileRow.title = `${file.name} (클릭하여 열기 / 대화 비교 창으로 드래그)`;
+        fileRow.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/ais-file-rel', file.path);
+          e.dataTransfer.setData('text/ais-file-name', file.name);
+          e.dataTransfer.setData('text/plain', file.path);
+          e.dataTransfer.effectAllowed = 'copyMove';
+        });
+
         fileRow.innerHTML = `
-          <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-1" onclick="loadStorageFile('${file.path}', '${file.name}')">
+          <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-1" onclick="handleStorageFileClick('${file.path}', '${file.name}')">
             <i data-lucide="file-json" class="w-3.5 h-3.5 ${isCurrentActive ? 'text-blue-400' : 'text-sky-400'} flex-shrink-0"></i>
             <span class="truncate text-[11px] leading-tight" title="${file.name}">${file.name}</span>
             <span class="text-[9px] px-1 py-0.2 rounded bg-google-cardDark text-google-textSecondary font-mono flex-shrink-0">${file.size_formatted || ''}</span>
           </div>
           <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0">
+            <button onclick="event.stopPropagation(); openCompareWithFile('${file.path}', '${file.name}', 'A')" class="px-1 py-0.2 rounded bg-blue-900/70 hover:bg-blue-600 text-blue-200 text-[10px] font-bold font-mono transition" title="대화 비교 [A]로 열기">A</button>
+            <button onclick="event.stopPropagation(); openCompareWithFile('${file.path}', '${file.name}', 'B')" class="px-1 py-0.2 rounded bg-purple-900/70 hover:bg-purple-600 text-purple-200 text-[10px] font-bold font-mono transition" title="대화 비교 [B]로 열기">B</button>
             <button onclick="event.stopPropagation(); openMoveFileModal('${file.path}', '${file.name}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-sky-300" title="다른 폴더로 이동">
               <i data-lucide="folder-symlink" class="w-3 h-3"></i>
             </button>
@@ -6282,6 +6406,15 @@
           <button type="button" class="w-full text-left px-3 py-2 hover:bg-purple-600 hover:text-white flex items-center space-x-2 transition cursor-pointer" onclick="openExternalFile('${safePath}', 'explorer'); closeStorageContextMenu();">
             <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400"></i>
             <span class="font-medium">탐색기에서 파일 위치 열기</span>
+          </button>
+          <div class="h-px bg-zinc-800 my-1"></div>
+          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-blue-600 hover:text-white flex items-center space-x-2 text-blue-300 transition cursor-pointer" onclick="openCompareWithFile('${safePath}', '${safeName}', 'A'); closeStorageContextMenu();">
+            <i data-lucide="columns-2" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span class="font-medium">대화 비교 [A]로 열기</span>
+          </button>
+          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-purple-600 hover:text-white flex items-center space-x-2 text-purple-300 transition cursor-pointer" onclick="openCompareWithFile('${safePath}', '${safeName}', 'B'); closeStorageContextMenu();">
+            <i data-lucide="columns-2" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span class="font-medium">대화 비교 [B]로 열기</span>
           </button>
           <div class="h-px bg-zinc-800 my-1"></div>
           <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-zinc-800 flex items-center space-x-2 text-zinc-300 transition cursor-pointer" onclick="copyToClipboard('${safePath}'); closeStorageContextMenu(); showToast('파일 경로가 복사되었습니다.', 'copy');">
@@ -9473,6 +9606,8 @@
     // ==========================================================================
     // 대화 비교 세션 (Compare Mode - Side-by-Side Dual Pane Editor & Diff Engine)
     // ==========================================================================
+    const renderMarkdown = safeParseMarkdown; // Alias to prevent any ReferenceError
+
     let compareDataA = null;
     let compareFilePathA = '';
     let compareFileNameA = '';
@@ -9489,6 +9624,9 @@
     let isCompareDiffHighlight = true;
     let isSyncingScrollA = false;
     let isSyncingScrollB = false;
+
+    let activePickerTargetPane = 'A';
+    let pendingChooseTargetFile = null;
 
     // Helper: 보관함 및 계통도에서 모든 파일 목록 수집
     function getAllStorageFilesList(node = storageTreeData?.tree, list = []) {
@@ -9540,12 +9678,306 @@
       return Array.from(map.values()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }
 
+    // 보관함 사이드바 파일 클릭 시 처리 (비교 모드일 때는 A/B 선택 모달 노출)
+    function handleStorageFileClick(relPath, filename) {
+      if (currentMainView === 'compare') {
+        openCompareChoosePaneDialog(relPath, filename);
+      } else {
+        loadStorageFile(relPath, filename);
+      }
+    }
+
+    function openCompareChoosePaneDialog(relPath, filename) {
+      pendingChooseTargetFile = { relPath, filename };
+      const modal = document.getElementById('compareChooseTargetModal');
+      const nameEl = document.getElementById('compareChooseTargetFileName');
+      if (nameEl) nameEl.textContent = filename || relPath;
+      if (modal) modal.classList.remove('hidden');
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function closeChooseTargetModal() {
+      document.getElementById('compareChooseTargetModal')?.classList.add('hidden');
+      pendingChooseTargetFile = null;
+    }
+
+    async function confirmChooseTarget(target) {
+      if (!pendingChooseTargetFile) {
+        closeChooseTargetModal();
+        return;
+      }
+      const { relPath, filename } = pendingChooseTargetFile;
+      closeChooseTargetModal();
+
+      if (target === 'feed') {
+        await switchMainView('feed');
+        await loadStorageFile(relPath, filename);
+      } else if (target === 'A' || target === 'B') {
+        await openCompareWithFile(relPath, filename, target);
+      }
+    }
+
+    // 비교 모드에서 특정 파일을 A 또는 B 창으로 즉시 열기
+    async function openCompareWithFile(relPath, fileName, pane) {
+      try {
+        const fullRel = relPath.startsWith('storage/') ? relPath : `storage/${relPath}`;
+        const res = await fetch(`/api/file?path=${encodeURIComponent(fullRel)}`);
+        if (!res.ok) throw new Error('파일 읽기 실패');
+        const json = await res.json();
+        const fName = fileName || relPath.split('/').pop().split('\\').pop();
+
+        if (pane === 'A') {
+          compareDataA = json;
+          compareFilePathA = fullRel;
+          compareFileNameA = fName;
+          compareIsDirtyA = false;
+          compareEditingIndicesA.clear();
+          document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+        } else {
+          compareDataB = json;
+          compareFilePathB = fullRel;
+          compareFileNameB = fName;
+          compareIsDirtyB = false;
+          compareEditingIndicesB.clear();
+          document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+        }
+
+        if (currentMainView !== 'compare') {
+          await switchMainView('compare');
+        } else {
+          renderComparePanes();
+        }
+        showToast(`[${pane}] '${fName}' 로드 완료!`, 'folder-open');
+      } catch (err) {
+        showToast(`대화 파일 불러오기 오류: ${err.message}`, 'alert-circle');
+      }
+    }
+
+    // 비교 모드 전용 보관함 파일 선택 모달
+    function openStoragePickerModal(targetPane) {
+      activePickerTargetPane = targetPane;
+      const modal = document.getElementById('compareStoragePickerModal');
+      const badge = document.getElementById('comparePickerBadge');
+      const title = document.getElementById('comparePickerTitle');
+      const input = document.getElementById('comparePickerSearchInput');
+
+      if (badge) {
+        badge.textContent = targetPane;
+        if (targetPane === 'A') {
+          badge.className = 'w-6 h-6 rounded-md bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-xs font-bold font-mono';
+        } else {
+          badge.className = 'w-6 h-6 rounded-md bg-purple-600/20 border border-purple-500/40 text-purple-400 flex items-center justify-center text-xs font-bold font-mono';
+        }
+      }
+      if (title) title.textContent = `[${targetPane} 대화]로 열 보관함 파일 선택`;
+      if (input) input.value = '';
+
+      filterStoragePickerList('');
+      if (modal) modal.classList.remove('hidden');
+      setTimeout(() => input?.focus(), 80);
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function closeStoragePickerModal() {
+      document.getElementById('compareStoragePickerModal')?.classList.add('hidden');
+    }
+
+    function filterStoragePickerList(query = '') {
+      const container = document.getElementById('comparePickerFileList');
+      if (!container) return;
+
+      const q = (query || '').toLowerCase().trim();
+      const allFiles = getAllFilesForCompare();
+      const filtered = q ? allFiles.filter(f => (f.name || '').toLowerCase().includes(q) || (f.rel_path || '').toLowerCase().includes(q)) : allFiles;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-google-textSecondary space-y-1 select-none">
+            <p class="text-xs font-semibold text-google-textPrimary">검색 결과가 없습니다</p>
+            <p class="text-[11px] opacity-75">다른 검색어를 입력하거나 PC에서 직접 파일을 열어보세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(f => {
+        const chunkText = f.total_chunks != null ? `${f.total_chunks}개 청크` : '';
+        const folder = f.rel_path.includes('/') ? f.rel_path.substring(0, f.rel_path.lastIndexOf('/')) : '';
+        return `
+          <div onclick="selectFileFromPickerModal('${escapeHtml(f.rel_path)}', '${escapeHtml(f.name)}')"
+               class="p-2.5 rounded-xl border border-google-borderDark bg-google-cardDark/50 hover:bg-google-cardDark hover:border-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-500/60 transition cursor-pointer flex items-center justify-between group">
+            <div class="flex items-center space-x-2.5 min-w-0 flex-1 mr-2">
+              <i data-lucide="file-json" class="w-4 h-4 text-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-400 flex-shrink-0"></i>
+              <div class="min-w-0">
+                <p class="text-xs font-semibold text-google-textPrimary group-hover:text-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-300 truncate">${escapeHtml(f.name)}</p>
+                ${folder ? `<p class="text-[10px] font-mono text-google-textSecondary opacity-75 truncate">📁 ${escapeHtml(folder)}</p>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 flex-shrink-0">
+              ${chunkText ? `<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">${chunkText}</span>` : ''}
+              <button class="px-2.5 py-1 rounded-lg bg-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-600 text-white text-[11px] font-semibold opacity-0 group-hover:opacity-100 transition shadow">
+                선택
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    async function selectFileFromPickerModal(relPath, fileName) {
+      closeStoragePickerModal();
+      await openCompareWithFile(relPath, fileName, activePickerTargetPane);
+    }
+
+    function handleModalLocalFileUpload(event) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      closeStoragePickerModal();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || typeof parsed !== 'object') throw new Error('올바른 JSON이 아닙니다.');
+          const pane = activePickerTargetPane;
+          if (pane === 'A') {
+            compareDataA = parsed;
+            compareFilePathA = file.name;
+            compareFileNameA = file.name;
+            compareIsDirtyA = false;
+            compareEditingIndicesA.clear();
+            document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+          } else {
+            compareDataB = parsed;
+            compareFilePathB = file.name;
+            compareFileNameB = file.name;
+            compareIsDirtyB = false;
+            compareEditingIndicesB.clear();
+            document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+          }
+          renderComparePanes();
+          showToast(`[${pane}] '${file.name}' 업로드 로드 완료!`, 'upload');
+        } catch (err) {
+          showToast(`파일 파싱 오류: ${err.message}`, 'alert-circle');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // 드래그 앤 드롭 핸들러 (좌/우 컬럼에 파일 드롭)
+    function handleComparePaneDragOver(e, pane) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'copy';
+      const overlay = document.getElementById(`compareDropOverlay${pane}`);
+      if (overlay) overlay.classList.remove('hidden');
+    }
+
+    function handleComparePaneDragLeave(e, pane) {
+      e.preventDefault();
+      e.stopPropagation();
+      const overlay = document.getElementById(`compareDropOverlay${pane}`);
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    async function handleComparePaneDrop(e, pane) {
+      e.preventDefault();
+      e.stopPropagation();
+      const overlay = document.getElementById(`compareDropOverlay${pane}`);
+      if (overlay) overlay.classList.add('hidden');
+
+      const aisRel = e.dataTransfer.getData('text/ais-file-rel');
+      const aisName = e.dataTransfer.getData('text/ais-file-name');
+      if (aisRel) {
+        await openCompareWithFile(aisRel, aisName, pane);
+        return;
+      }
+
+      // Windows 탐색기/바탕화면에서 드래그한 파일
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const parsed = JSON.parse(evt.target.result);
+            if (!parsed || typeof parsed !== 'object') throw new Error('올바른 JSON이 아닙니다.');
+            if (pane === 'A') {
+              compareDataA = parsed;
+              compareFilePathA = file.name;
+              compareFileNameA = file.name;
+              compareIsDirtyA = false;
+              compareEditingIndicesA.clear();
+              document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+            } else {
+              compareDataB = parsed;
+              compareFilePathB = file.name;
+              compareFileNameB = file.name;
+              compareIsDirtyB = false;
+              compareEditingIndicesB.clear();
+              document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+            }
+            renderComparePanes();
+            showToast(`[${pane}] '${file.name}' 드롭되어 로드되었습니다!`, 'folder-open');
+          } catch (err) {
+            showToast('파일 파싱 실패: ' + err.message, 'alert-circle');
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    // 청크 번호 직접 입력 점프 및 스텝 이동
+    function jumpCompareChunk(pane, val) {
+      const targetNum = parseInt(val, 10);
+      if (isNaN(targetNum) || targetNum < 1) return;
+      const chunkIdx = targetNum - 1;
+      const card = document.getElementById(`compareCard_${pane}_${chunkIdx}`);
+      const feed = document.getElementById(`compareFeed${pane}`);
+      if (card && feed) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('ring-2', 'ring-amber-400');
+        setTimeout(() => {
+          card.classList.remove('ring-2', 'ring-amber-400');
+        }, 1200);
+
+        const input = document.getElementById(`compareJumpInput${pane}`);
+        if (input) input.value = targetNum;
+
+        // 동시 스크롤 켜져있을 경우 상대 창의 동일 번호 청크로도 함께 이동
+        if (isCompareSyncScroll) {
+          const otherPane = (pane === 'A') ? 'B' : 'A';
+          const otherCard = document.getElementById(`compareCard_${otherPane}_${chunkIdx}`);
+          if (otherCard) {
+            otherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            otherCard.classList.add('ring-2', 'ring-amber-400');
+            setTimeout(() => {
+              otherCard.classList.remove('ring-2', 'ring-amber-400');
+            }, 1200);
+          }
+          const otherInput = document.getElementById(`compareJumpInput${otherPane}`);
+          if (otherInput) otherInput.value = targetNum;
+        }
+      } else {
+        showToast(`[${pane}] #${targetNum} 청크를 찾을 수 없습니다.`, 'alert-circle');
+      }
+    }
+
+    function stepCompareChunk(pane, delta) {
+      const input = document.getElementById(`compareJumpInput${pane}`);
+      if (!input) return;
+      const cur = parseInt(input.value || '1', 10);
+      const data = (pane === 'A') ? compareDataA : compareDataB;
+      const max = data?.chunkedPrompt?.chunks?.length || 1;
+      let next = Math.max(1, Math.min(max, cur + delta));
+      input.value = next;
+      jumpCompareChunk(pane, next);
+    }
+
     // 비교 모드 초기화
     async function initCompareView(forceReload = false) {
-      // 1. 드롭다운 파일 목록 생성
-      populateCompareSelects();
-
-      // 2. Pane A 초기화 (현재 열린 activeFilePath와 currentData를 기본으로 설정)
+      // 1. Pane A 초기화 (현재 열린 activeFilePath와 currentData를 기본으로 설정)
       if (!compareDataA || forceReload || (activeFilePath && compareFilePathA !== activeFilePath)) {
         if (currentData && currentData.chunkedPrompt) {
           compareDataA = JSON.parse(JSON.stringify(currentData));
@@ -9565,7 +9997,7 @@
         }
       }
 
-      // 3. Pane B 초기화 (비어있는 경우 자동으로 연관된 부모/자식 또는 두 번째 파일 선택)
+      // 2. Pane B 초기화 (비어있는 경우 자동으로 연관된 부모/자식 또는 두 번째 파일 추천)
       if (!compareDataB || forceReload) {
         const allFiles = getAllFilesForCompare();
         let targetBFile = null;
@@ -9603,126 +10035,8 @@
         }
       }
 
-      // 4. 셀렉트 박스 선택값 갱신
-      updateCompareSelectValues();
-
-      // 5. 렌더링
+      // 3. 렌더링
       renderComparePanes();
-    }
-
-    function populateCompareSelects() {
-      const selectA = document.getElementById('compareSelectFileA');
-      const selectB = document.getElementById('compareSelectFileB');
-      if (!selectA || !selectB) return;
-
-      const allFiles = getAllFilesForCompare();
-      let optionsHtml = '';
-
-      allFiles.forEach(f => {
-        const chunkInfo = f.total_chunks != null ? ` (${f.total_chunks}개 청크)` : '';
-        optionsHtml += `<option value="${escapeHtml(f.rel_path)}">${escapeHtml(f.name)}${chunkInfo}</option>`;
-      });
-
-      optionsHtml += `<option value="__custom_upload__">📁 로컬 JSON 파일 불러오기...</option>`;
-
-      selectA.innerHTML = optionsHtml;
-      selectB.innerHTML = optionsHtml;
-    }
-
-    function updateCompareSelectValues() {
-      const selectA = document.getElementById('compareSelectFileA');
-      const selectB = document.getElementById('compareSelectFileB');
-      if (selectA && compareFilePathA) {
-        selectA.value = compareFilePathA;
-        if (!selectA.value && selectA.options.length > 0) {
-          for (let opt of selectA.options) {
-            if (opt.textContent.startsWith(compareFileNameA)) {
-              selectA.value = opt.value;
-              break;
-            }
-          }
-        }
-      }
-      if (selectB && compareFilePathB) {
-        selectB.value = compareFilePathB;
-        if (!selectB.value && selectB.options.length > 0) {
-          for (let opt of selectB.options) {
-            if (opt.textContent.startsWith(compareFileNameB)) {
-              selectB.value = opt.value;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    async function onCompareSelectFileChanged(pane, val) {
-      if (val === '__custom_upload__') {
-        const input = document.getElementById(`compareFileInput${pane}`);
-        if (input) input.click();
-        return;
-      }
-      try {
-        const res = await fetch(`/api/file?path=${encodeURIComponent(val)}`);
-        if (!res.ok) throw new Error('파일 읽기 실패');
-        const json = await res.json();
-        const fName = val.split('/').pop().split('\\').pop();
-
-        if (pane === 'A') {
-          compareDataA = json;
-          compareFilePathA = val;
-          compareFileNameA = fName;
-          compareIsDirtyA = false;
-          compareEditingIndicesA.clear();
-          document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
-        } else {
-          compareDataB = json;
-          compareFilePathB = val;
-          compareFileNameB = fName;
-          compareIsDirtyB = false;
-          compareEditingIndicesB.clear();
-          document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
-        }
-        renderComparePanes();
-        showToast(`[${pane}] '${fName}' 로드 완료!`, 'folder-open');
-      } catch (err) {
-        showToast(`대화 파일 불러오기 오류: ${err.message}`, 'alert-circle');
-      }
-    }
-
-    function handleCompareFileUpload(event, pane) {
-      const file = event.target?.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (!parsed || typeof parsed !== 'object') throw new Error('올바른 JSON이 아닙니다.');
-          if (pane === 'A') {
-            compareDataA = parsed;
-            compareFilePathA = file.name;
-            compareFileNameA = file.name;
-            compareIsDirtyA = false;
-            compareEditingIndicesA.clear();
-            document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
-          } else {
-            compareDataB = parsed;
-            compareFilePathB = file.name;
-            compareFileNameB = file.name;
-            compareIsDirtyB = false;
-            compareEditingIndicesB.clear();
-            document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
-          }
-          populateCompareSelects();
-          updateCompareSelectValues();
-          renderComparePanes();
-          showToast(`[${pane}] '${file.name}' 업로드 로드 완료!`, 'upload');
-        } catch (err) {
-          showToast(`파일 파싱 오류: ${err.message}`, 'alert-circle');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
     }
 
     // LCP 및 청크별 Diff 계산
@@ -9785,11 +10099,28 @@
       const chunksA = compareDataA?.chunkedPrompt?.chunks || [];
       const chunksB = compareDataB?.chunkedPrompt?.chunks || [];
 
+      // 파일명 표시
+      const fNameA = document.getElementById('compareFileNameDisplayA');
+      const fNameB = document.getElementById('compareFileNameDisplayB');
+      if (fNameA) fNameA.textContent = compareFileNameA || '대화 A를 선택하세요';
+      if (fNameB) fNameB.textContent = compareFileNameB || '대화 B를 선택하세요';
+
       // 통계 뱃지
       const statsA = document.getElementById('compareStatsA');
       const statsB = document.getElementById('compareStatsB');
       if (statsA) statsA.textContent = `${chunksA.length}개 청크`;
       if (statsB) statsB.textContent = `${chunksB.length}개 청크`;
+
+      // 청크 점프 인풋 Max 및 총개수 갱신
+      const maxBadgeA = document.getElementById('compareMaxChunkBadgeA');
+      const maxBadgeB = document.getElementById('compareMaxChunkBadgeB');
+      if (maxBadgeA) maxBadgeA.textContent = `/ ${chunksA.length}`;
+      if (maxBadgeB) maxBadgeB.textContent = `/ ${chunksB.length}`;
+
+      const jumpInputA = document.getElementById('compareJumpInputA');
+      const jumpInputB = document.getElementById('compareJumpInputB');
+      if (jumpInputA) jumpInputA.max = chunksA.length;
+      if (jumpInputB) jumpInputB.max = chunksB.length;
 
       // Diff 계산
       const diff = computeCompareDiffStats(chunksA, chunksB);
@@ -9832,10 +10163,15 @@
               <i data-lucide="message-square-dashed" class="w-6 h-6 opacity-40"></i>
             </div>
             <p class="text-xs font-semibold text-google-textPrimary mb-1">대화가 비어 있습니다</p>
-            <p class="text-[11px] opacity-75 mb-3">상단 셀렉트에서 대화를 선택하거나 새 청크를 추가하세요.</p>
-            <div class="flex items-center space-x-1.5">
-              <button onclick="addCompareChunk('${pane}', 'user')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium cursor-pointer">+ User 추가</button>
-              <button onclick="addCompareChunk('${pane}', 'model')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium cursor-pointer">+ Model 추가</button>
+            <p class="text-[11px] opacity-75 mb-4 max-w-xs leading-relaxed">
+              좌측 <strong>JSON 보관함</strong>에서 파일을 이 창으로 <strong>드래그 앤 드롭</strong>하거나,<br>
+              아래 버튼을 눌러 보관함 파일을 선택하세요.
+            </p>
+            <div class="flex items-center space-x-2">
+              <button onclick="openStoragePickerModal('${pane}')" class="px-3 py-1.5 rounded-xl bg-${pane === 'A' ? 'blue' : 'purple'}-600 hover:bg-${pane === 'A' ? 'blue' : 'purple'}-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow transition cursor-pointer">
+                <i data-lucide="folder-search" class="w-3.5 h-3.5"></i>
+                <span>보관함에서 선택</span>
+              </button>
             </div>
           </div>
         `;
@@ -9846,18 +10182,6 @@
       const editingSet = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
 
       let html = '';
-
-      // 맨 위 삽입 바
-      html += `
-        <div class="group py-1 flex items-center justify-center opacity-40 hover:opacity-100 transition">
-          <div class="flex items-center space-x-1 bg-google-cardDark/80 border border-google-borderDark px-2 py-0.5 rounded-full text-[10px]">
-            <span class="text-google-textSecondary font-semibold mr-1">맨 위 삽입:</span>
-            <button onclick="insertCompareChunkAt('${pane}', 0, 'user')" class="text-blue-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-blue-600/30 transition cursor-pointer">+User</button>
-            <button onclick="insertCompareChunkAt('${pane}', 0, 'model')" class="text-emerald-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-emerald-600/30 transition cursor-pointer">+Model</button>
-            <button onclick="insertCompareChunkAt('${pane}', 0, 'thought')" class="text-purple-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-purple-600/30 transition cursor-pointer">+Thought</button>
-          </div>
-        </div>
-      `;
 
       chunks.forEach((chunk, i) => {
         const isThought = !!chunk.isThought;
@@ -9948,7 +10272,7 @@
               </div>
             </div>
 
-            <!-- Card Body -->
+            <!-- Card Body (safeParseMarkdown 사용으로 ReferenceError 원천 차단) -->
             <div class="p-3 text-xs leading-relaxed">
               ${isEditing ? `
                 <div class="space-y-2">
@@ -9961,18 +10285,8 @@
                   </div>
                 </div>
               ` : `
-                <div class="markdown-body select-text overflow-x-auto whitespace-pre-wrap break-words max-h-[500px] overflow-y-auto">${renderMarkdown(chunk.text || '')}</div>
+                <div class="markdown-body select-text overflow-x-auto whitespace-pre-wrap break-words max-h-[500px] overflow-y-auto">${safeParseMarkdown(chunk.text || '')}</div>
               `}
-            </div>
-          </div>
-
-          <!-- Gap Insert Divider -->
-          <div class="group py-1 flex items-center justify-center opacity-30 hover:opacity-100 transition">
-            <div class="flex items-center space-x-1 bg-google-cardDark/80 border border-google-borderDark px-2 py-0.5 rounded-full text-[10px]">
-              <span class="text-google-textSecondary font-semibold mr-1">#${i + 2}에 삽입:</span>
-              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'user')" class="text-blue-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-blue-600/30 transition cursor-pointer">+User</button>
-              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'model')" class="text-emerald-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-emerald-600/30 transition cursor-pointer">+Model</button>
-              <button onclick="insertCompareChunkAt('${pane}', ${i + 1}, 'thought')" class="text-purple-400 hover:text-white px-1.5 py-0.2 rounded hover:bg-purple-600/30 transition cursor-pointer">+Thought</button>
             </div>
           </div>
         `;
@@ -10004,7 +10318,6 @@
       if (pane === 'A') {
         compareIsDirtyA = true;
         document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
-        // 현재 활성 파일과 동일한 경우 currentData도 함께 실시간 동기화
         if (compareFilePathA === activeFilePath && currentData?.chunkedPrompt?.chunks?.[index]) {
           currentData.chunkedPrompt.chunks[index].text = newText;
           currentData.chunkedPrompt.chunks[index].tokenCount = chunk.tokenCount;
@@ -10014,7 +10327,6 @@
         document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
       }
 
-      // Diff 뱃지만 디바운스 갱신
       debounceUpdateCompareDiff();
     }
 
@@ -10084,78 +10396,6 @@
       renderComparePanes();
     }
 
-    // 청크 추가
-    function addCompareChunk(pane, role) {
-      const data = (pane === 'A') ? compareDataA : compareDataB;
-      if (!data) return;
-      if (!data.chunkedPrompt) data.chunkedPrompt = { chunks: [] };
-      if (!Array.isArray(data.chunkedPrompt.chunks)) data.chunkedPrompt.chunks = [];
-
-      const isThought = (role === 'thought');
-      const realRole = isThought ? 'model' : role;
-      const newChunk = {
-        role: realRole,
-        isThought: isThought,
-        text: '',
-        parts: isThought ? [{ text: '', thought: true }] : [{ text: '' }],
-        tokenCount: 0
-      };
-
-      data.chunkedPrompt.chunks.push(newChunk);
-      const newIdx = data.chunkedPrompt.chunks.length - 1;
-      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
-      set.add(newIdx);
-
-      if (pane === 'A') {
-        compareIsDirtyA = true;
-        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
-      } else {
-        compareIsDirtyB = true;
-        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
-      }
-
-      renderComparePanes();
-
-      // 스크롤 맨 아래로 이동
-      setTimeout(() => {
-        const feed = document.getElementById(`compareFeed${pane}`);
-        if (feed) feed.scrollTop = feed.scrollHeight;
-      }, 50);
-    }
-
-    // 특정 위치에 청크 삽입
-    function insertCompareChunkAt(pane, atIndex, role) {
-      const data = (pane === 'A') ? compareDataA : compareDataB;
-      if (!data) return;
-      if (!data.chunkedPrompt) data.chunkedPrompt = { chunks: [] };
-      if (!Array.isArray(data.chunkedPrompt.chunks)) data.chunkedPrompt.chunks = [];
-
-      const isThought = (role === 'thought');
-      const realRole = isThought ? 'model' : role;
-      const newChunk = {
-        role: realRole,
-        isThought: isThought,
-        text: '',
-        parts: isThought ? [{ text: '', thought: true }] : [{ text: '' }],
-        tokenCount: 0
-      };
-
-      data.chunkedPrompt.chunks.splice(atIndex, 0, newChunk);
-      const set = (pane === 'A') ? compareEditingIndicesA : compareEditingIndicesB;
-      set.clear();
-      set.add(atIndex);
-
-      if (pane === 'A') {
-        compareIsDirtyA = true;
-        document.getElementById('compareDirtyBadgeA')?.classList.remove('hidden');
-      } else {
-        compareIsDirtyB = true;
-        document.getElementById('compareDirtyBadgeB')?.classList.remove('hidden');
-      }
-
-      renderComparePanes();
-    }
-
     // 청크 삭제
     async function deleteCompareChunk(pane, index) {
       const data = (pane === 'A') ? compareDataA : compareDataB;
@@ -10197,7 +10437,6 @@
       if (!Array.isArray(dstData.chunkedPrompt.chunks)) dstData.chunkedPrompt.chunks = [];
 
       const cloned = JSON.parse(JSON.stringify(srcChunk));
-      // 같은 위치에 삽입, 범위 초과 시 맨 뒤에 추가
       const insertIdx = Math.min(index, dstData.chunkedPrompt.chunks.length);
       dstData.chunkedPrompt.chunks.splice(insertIdx, 0, cloned);
 
@@ -10305,7 +10544,6 @@
       document.getElementById('compareDirtyBadgeA')?.classList.toggle('hidden', !compareIsDirtyA);
       document.getElementById('compareDirtyBadgeB')?.classList.toggle('hidden', !compareIsDirtyB);
 
-      updateCompareSelectValues();
       renderComparePanes();
       showToast('좌우 대화 위치를 서로 맞바꾸었습니다.', 'arrow-left-right');
     }
