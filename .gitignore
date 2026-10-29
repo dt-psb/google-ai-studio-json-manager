@@ -25,6 +25,8 @@ $RECYCLE.BIN/
 # 5. 파일 편집/동기화 시 생성되는 백업 파일
 *.bak
 *.bak.*
+*.bak_*
+*.bak_lineage*
 *.backup
 
 # 6. 파이썬 캐시 및 가상환경

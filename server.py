@@ -161,6 +161,7 @@ def set_windows_clipboard_text(text: str) -> bool:
 DEFAULT_WORLDVIEWS_CONFIG: Dict[str, Any] = {
     "worldviews": ["세계관 1", "세계관 2", "세계관 3"],
     "mappings": {},
+    "memos": {},
 }
 
 
@@ -173,6 +174,7 @@ def load_worldviews_config() -> Dict[str, Any]:
             if isinstance(data, dict):
                 data.setdefault("worldviews", DEFAULT_WORLDVIEWS_CONFIG["worldviews"][:])
                 data.setdefault("mappings", {})
+                data.setdefault("memos", {})
                 if not isinstance(data["worldviews"], list):
                     data["worldviews"] = DEFAULT_WORLDVIEWS_CONFIG["worldviews"][:]
                 if not isinstance(data["mappings"], dict):
@@ -247,8 +249,13 @@ def get_font_format(ext: str) -> str:
 # 스토리지 트리 / 파일 목록
 # ---------------------------------------------------------------------------
 
-def get_storage_tree(dir_path: str, rel_path: str = "") -> Dict[str, Any]:
+def get_storage_tree(dir_path: str, rel_path: str = "", memos: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
     """storage/ 디렉터리를 재귀 탐색하여 폴더·파일 트리를 반환하고 모든 하위 문서 개수까지 계산."""
+    if memos is None:
+        try:
+            memos = load_worldviews_config().get("memos", {})
+        except Exception:
+            memos = {}
     tree: Dict[str, Any] = {
         "name": os.path.basename(dir_path) if rel_path else "storage",
         "path": normalize_path(rel_path),
@@ -271,12 +278,13 @@ def get_storage_tree(dir_path: str, rel_path: str = "") -> Dict[str, Any]:
 
         if os.path.isdir(full_path):
             if not entry.startswith(".") and entry != "__pycache__":
-                sub_tree = get_storage_tree(full_path, sub_rel)
+                sub_tree = get_storage_tree(full_path, sub_rel, memos)
                 tree["folders"].append(sub_tree)
         elif os.path.isfile(full_path) and is_valid_json_file(full_path, entry):
             stat = get_file_stat(full_path)
             if stat:
-                tree["files"].append({"name": entry, "path": sub_rel, **stat})
+                file_memo = memos.get(sub_rel) or memos.get(entry, "")
+                tree["files"].append({"name": entry, "path": sub_rel, "memo": file_memo, **stat})
 
     # 직속 파일 수 및 모든 하위 폴더(이중, 삼중, 다중 계층) 내 파일 총합 재귀 계산
     direct_count = len(tree["files"])
@@ -289,13 +297,14 @@ def get_storage_tree(dir_path: str, rel_path: str = "") -> Dict[str, Any]:
 
 def get_root_json_files() -> List[Dict[str, Any]]:
     """BASE_DIR 루트에 있는 유효한 JSON 파일 목록을 반환 (mtime 내림차순)."""
+    memos = load_worldviews_config().get("memos", {})
     root_files = []
     for filename in os.listdir(BASE_DIR):
         full_path = os.path.join(BASE_DIR, filename)
         if os.path.isfile(full_path) and is_valid_json_file(full_path, filename):
             stat = get_file_stat(full_path)
             if stat:
-                root_files.append({"name": filename, "path": filename, "is_root": True, **stat})
+                root_files.append({"name": filename, "path": filename, "is_root": True, "memo": memos.get(filename, ""), **stat})
     root_files.sort(key=lambda x: x["mtime"], reverse=True)
     return root_files
 
@@ -323,6 +332,8 @@ def get_all_storage_files() -> List[Dict[str, Any]]:
 
             stat = get_file_stat(abs_path)
             if stat:
+                memos_map = wv_cfg.get("memos", {})
+                file_memo = memos_map.get(rel_path) or memos_map.get(filename, "")
                 results.append({
                     "name": filename,
                     "rel_path": rel_path,
@@ -330,14 +341,35 @@ def get_all_storage_files() -> List[Dict[str, Any]]:
                     "category": category,
                     "full_path": abs_path,
                     "abs_path": abs_path,
+                    "memo": file_memo,
                     **stat,
                 })
     return results
 
 
-# 제외할 시스템/바이너리/스크립트 확장자 목록
+def make_backup(filepath: str, suffix: str = ".bak") -> Optional[str]:
+    """안전 백업을 storage/.backups 숨김 디렉터리에 격리 생성하여 일반 보관함 목록에 노출되지 않도록 처리."""
+    try:
+        backup_base = os.path.join(STORAGE_DIR, ".backups")
+        os.makedirs(backup_base, exist_ok=True)
+        try:
+            rel = os.path.relpath(filepath, STORAGE_DIR)
+            if rel.startswith(".."):
+                rel = os.path.relpath(filepath, BASE_DIR)
+        except Exception:
+            rel = os.path.basename(filepath)
+        dest = os.path.join(backup_base, rel + suffix)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copy2(filepath, dest)
+        return dest
+    except Exception as e:
+        print(f"[Backup Warning] {e}")
+        return None
+
+
+# 제외할 시스템/바이너리/스크립트/백업 확장자 목록
 EXCLUDED_EXTENSIONS = {
-    ".bak", ".tmp", ".swp", ".py", ".pyw", ".pyc", ".bat", ".cmd", ".vbs",
+    ".bak", ".bak_lineage", ".tmp", ".swp", ".py", ".pyw", ".pyc", ".bat", ".cmd", ".vbs",
     ".sh", ".exe", ".ico", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp",
     ".zip", ".tar", ".gz", ".7z", ".rar", ".pdf", ".html", ".htm", ".css",
     ".js", ".ts", ".map", ".db", ".sqlite", ".sqlite3", ".lnk", ".log"
@@ -355,15 +387,18 @@ def is_valid_json_file(full_path: str, filename: Optional[str] = None) -> bool:
     if filename is None:
         filename = os.path.basename(full_path)
 
-    # 숨김 파일 및 시스템 파일 제외
+    # 숨김 파일 및 시스템 파일 제외 (.backups 등)
     if filename.startswith("."):
         return False
 
     lower = filename.lower()
-    _, ext = os.path.splitext(lower)
 
-    # 명백한 비JSON/스크립트/바이너리 제외
-    if ext in EXCLUDED_EXTENSIONS or lower.endswith(".bak.json") or lower.endswith(".tmp"):
+    # 명백한 비JSON/백업/스크립트/임시 파일 제외
+    if ".bak" in lower or "bak_lineage" in lower or lower.endswith(".tmp"):
+        return False
+
+    _, ext = os.path.splitext(lower)
+    if ext in EXCLUDED_EXTENSIONS:
         return False
 
     # .json 확장자는 기본 유효
@@ -417,10 +452,10 @@ def is_valid_json_file(full_path: str, filename: Optional[str] = None) -> bool:
 def _is_valid_json_filename(filename: str) -> bool:
     """파일명 기반 1차 판정 (경로를 모를 때 사용)"""
     lower = filename.lower()
-    if filename.startswith("."):
+    if filename.startswith(".") or ".bak" in lower or "bak_lineage" in lower or lower.endswith(".tmp"):
         return False
     _, ext = os.path.splitext(lower)
-    return ext not in EXCLUDED_EXTENSIONS and not lower.endswith(".bak.json")
+    return ext not in EXCLUDED_EXTENSIONS
 
 
 def _build_normalized_mappings(mappings: Dict[str, str]) -> Dict[str, str]:
@@ -571,12 +606,12 @@ def calc_lcp(chunks1: List[Dict], chunks2: List[Dict]) -> int:
 _FILE_CHUNKS_CACHE: Dict[str, Dict[str, Any]] = {}
 
 
-def get_cached_file_chunks(sf: Dict[str, Any]) -> Tuple[List[Dict], str, str]:
-    """파일을 읽어 청크 서명 목록을 반환. mtime 기반 캐싱 적용."""
+def get_cached_file_chunks(sf: Dict[str, Any]) -> Tuple[List[Dict], str, str, str]:
+    """파일을 읽어 청크 서명, 첫 프롬프트, 시스템 지침, 메모를 반환. mtime 기반 캐싱 적용."""
     path, mtime = sf["abs_path"], sf["mtime"]
     cached = _FILE_CHUNKS_CACHE.get(path)
     if cached and cached["mtime"] == mtime:
-        return cached["chunks"], cached["first_prompt"], cached["system_instruction"]
+        return cached["chunks"], cached["first_prompt"], cached["system_instruction"], cached.get("memo", "")
 
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -584,13 +619,20 @@ def get_cached_file_chunks(sf: Dict[str, Any]) -> Tuple[List[Dict], str, str]:
         chunks = extract_chunks_signature(data)
         first_prompt = next((c["preview"] for c in chunks if c["role"] == "user"), "")
         sys_inst = (data.get("systemInstruction", {}).get("text") or "").strip()[:80]
+        memo = (data.get("memo") or data.get("description") or "").strip()
+        if not memo:
+            cfg = load_worldviews_config()
+            memos_cfg = cfg.get("memos", {})
+            memo = memos_cfg.get(sf.get("rel_path", "")) or memos_cfg.get(sf.get("name", ""), "")
+
         _FILE_CHUNKS_CACHE[path] = {
             "mtime": mtime, "chunks": chunks,
             "first_prompt": first_prompt, "system_instruction": sys_inst,
+            "memo": memo
         }
-        return chunks, first_prompt, sys_inst
+        return chunks, first_prompt, sys_inst, memo
     except Exception:
-        return [], "", ""
+        return [], "", "", ""
 
 
 # ---------------------------------------------------------------------------
@@ -640,12 +682,13 @@ def analyze_storage_branches(current_full_or_rel: Optional[str] = None,
     else:
         loaded_files = []
         for sf in storage_files:
-            chunks, first_prompt, sys_inst = get_cached_file_chunks(sf)
+            chunks, first_prompt, sys_inst, memo = get_cached_file_chunks(sf)
             if chunks:
                 loaded_files.append({**sf, "chunks": chunks,
                                       "total_chunks": len(chunks),
                                       "first_prompt": first_prompt,
-                                      "system_instruction": sys_inst})
+                                      "system_instruction": sys_inst,
+                                      "memo": memo})
 
         families, all_tree_nodes = _build_families(loaded_files, None, threshold)
         categories_list = _build_categories_list(loaded_files)
@@ -889,7 +932,8 @@ def _build_families(loaded_files: List[Dict], current_item: Optional[Dict],
             "title": root_trunk["name"],
             "category": root_trunk.get("category", "미분류"),
             "folder": root_trunk.get("folder", ""),
-            "root_prompt": root_trunk["first_prompt"] or root_trunk["name"],
+            "root_prompt": root_trunk.get("memo") or root_trunk["first_prompt"] or root_trunk["name"],
+            "memo": root_trunk.get("memo", ""),
             "root_total_chunks": root_trunk["total_chunks"],
             "files_count": len(members),
             "tree": root_tree,
@@ -1098,7 +1142,9 @@ def _make_tree_node(m: Dict, current_item: Optional[Dict], is_root: bool) -> Dic
         "fork_turn": 0,
         "common_with_parent": 0,
         "depth": 0,
-        "first_prompt": m["first_prompt"],
+        "first_prompt": m.get("memo") or m["first_prompt"],
+        "raw_first_prompt": m["first_prompt"],
+        "memo": m.get("memo", ""),
         "children": [],
     }
 
@@ -1399,11 +1445,9 @@ def find_and_replace_in_storage(
                     modified_paths.append(rel_path)
 
                     if not is_preview:
-                        # 안전 백업 생성 후 저장
+                        # 안전 백업 생성 후 저장 (.backups 폴더에 격리 저장)
                         try:
-                            backup_path = abs_path + ".bak"
-                            with open(backup_path, "w", encoding="utf-8") as bf:
-                                bf.write(raw_content)
+                            make_backup(abs_path, ".bak")
                             with open(abs_path, "w", encoding="utf-8") as f:
                                 json.dump(data, f, ensure_ascii=False, indent=2)
                         except Exception as e:
@@ -1517,6 +1561,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             "/api/search":           lambda: self._get_search(qs),
             "/api/settings":         self._get_settings,
             "/api/open-manual":      self._get_open_manual,
+            "/api/memos":            self._get_memos,
         }
 
         for route, handler in routes.items():
@@ -1725,6 +1770,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             "/api/storage/open-external":     self._post_open_external,
             "/api/download-to-c":             self._post_download_to_c,
             "/api/storage/find-replace":       self._post_find_replace,
+            "/api/memo":                       self._post_memo,
         }
 
         for route, handler in post_routes.items():
@@ -1799,12 +1845,8 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             if start_idx > end_idx:
                 start_idx = 0
 
-            # 안전 백업 생성
-            backup_path = target_path + ".bak_lineage"
-            try:
-                shutil.copy2(target_path, backup_path)
-            except Exception as b_err:
-                print(f"[Lineage Sync] 백업 생성 경고: {b_err}")
+            # 안전 백업 생성 (.backups 폴더에 격리 저장)
+            make_backup(target_path, ".bak_lineage")
 
             # 조상 파일에서 해당 구간 청크 복사
             fresh_ancestor_chunks = copy.deepcopy(ancestor_chunks[start_idx:end_idx + 1])
@@ -1899,7 +1941,7 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
                 sf_path = sf["abs_path"]
                 if sf_path == normalize_path(parent_path) or sf_path in found_paths:
                     continue
-                c_chunks, _, _ = get_cached_file_chunks(sf)
+                c_chunks, _, _, _ = get_cached_file_chunks(sf)
                 if not c_chunks or len(c_chunks) < parent_total:
                     continue
                 # 첫 청크 유사 판정
@@ -1948,12 +1990,8 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
                     # 자식의 고유 대화(#orig_common 이후 청크들) 분리
                     child_own_chunks = child_chunks[orig_common:]
 
-                    # 백업 생성
-                    bak_path = c_path + ".bak_lineage"
-                    try:
-                        shutil.copy2(c_path, bak_path)
-                    except Exception:
-                        pass
+                    # 백업 생성 (.backups 폴더에 격리 저장)
+                    make_backup(c_path, ".bak_lineage")
 
                     # 부모의 최신 청크 전체 + 자식의 고유 대화로 안전 조립!
                     fresh_parent_chunks = copy.deepcopy(parent_chunks)
@@ -2127,6 +2165,48 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
             print(f"[Error] _post_clipboard 예외: {e}\n{traceback.format_exc()}")
             self._send_error(500, f"Clipboard copy error: {e}")
 
+    def _get_memos(self):
+        cfg = load_worldviews_config()
+        self._send_json(cfg.get("memos", {}))
+
+    def _post_memo(self):
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        filename = payload.get("path") or payload.get("filename")
+        memo = (payload.get("memo") or "").strip()
+        if not filename:
+            self._send_error(400, "Missing filename")
+            return
+
+        rel_clean = strip_storage_prefix(filename)
+        cfg = load_worldviews_config()
+        cfg.setdefault("memos", {})
+        if memo:
+            cfg["memos"][rel_clean] = memo
+            cfg["memos"][os.path.basename(rel_clean)] = memo
+        else:
+            cfg["memos"].pop(rel_clean, None)
+            cfg["memos"].pop(os.path.basename(rel_clean), None)
+        save_worldviews_config(cfg)
+
+        filepath = resolve_file_path(filename)
+        if filepath and os.path.exists(filepath):
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    f_data = json.load(f)
+                if isinstance(f_data, dict):
+                    f_data["memo"] = memo
+                    with open(filepath, "w", encoding="utf-8") as f:
+                        json.dump(f_data, f, ensure_ascii=False, indent=2)
+                if filepath in _FILE_CHUNKS_CACHE:
+                    del _FILE_CHUNKS_CACHE[filepath]
+            except Exception as e:
+                print(f"[Warning] Failed to write memo into file: {e}")
+
+        invalidate_branch_tree_cache()
+        self._send_json({"success": True, "memo": memo, "file": rel_clean})
+
     def _post_worldviews(self):
         payload = self._read_json_body()
         if payload is None:
@@ -2159,13 +2239,23 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         if os.path.exists(filepath):
-            try:
-                shutil.copy2(filepath, filepath + ".bak")
-            except Exception:
-                pass
+            make_backup(filepath, ".bak")
 
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+
+        if isinstance(data, dict) and "memo" in data:
+            memo_val = (data.get("memo") or "").strip()
+            cfg = load_worldviews_config()
+            cfg.setdefault("memos", {})
+            rel_clean = strip_storage_prefix(filename)
+            if memo_val:
+                cfg["memos"][rel_clean] = memo_val
+                cfg["memos"][os.path.basename(rel_clean)] = memo_val
+            else:
+                cfg["memos"].pop(rel_clean, None)
+                cfg["memos"].pop(os.path.basename(rel_clean), None)
+            save_worldviews_config(cfg)
 
         if filepath in _FILE_CHUNKS_CACHE:
             del _FILE_CHUNKS_CACHE[filepath]
@@ -2246,19 +2336,66 @@ class AISHandler(http.server.SimpleHTTPRequestHandler):
 
         # storage/ 또는 BASE_DIR 에서 소스 탐색
         src_full = os.path.abspath(os.path.join(STORAGE_DIR, old_path))
+        is_in_storage = True
         if not (is_safe_path(STORAGE_DIR, old_path) and os.path.exists(src_full)):
             src_full = os.path.abspath(os.path.join(BASE_DIR, old_path))
+            is_in_storage = False
             if not is_safe_path(BASE_DIR, old_path) or not os.path.exists(src_full):
                 self._send_error(404, "Target not found")
                 return
 
-        if os.path.isfile(src_full) and not new_name.lower().endswith(".json"):
+        is_dir = os.path.isdir(src_full)
+        if not is_dir and not new_name.lower().endswith(".json"):
             new_name += ".json"
 
         dest_full = os.path.join(os.path.dirname(src_full), new_name)
-        os.rename(src_full, dest_full)
+        if os.path.exists(dest_full):
+            target_type = "폴더" if is_dir else "파일"
+            self._send_error(400, f"이미 동일한 이름의 {target_type}가 존재합니다.")
+            return
+
+        try:
+            os.rename(src_full, dest_full)
+        except Exception as e:
+            self._send_error(500, f"이름 변경 실패: {e}")
+            return
+
+        old_rel = old_path.replace("\\", "/")
+        new_rel = (os.path.relpath(dest_full, STORAGE_DIR) if is_in_storage else os.path.relpath(dest_full, BASE_DIR)).replace("\\", "/")
+
+        # Evict old cached chunks
+        to_del = [k for k in _FILE_CHUNKS_CACHE if k == src_full or k.startswith(src_full + os.sep)]
+        for k in to_del:
+            del _FILE_CHUNKS_CACHE[k]
+
+        # Update worldviews mappings and memos for renamed paths
+        try:
+            cfg = load_worldviews_config()
+            cfg_changed = False
+            for section in ("mappings", "memos"):
+                sec_dict = cfg.get(section, {})
+                updates = {}
+                deletes = []
+                for k, v in sec_dict.items():
+                    if k == old_rel:
+                        deletes.append(k)
+                        updates[new_rel] = v
+                    elif k.startswith(old_rel + "/"):
+                        deletes.append(k)
+                        updates[new_rel + k[len(old_rel):]] = v
+                for k in deletes:
+                    del sec_dict[k]
+                    cfg_changed = True
+                for k, v in updates.items():
+                    sec_dict[k] = v
+                    cfg_changed = True
+            if cfg_changed:
+                save_worldviews_config(cfg)
+        except Exception as e:
+            print(f"[Warning] Failed to update worldviews config on rename: {e}")
+
         invalidate_branch_tree_cache()
-        self._send_json({"success": True, "new_name": new_name})
+        self._send_json({"success": True, "old_path": old_rel, "new_path": new_rel, "new_name": new_name, "is_folder": is_dir})
 
     def _post_delete(self):
         payload = self._read_json_body()

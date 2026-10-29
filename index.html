@@ -1233,19 +1233,12 @@
 
   <!-- Top Navigation Bar -->
   <header class="relative h-14 border-b border-google-borderDark bg-google-surfaceDark px-4 flex items-center justify-between z-50 flex-shrink-0">
-    <div class="flex items-center space-x-2.5 flex-shrink-0">
-      <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="font-bold text-xs tracking-tight text-google-textPrimary">AI Studio</span>
-        <span class="text-google-borderDark text-xs font-light select-none">/</span>
-        <!-- Filename clickable to rename -->
-        <div class="flex items-center space-x-1.5 cursor-pointer group px-2 py-0.5 rounded-lg hover:bg-google-cardDark/80 border border-transparent hover:border-google-borderDark transition" onclick="openRenameModal()" title="클릭하여 파일명 변경">
-          <i data-lucide="file-json" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
-          <p id="currentFileName" class="text-[11px] text-google-textSecondary group-hover:text-google-textPrimary truncate max-w-[150px] sm:max-w-xs font-mono font-medium transition">불러온 파일 없음</p>
-          <i data-lucide="edit-2" class="w-2.5 h-2.5 text-google-textSecondary opacity-0 group-hover:opacity-100 group-hover:text-blue-400 transition"></i>
-        </div>
+    <!-- Left: Filename clickable to rename & memo (Responsive with ellipsis) -->
+    <div class="flex items-center min-w-0 max-w-[180px] sm:max-w-[240px] md:max-w-xs lg:max-w-sm xl:max-w-md flex-shrink mr-1 sm:mr-2">
+      <div class="flex items-center space-x-1.5 cursor-pointer group px-2 py-1 rounded-lg hover:bg-google-cardDark/80 border border-transparent hover:border-google-borderDark transition min-w-0 w-full" onclick="openRenameModal()" title="클릭하여 파일명 및 세션 메모 편집">
+        <i data-lucide="file-json" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
+        <p id="currentFileName" class="text-[11px] text-google-textSecondary group-hover:text-google-textPrimary truncate font-mono font-medium transition flex-1 min-w-0" title="클릭하여 파일명 및 세션 메모 편집">불러온 파일 없음</p>
+        <i data-lucide="edit-2" class="w-2.5 h-2.5 text-google-textSecondary opacity-0 group-hover:opacity-100 group-hover:text-blue-400 transition flex-shrink-0"></i>
       </div>
     </div>
 
@@ -1342,34 +1335,10 @@
         </div>
       </div>
 
-      <!-- Multiple Color Theme Selector Dropdown -->
-      <div class="flex items-center space-x-1 bg-google-cardDark border border-google-borderDark rounded-md px-2 py-1 shadow-sm relative z-20 pointer-events-auto">
-        <i data-lucide="palette" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
-        <select id="themeSelect" onchange="changeTheme(this.value)" class="bg-transparent text-xs text-google-textPrimary focus:outline-none cursor-pointer font-medium pr-1">
-          <option value="dark" class="bg-zinc-900 text-white">🌙 Dark Studio</option>
-          <option value="midnight" class="bg-zinc-900 text-white">🌌 Midnight Navy</option>
-          <option value="forest" class="bg-zinc-900 text-white">🌲 Forest Emerald (눈 편함)</option>
-          <option value="nord" class="bg-zinc-900 text-white">❄️ Nordic Slate</option>
-          <option value="cyberpunk" class="bg-zinc-900 text-white">🔮 Cyberpunk Violet</option>
-          <option value="oled" class="bg-zinc-900 text-white">🖤 OLED Pure Black</option>
-          <option value="warm" class="bg-zinc-900 text-white">📜 Warm Paper (세피아)</option>
-          <option value="cleanlight" class="bg-zinc-900 text-white">☀️ Clean Studio Light</option>
-          <option value="rose" class="bg-zinc-900 text-white">🌹 Rosé Noir (와인빛 다크)</option>
-          <option value="abyss" class="bg-zinc-900 text-white">🌊 Abyss Teal (심해 청록)</option>
-          <option value="ember" class="bg-zinc-900 text-white">🔥 Amber Ember (잿불 황금)</option>
-          <option value="sakura" class="bg-zinc-900 text-white">🌸 Sakura Mist (벚꽃 라이트)</option>
-        </select>
-      </div>
-
-      <!-- Manual / Help Button -->
-      <button onclick="openManualGuide()" class="px-2.5 py-1.5 rounded-md bg-purple-950/70 hover:bg-purple-900 border border-purple-700/60 text-purple-300 hover:text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-sm cursor-pointer" title="기능 종합 사용설명서 열기 (새 창)">
-        <i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-400"></i>
-        <span class="hidden sm:inline">설명서</span>
-      </button>
-
       <!-- Settings & Tools Panel Toggle -->
-      <button onclick="toggleSidePanel()" class="p-1.5 rounded-md hover:bg-google-cardDark text-google-textSecondary hover:text-google-textPrimary transition" title="설정 & 도구 패널 토글">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-400"></i>
+      <button onclick="toggleSidePanel()" class="px-2.5 py-1.5 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary border border-google-borderDark flex items-center space-x-1.5 transition text-xs font-medium cursor-pointer shadow-sm" title="설정 & 도구 패널 토글">
+        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-blue-400"></i>
+        <span class="hidden sm:inline">도구 & 설정</span>
       </button>
     </div>
   </header>
@@ -1389,6 +1358,9 @@
           <span class="text-xs font-semibold text-google-textPrimary tracking-wide block truncate">JSON 보관함</span>
         </div>
         <div class="flex items-center space-x-0.5 flex-shrink-0">
+          <button onclick="openSessionMemoBrowser()" class="p-1 rounded bg-transparent hover:bg-google-cardDark text-google-textSecondary hover:text-emerald-400 transition" title="세션 탐색 & 메모 브라우저 열기">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          </button>
           <button onclick="openCreateFolderModal('')" class="p-1 rounded bg-transparent hover:bg-google-cardDark text-google-textSecondary hover:text-amber-300 transition" title="새 폴더 생성">
             <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
           </button>
@@ -1430,12 +1402,18 @@
             <span class="hidden sm:inline text-[11px] font-medium">보관함</span>
           </button>
 
+          <!-- Session Memo Browser Button -->
+          <button onclick="openSessionMemoBrowser()" class="px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/70 text-emerald-300 hover:text-white text-[11px] font-semibold flex items-center space-x-1.5 transition shadow-sm cursor-pointer flex-shrink-0" title="파일명과 메모를 보며 JSON 세션을 선택/탐색합니다">
+            <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>
+            <span class="hidden sm:inline">세션 탐색 / 메모</span>
+          </button>
 
           <!-- Current File Breadcrumb / Tag -->
-          <div class="flex items-center space-x-1.5 min-w-0 max-w-[180px] sm:max-w-xs md:max-w-md bg-google-cardDark/70 px-2.5 py-1 rounded-lg border border-google-borderDark/80">
+          <div class="flex items-center space-x-1.5 min-w-0 max-w-[200px] sm:max-w-xs md:max-w-md bg-google-cardDark/70 px-2.5 py-1 rounded-lg border border-google-borderDark/80 cursor-pointer group hover:border-blue-500/50 transition" onclick="openRenameModal()" title="클릭하여 파일명 및 세션 메모 편집">
             <i data-lucide="file-json" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
             <span id="currentFilePathDisplay" class="font-mono text-google-textPrimary text-[11px] font-semibold truncate select-text" title="현재 열린 파일 경로">Google AI Studio 테스트.json</span>
-            <button onclick="openRenameModal()" class="text-google-textSecondary hover:text-blue-400 p-0.5 rounded transition flex-shrink-0 cursor-pointer" title="파일명 변경">
+            <span id="currentFileMemoBadge" class="hidden text-[10px] text-emerald-300 bg-emerald-950/80 px-1.5 py-0.2 rounded border border-emerald-700/60 truncate max-w-[130px] font-normal" title="현재 세션 메모"></span>
+            <button onclick="event.stopPropagation(); openRenameModal()" class="text-google-textSecondary hover:text-blue-400 p-0.5 rounded transition flex-shrink-0 cursor-pointer" title="파일명 및 세션 메모 편집">
               <i data-lucide="edit-2" class="w-3 h-3"></i>
             </button>
           </div>
@@ -1877,6 +1855,24 @@
               <span id="badgeCompareDiffHighlight" class="px-1.5 py-0.2 rounded text-[10px] font-mono bg-amber-500/20 font-bold">ON</span>
             </button>
 
+            <!-- Sync Chunk Jump Control (서로 같은 번호로 동시 이동) -->
+            <div class="flex items-center space-x-1 bg-google-cardDark px-1.5 py-0.5 rounded-lg border border-amber-500/40 text-xs flex-shrink-0" title="좌/우 대화 모두 같은 번호의 청크로 동시 이동">
+              <span class="text-[11px] text-amber-400 font-mono font-bold pl-0.5">#</span>
+              <input type="number" id="compareSyncJumpInput" min="1" placeholder="번호"
+                     class="w-12 h-6 rounded px-1 text-center font-mono text-xs focus:outline-none focus:border-amber-400 transition"
+                     style="background-color: var(--g-bg); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4);"
+                     title="이동할 번호 입력 후 Enter"
+                     onkeydown="if(event.key==='Enter') jumpCompareBothPanes(this.value)">
+              <button onclick="stepCompareBothPanes(-1)" class="p-0.5 rounded hover:bg-amber-500/20 text-amber-400/80 hover:text-amber-300 cursor-pointer transition" title="이전 번호"><i data-lucide="chevron-up" class="w-3 h-3"></i></button>
+              <button onclick="stepCompareBothPanes(1)" class="p-0.5 rounded hover:bg-amber-500/20 text-amber-400/80 hover:text-amber-300 cursor-pointer transition" title="다음 번호"><i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+              <button onclick="jumpCompareBothPanes(document.getElementById('compareSyncJumpInput')?.value)"
+                      class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-xs flex items-center space-x-1 cursor-pointer transition border border-amber-500/40"
+                      title="입력한 번호로 양쪽 창 동시 이동">
+                <i data-lucide="crosshair" class="w-3 h-3 text-amber-400"></i>
+                <span class="hidden sm:inline">동일 이동</span>
+              </button>
+            </div>
+
             <!-- Sync Scroll Toggle -->
             <button id="btnCompareSyncScroll" onclick="toggleCompareSyncScroll()" class="px-2.5 py-1 rounded-lg bg-google-cardDark hover:bg-zinc-700/60 border border-blue-500/40 text-blue-300 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer" title="좌/우 창 동시 스크롤 연동 켜기/끄기">
               <i data-lucide="link-2" class="w-3.5 h-3.5 text-blue-400"></i>
@@ -1932,7 +1928,7 @@
                 <div class="flex items-center space-x-1 bg-google-cardDark px-1.5 py-0.5 rounded-lg border border-google-borderDark text-[11px] flex-shrink-0" title="청크 번호 입력 후 Enter (또는 화살표 클릭)로 해당 청크로 바로 이동">
                   <span class="text-[10px] text-google-textSecondary font-mono font-bold">#</span>
                   <input type="number" id="compareJumpInputA" min="1" placeholder="1"
-                         onkeydown="if(event.key==='Enter') jumpCompareChunk('A', this.value)"
+                         onkeydown="if(event.key==='Enter') jumpCompareChunk('A', this.value, false)"
                          class="w-9 sm:w-11 bg-transparent text-center font-mono text-google-textPrimary focus:outline-none focus:text-blue-400 text-xs py-0.5">
                   <span id="compareMaxChunkBadgeA" class="text-[10px] text-google-textSecondary font-mono pr-0.5">/ 0</span>
                   <button onclick="stepCompareChunk('A', -1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="이전 청크"><i data-lucide="chevron-up" class="w-3 h-3"></i></button>
@@ -1987,7 +1983,7 @@
                 <div class="flex items-center space-x-1 bg-google-cardDark px-1.5 py-0.5 rounded-lg border border-google-borderDark text-[11px] flex-shrink-0" title="청크 번호 입력 후 Enter (또는 화살표 클릭)로 해당 청크로 바로 이동">
                   <span class="text-[10px] text-google-textSecondary font-mono font-bold">#</span>
                   <input type="number" id="compareJumpInputB" min="1" placeholder="1"
-                         onkeydown="if(event.key==='Enter') jumpCompareChunk('B', this.value)"
+                         onkeydown="if(event.key==='Enter') jumpCompareChunk('B', this.value, false)"
                          class="w-9 sm:w-11 bg-transparent text-center font-mono text-google-textPrimary focus:outline-none focus:text-purple-400 text-xs py-0.5">
                   <span id="compareMaxChunkBadgeB" class="text-[10px] text-google-textSecondary font-mono pr-0.5">/ 0</span>
                   <button onclick="stepCompareChunk('B', -1)" class="p-0.5 rounded hover:bg-zinc-700/60 text-google-textSecondary hover:text-white" title="이전 청크"><i data-lucide="chevron-up" class="w-3 h-3"></i></button>
@@ -2187,6 +2183,40 @@
       <!-- Tab 2: View, Tools, Search & Fonts (상단 바에서 분리 이동된 뷰/검색/도구 채널) -->
       <div id="panelContentTools" class="p-4 space-y-5 text-xs overflow-y-auto flex-1 hidden">
         
+        <!-- 0. 화면 컬러 테마 & 종합 설명서 -->
+        <div class="space-y-3 bg-google-cardDark/40 p-3 rounded-xl border border-google-borderDark">
+          <div class="space-y-1.5">
+            <label class="font-medium text-google-textPrimary flex items-center justify-between">
+              <span class="flex items-center space-x-1.5">
+                <i data-lucide="palette" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>화면 컬러 테마</span>
+              </span>
+            </label>
+            <select id="themeSelect" onchange="changeTheme(this.value)" class="w-full bg-google-cardDark text-google-textPrimary text-xs px-2.5 py-1.5 rounded-lg border border-google-borderDark focus:outline-none focus:border-amber-500 cursor-pointer font-medium shadow-inner">
+              <option value="dark" class="bg-zinc-900 text-white">🌙 Dark Studio</option>
+              <option value="midnight" class="bg-zinc-900 text-white">🌌 Midnight Navy</option>
+              <option value="forest" class="bg-zinc-900 text-white">🌲 Forest Emerald (눈 편함)</option>
+              <option value="nord" class="bg-zinc-900 text-white">❄️ Nordic Slate</option>
+              <option value="cyberpunk" class="bg-zinc-900 text-white">🔮 Cyberpunk Violet</option>
+              <option value="oled" class="bg-zinc-900 text-white">🖤 OLED Pure Black</option>
+              <option value="warm" class="bg-zinc-900 text-white">📜 Warm Paper (세피아)</option>
+              <option value="cleanlight" class="bg-zinc-900 text-white">☀️ Clean Studio Light</option>
+              <option value="rose" class="bg-zinc-900 text-white">🌹 Rosé Noir (와인빛 다크)</option>
+              <option value="abyss" class="bg-zinc-900 text-white">🌊 Abyss Teal (심해 청록)</option>
+              <option value="ember" class="bg-zinc-900 text-white">🔥 Amber Ember (잿불 황금)</option>
+              <option value="sakura" class="bg-zinc-900 text-white">🌸 Sakura Mist (벚꽃 라이트)</option>
+            </select>
+          </div>
+
+          <div class="pt-2 border-t border-google-borderDark/40 flex items-center justify-between">
+            <span class="text-[11px] text-google-textSecondary">도움말 및 기능 안내:</span>
+            <button onclick="openManualGuide()" class="px-2.5 py-1.5 rounded-lg bg-purple-950/70 hover:bg-purple-900 border border-purple-700/60 text-purple-300 hover:text-white text-[11px] font-semibold flex items-center space-x-1.5 transition shadow-sm cursor-pointer" title="기능 종합 사용설명서 열기 (새 창)">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>종합 사용설명서</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 1. 범위 지정 청크 검색 -->
         <div class="space-y-2 bg-google-cardDark/40 p-3 rounded-xl border border-google-borderDark">
           <label class="font-medium text-google-textPrimary flex items-center justify-between">
@@ -2425,6 +2455,40 @@
         <div class="flex items-center justify-end space-x-2 pt-2">
           <button onclick="closeCreateFolderModal()" class="px-3 py-1.5 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary">취소</button>
           <button onclick="submitCreateFolder()" class="px-4 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium shadow">폴더 생성</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Storage Folder Modal (보관함 폴더명 변경 모달 - prompt 대체) -->
+  <div id="renameFolderModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+    <div class="bg-google-surfaceDark border border-google-borderDark w-full max-w-md rounded-2xl shadow-2xl p-5 space-y-4 modal-box">
+      <div class="flex items-center justify-between border-b border-google-borderDark pb-2.5">
+        <h3 class="font-bold text-sm text-google-textPrimary flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+            <i data-lucide="folder-edit" class="w-4 h-4"></i>
+          </div>
+          <span>보관함 폴더명 변경</span>
+        </h3>
+        <button onclick="closeRenameFolderModal()" class="text-google-textSecondary hover:text-google-textPrimary p-1 rounded-lg hover:bg-google-cardDark transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="space-y-3.5 text-xs">
+        <div class="flex items-center space-x-2 bg-google-cardDark/60 p-2.5 rounded-xl border border-google-borderDark/60 text-google-textSecondary">
+          <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
+          <span id="renameFolderPathHint" class="font-mono truncate">storage/...</span>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-google-textPrimary mb-1.5">새 폴더명</label>
+          <input type="text" id="renameFolderInput" onkeydown="if(event.key==='Enter') submitRenameFolder()" placeholder="변경할 폴더명을 입력하세요" class="w-full bg-google-cardDark text-google-textPrimary px-3 py-2 rounded-xl border border-google-borderDark focus:outline-none focus:border-amber-500 font-medium text-xs shadow-inner">
+        </div>
+        <div class="flex items-center justify-end space-x-2 pt-2 border-t border-google-borderDark">
+          <button onclick="closeRenameFolderModal()" class="px-3.5 py-1.5 rounded-xl bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary text-xs transition cursor-pointer">취소</button>
+          <button onclick="submitRenameFolder()" class="px-4 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs shadow-md transition flex items-center space-x-1.5 cursor-pointer">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>변경 적용</span>
+          </button>
         </div>
       </div>
     </div>
@@ -2670,33 +2734,151 @@
     </div>
   </div>
 
-  <!-- Rename File Modal -->
-  <div id="renameModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-google-surfaceDark border border-google-borderDark w-full max-w-md rounded-xl shadow-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-google-borderDark pb-2.5">
-        <h3 class="font-semibold text-sm text-google-textPrimary flex items-center space-x-2">
-          <i data-lucide="edit-3" class="w-4 h-4 text-blue-400"></i>
-          <span>JSON 파일명 변경</span>
+  <!-- Session Info & Memo Modal (대화 세션 제목 및 메모 편집) -->
+  <div id="renameModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+    <div class="bg-google-surfaceDark border border-google-borderDark w-full max-w-lg rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-google-borderDark pb-3">
+        <h3 class="font-bold text-sm text-google-textPrimary flex items-center space-x-2">
+          <div class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+            <i data-lucide="file-edit" class="w-3.5 h-3.5"></i>
+          </div>
+          <span>대화 세션 정보 / 제목 및 메모 설정</span>
         </h3>
-        <button onclick="closeRenameModal()" class="text-google-textSecondary hover:text-google-textPrimary">
+        <button onclick="closeRenameModal()" class="text-google-textSecondary hover:text-google-textPrimary p-1 rounded-lg hover:bg-google-cardDark transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="space-y-3 text-xs">
-        <p class="text-google-textSecondary">
-          새로운 파일명을 입력하세요. (.json 확장자는 자동으로 유지됩니다)
-        </p>
+      <div class="space-y-3.5 text-xs">
+        <!-- Target Path Info & Worldview -->
+        <div class="flex items-center justify-between bg-google-cardDark/60 p-2.5 rounded-xl border border-google-borderDark/60">
+          <div class="flex items-center space-x-2 truncate min-w-0 mr-2">
+            <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
+            <span id="renameModalPathHint" class="text-[11px] font-mono text-google-textSecondary truncate">storage/...</span>
+          </div>
+          <span id="renameModalWvBadge" class="text-[10px] px-2 py-0.5 rounded-md bg-purple-950/70 border border-purple-800 text-purple-300 font-semibold flex-shrink-0">세계관: 미분류</span>
+        </div>
 
         <div>
-          <label class="block text-[11px] text-google-textSecondary mb-1">파일명</label>
-          <input type="text" id="renameModalInput" onkeydown="if(event.key==='Enter') applyRenameFile()" placeholder="새_파일명.json" class="w-full bg-google-cardDark text-google-textPrimary px-3 py-2 rounded-lg border border-google-borderDark focus:outline-none focus:border-blue-500 font-mono text-xs">
+          <label class="block text-[11px] font-semibold text-google-textPrimary mb-1.5 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="file-json" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>대화 파일명 (제목)</span>
+            </span>
+            <span class="text-[10px] text-google-textSecondary font-normal">.json 자동 유지</span>
+          </label>
+          <input type="text" id="renameModalInput" onkeydown="if(event.key==='Enter'&&!event.shiftKey) applyRenameFile()" placeholder="대화_세션_파일명.json" class="w-full bg-google-cardDark text-google-textPrimary px-3 py-2 rounded-xl border border-google-borderDark focus:outline-none focus:border-blue-500 font-mono text-xs shadow-inner">
         </div>
 
-        <div class="flex items-center justify-end space-x-2 pt-2">
-          <button onclick="closeRenameModal()" class="px-3 py-1.5 rounded-md bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary">취소</button>
-          <button onclick="applyRenameFile()" class="px-4 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium shadow">변경 적용</button>
+        <div>
+          <label class="block text-[11px] font-semibold text-google-textPrimary mb-1.5 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="sticky-note" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>세션 메모 / 줄거리 요약 (대표 문장)</span>
+            </span>
+            <span class="text-[10px] text-emerald-400 font-normal">계통도 & 브라우저 대표 문장으로 노출</span>
+          </label>
+          <textarea id="renameModalMemoInput" rows="4" placeholder="이 대화 세션에 오간 주요 내용, 줄거리, 분기점, 특이사항 등을 자유롭게 메모하세요.&#10;작성된 메모는 대화 계통도 및 세션 브라우저에서 '대표 문장'으로 최우선 표시됩니다." class="w-full bg-google-cardDark text-google-textPrimary p-3 rounded-xl border border-google-borderDark focus:outline-none focus:border-emerald-500 text-xs leading-relaxed shadow-inner resize-y"></textarea>
+          <div class="flex items-center justify-between text-[10px] text-google-textSecondary mt-1">
+            <span>💡 메모를 지우고 저장하면 기존의 첫 질문 문장으로 복귀합니다.</span>
+            <span id="renameModalMemoCharCount" class="font-mono">0자</span>
+          </div>
         </div>
+
+        <div class="flex items-center justify-end space-x-2 pt-2 border-t border-google-borderDark">
+          <button onclick="closeRenameModal()" class="px-3.5 py-1.5 rounded-xl bg-google-cardDark hover:bg-zinc-700/60 text-google-textSecondary hover:text-google-textPrimary text-xs transition">취소</button>
+          <button onclick="applyRenameFile()" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition flex items-center space-x-1.5 cursor-pointer">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>저장 및 적용</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Memo Browser Modal (파일명 + 메모 같이 떠서 JSON 고를 수 있는 전용 화면) -->
+  <div id="sessionMemoBrowserModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-google-surfaceDark border border-google-borderDark w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:px-6 sm:py-4 border-b border-google-borderDark flex items-center justify-between bg-zinc-900/60 flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-google-textPrimary flex items-center space-x-2">
+              <span>대화 세션 탐색기 & 메모 브라우저</span>
+              <span id="sessionBrowserCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">0개</span>
+            </h2>
+            <p class="text-xs text-google-textSecondary hidden sm:block">
+              파일명과 사용자가 기록한 세션 요약 메모를 한눈에 보며 대화를 선택하고 바로 열거나 비교창으로 전송하세요.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="refreshSessionMemoBrowser()" class="p-2 rounded-xl bg-google-cardDark hover:bg-zinc-700 text-google-textSecondary hover:text-white transition cursor-pointer" title="목록 새로고침">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+          <button onclick="closeSessionMemoBrowser()" class="p-2 rounded-xl bg-google-cardDark hover:bg-zinc-700 text-google-textSecondary hover:text-white transition cursor-pointer" title="닫기 (ESC)">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls Toolbar: Search, Worldview filter, Memo filter, Sort -->
+      <div class="p-3 sm:px-6 border-b border-google-borderDark bg-google-cardDark/40 flex items-center justify-between flex-wrap gap-2.5 text-xs flex-shrink-0">
+        
+        <!-- Search Input -->
+        <div class="relative flex-1 min-w-[220px]">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-google-textSecondary"></i>
+          <input type="text" id="sessionBrowserSearchInput" oninput="filterSessionBrowserItems()" placeholder="파일명 또는 세션 메모 내용으로 실시간 검색..." class="w-full bg-google-bgDark text-google-textPrimary pl-9 pr-8 py-2 rounded-xl border border-google-borderDark focus:outline-none focus:border-emerald-500 font-medium text-xs">
+          <button id="sessionBrowserClearSearch" onclick="clearSessionBrowserSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-google-textSecondary hover:text-google-textPrimary p-0.5 cursor-pointer">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+          <!-- Worldview Filter -->
+          <div class="flex items-center space-x-1.5 bg-google-bgDark px-2.5 py-1.5 rounded-xl border border-google-borderDark">
+            <i data-lucide="globe" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
+            <select id="sessionBrowserWorldviewSelect" onchange="filterSessionBrowserItems()" class="bg-transparent text-google-textPrimary text-xs focus:outline-none cursor-pointer">
+              <option value="all">전체 세계관</option>
+            </select>
+          </div>
+
+          <!-- Memo Only Toggle -->
+          <label class="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-google-bgDark border border-google-borderDark cursor-pointer hover:bg-zinc-800 transition select-none">
+            <input type="checkbox" id="sessionBrowserMemoOnlyToggle" onchange="filterSessionBrowserItems()" class="rounded border-zinc-600 text-emerald-500 focus:ring-0">
+            <span class="text-google-textPrimary text-xs">메모 있는 것만</span>
+          </label>
+
+          <!-- Sort Select -->
+          <div class="flex items-center space-x-1.5 bg-google-bgDark px-2.5 py-1.5 rounded-xl border border-google-borderDark">
+            <i data-lucide="arrow-down-up" class="w-3.5 h-3.5 text-purple-400 flex-shrink-0"></i>
+            <select id="sessionBrowserSortSelect" onchange="filterSessionBrowserItems()" class="bg-transparent text-google-textPrimary text-xs focus:outline-none cursor-pointer">
+              <option value="recent">최신 수정순</option>
+              <option value="name">파일명 오름차순</option>
+              <option value="memo_first">메모 있는 세션 우선</option>
+              <option value="size">용량 큰순</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Sessions Grid Container (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6" id="sessionBrowserContainer">
+        <!-- Cards rendered dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-google-borderDark bg-zinc-900/60 flex items-center justify-between text-xs flex-shrink-0">
+        <span class="text-google-textSecondary text-[11px]" id="sessionBrowserStatsText">
+          💡 각 세션 카드의 [열기] 버튼을 누르면 대화창으로 즉시 이동하며, [A]/[B]로 대화 비교창에 바로 꽂을 수 있습니다.
+        </span>
+        <button onclick="closeSessionMemoBrowser()" class="px-4 py-1.5 rounded-xl bg-google-cardDark hover:bg-zinc-700 text-google-textPrimary border border-google-borderDark font-medium transition cursor-pointer">
+          닫기
+        </button>
       </div>
     </div>
   </div>
@@ -3032,6 +3214,46 @@
     </div>
   </div>
 
+  <!-- Chunk Match Tracker Modal (상대 대화 일치/유사도 추적 다이얼로그) -->
+  <div id="compareMatchModal" class="hidden fixed inset-0 z-[99995] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in select-none">
+    <div class="bg-google-surfaceDark border border-google-borderDark rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-modal-enter">
+      <!-- Header -->
+      <div class="px-5 py-3.5 border-b border-google-borderDark flex items-center justify-between flex-shrink-0 bg-google-cardDark/60">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="scan-search" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-google-textPrimary">청크 상대 대화 일치/유사도 추적</h3>
+            <p class="text-[10px] text-google-textSecondary">선택한 청크가 상대 세션에 100% 일치하거나 90%+ 유사하게 존재하는지 전수 분석</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCompareMatchModal()" class="p-1 rounded-lg hover:bg-zinc-700/60 text-google-textSecondary hover:text-white transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5 overflow-y-auto space-y-4 select-text text-xs leading-relaxed flex-1 min-h-0" id="compareMatchModalBody">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 border-t border-google-borderDark bg-google-cardDark/40 flex items-center justify-between flex-shrink-0 gap-2 flex-wrap">
+        <span id="compareMatchModalMeta" class="text-[11px] font-mono text-google-textSecondary truncate"></span>
+        <div class="flex items-center space-x-2">
+          <button id="btnCompareMatchJump" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs flex items-center space-x-1.5 transition shadow cursor-pointer">
+            <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+            <span>해당 청크로 이동</span>
+          </button>
+          <button type="button" onclick="closeCompareMatchModal()" class="px-3 py-1.5 rounded-xl bg-google-cardDark hover:bg-zinc-700/60 border border-google-borderDark text-google-textSecondary hover:text-white text-xs font-medium transition cursor-pointer">
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Global In-App Confirm Dialog (화면 검은색 먹통 방지 및 완전한 인앱 모달) -->
   <div id="globalConfirmModal" class="hidden fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4">
     <div class="bg-google-surfaceDark border border-google-borderDark rounded-2xl max-w-md w-full shadow-2xl overflow-hidden p-5 space-y-4 animate-modal-enter">
@@ -3174,6 +3396,11 @@
     let currentMainView = 'feed'; // 'feed' | 'branchTree'
     let treeFuzzyThreshold = 0.85; // 오타 및 띄어쓰기 유사도 허용 기준 (기본 85%)
     let currentDiffComparisons = null;
+
+    function formatFileDisplayName(name) {
+      if (!name || typeof name !== 'string') return '';
+      return name.replace(/\.json$/i, '');
+    }
 
     function escapeHtml(str) {
       if (str == null) return '';
@@ -3555,7 +3782,7 @@
             <button onclick="event.stopPropagation(); openCreateFolderModal('${folder.path}')" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-amber-300" title="하위 폴더 추가">
               <i data-lucide="folder-plus" class="w-3 h-3"></i>
             </button>
-            <button onclick="event.stopPropagation(); renameStorageItem('${folder.path}', '${folder.name}', true)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-blue-300" title="폴더 이름 변경">
+            <button onclick="event.stopPropagation(); openRenameFolderModal('${folder.path}', '${folder.name}')" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-blue-300" title="폴더 이름 변경">
               <i data-lucide="edit-2" class="w-3 h-3"></i>
             </button>
             <button onclick="event.stopPropagation(); deleteStorageItem('${folder.path}', true)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-rose-400" title="폴더 삭제">
@@ -3612,22 +3839,33 @@
           e.dataTransfer.effectAllowed = 'copyMove';
         });
 
+        const fileMemo = file.memo || (typeof storageMemosMap !== 'undefined' ? (storageMemosMap[file.path] || storageMemosMap[file.name] || '') : '');
+        const safeMemo = escapeHtml(fileMemo);
+        const safeName = escapeHtml(file.name);
+        const safeDisplayName = escapeHtml(formatFileDisplayName(file.name));
+        const safePath = escapeHtml(file.path);
+
         fileRow.innerHTML = `
-          <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-1" onclick="handleStorageFileClick('${file.path}', '${file.name}')">
-            <i data-lucide="file-json" class="w-3.5 h-3.5 ${isCurrentActive ? 'text-blue-400' : 'text-sky-400'} flex-shrink-0"></i>
-            <span class="truncate text-[11px] leading-tight" title="${file.name}">${file.name}</span>
-            <span class="text-[9px] px-1 py-0.2 rounded bg-google-cardDark text-google-textSecondary font-mono flex-shrink-0">${file.size_formatted || ''}</span>
+          <div class="flex items-start space-x-1.5 overflow-hidden flex-1 mr-1 py-0.5" onclick="handleStorageFileClick('${safePath}', '${safeName}')">
+            <i data-lucide="file-json" class="w-3.5 h-3.5 ${isCurrentActive ? 'text-blue-400' : 'text-sky-400'} flex-shrink-0 mt-0.5"></i>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center space-x-1">
+                <span class="truncate text-[11px] leading-tight" title="${safeName}">${safeDisplayName}</span>
+                <span class="text-[9px] px-1 py-0.2 rounded bg-google-cardDark text-google-textSecondary font-mono flex-shrink-0">${file.size_formatted || ''}</span>
+              </div>
+              ${fileMemo ? `<div class="text-[10px] text-emerald-400/90 truncate font-normal leading-tight mt-0.5" title="메모: ${safeMemo}">${safeMemo}</div>` : ''}
+            </div>
           </div>
           <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0">
-            <button onclick="event.stopPropagation(); openCompareWithFile('${file.path}', '${file.name}', 'A')" class="px-1 py-0.2 rounded bg-blue-900/70 hover:bg-blue-600 text-blue-200 text-[10px] font-bold font-mono transition" title="대화 비교 [A]로 열기">A</button>
-            <button onclick="event.stopPropagation(); openCompareWithFile('${file.path}', '${file.name}', 'B')" class="px-1 py-0.2 rounded bg-purple-900/70 hover:bg-purple-600 text-purple-200 text-[10px] font-bold font-mono transition" title="대화 비교 [B]로 열기">B</button>
-            <button onclick="event.stopPropagation(); openMoveFileModal('${file.path}', '${file.name}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-sky-300" title="다른 폴더로 이동">
+            <button onclick="event.stopPropagation(); openCompareWithFile('${safePath}', '${safeName}', 'A')" class="px-1 py-0.2 rounded bg-blue-900/70 hover:bg-blue-600 text-blue-200 text-[10px] font-bold font-mono transition" title="대화 비교 [A]로 열기">A</button>
+            <button onclick="event.stopPropagation(); openCompareWithFile('${safePath}', '${safeName}', 'B')" class="px-1 py-0.2 rounded bg-purple-900/70 hover:bg-purple-600 text-purple-200 text-[10px] font-bold font-mono transition" title="대화 비교 [B]로 열기">B</button>
+            <button onclick="event.stopPropagation(); openRenameModal('${safePath}', '${safeName}')" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-emerald-300" title="제목 및 세션 메모 편집">
+              <i data-lucide="file-edit" class="w-3 h-3"></i>
+            </button>
+            <button onclick="event.stopPropagation(); openMoveFileModal('${safePath}', '${safeName}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-sky-300" title="다른 폴더로 이동">
               <i data-lucide="folder-symlink" class="w-3 h-3"></i>
             </button>
-            <button onclick="event.stopPropagation(); renameStorageItem('${file.path}', '${file.name}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-blue-300" title="파일명 변경">
-              <i data-lucide="edit-2" class="w-3 h-3"></i>
-            </button>
-            <button onclick="event.stopPropagation(); deleteStorageItem('${file.path}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-rose-400" title="파일 삭제">
+            <button onclick="event.stopPropagation(); deleteStorageItem('${safePath}', false)" class="p-0.5 rounded hover:bg-google-cardDark text-google-textSecondary hover:text-rose-400" title="파일 삭제">
               <i data-lucide="trash-2" class="w-3 h-3"></i>
             </button>
           </div>
@@ -3681,7 +3919,7 @@
         renderAll();
         renderStorageTree();
         updateCurrentFileWorldviewBadge();
-        showToast(`'${filename}' 보관함 파일을 열었습니다.`, 'folder-open');
+        showToast(`'${formatFileDisplayName(filename)}' 보관함 파일을 열었습니다.`, 'folder-open');
         if (jumpToChunk != null) {
           navigateToChunkSafely(jumpToChunk);
         }
@@ -3756,7 +3994,8 @@
 
     function openMoveFileModal(sourcePath, filename, isFromRoot = false) {
       moveFileTargetItem = { sourcePath, filename, isFromRoot };
-      document.getElementById('moveFileSourceName').textContent = filename;
+      document.getElementById('moveFileSourceName').textContent = formatFileDisplayName(filename);
+      document.getElementById('moveFileSourceName').title = filename;
       const select = document.getElementById('moveFileTargetFolderSelect');
       if (select) {
         select.innerHTML = '<option value="">📁 보관함 루트 (storage/)</option>';
@@ -3805,22 +4044,90 @@
       }
     }
 
-    async function renameStorageItem(itemPath, currentName, isFolder) {
-      const newName = prompt(`새로운 ${isFolder ? '폴더명' : '파일명'}을 입력하세요:`, currentName);
-      if (!newName || newName.trim() === currentName) return;
+    // ==========================================
+    // 폴더명 변경 모달 및 처리 (prompt 대체)
+    // ==========================================
+    let renameTargetFolder = null;
 
+    function openRenameFolderModal(folderPath, currentName) {
+      if (typeof closeStorageContextMenu === 'function') closeStorageContextMenu();
+      renameTargetFolder = { path: folderPath, name: currentName };
+      const input = document.getElementById('renameFolderInput');
+      const hint = document.getElementById('renameFolderPathHint');
+      if (hint) {
+        hint.textContent = `storage/${folderPath}`;
+      }
+      if (input) {
+        input.value = currentName;
+      }
+      document.getElementById('renameFolderModal')?.classList.remove('hidden');
+      setTimeout(() => {
+        input?.focus();
+        input?.select();
+      }, 50);
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function closeRenameFolderModal() {
+      document.getElementById('renameFolderModal')?.classList.add('hidden');
+      renameTargetFolder = null;
+    }
+
+    async function submitRenameFolder() {
+      if (!renameTargetFolder) return;
+      const input = document.getElementById('renameFolderInput');
+      const newName = (input?.value || '').trim();
+      if (!newName) {
+        showToast('변경할 폴더명을 입력해주세요.', 'alert-circle');
+        return;
+      }
+      if (newName === renameTargetFolder.name) {
+        closeRenameFolderModal();
+        return;
+      }
+
+      const oldPath = renameTargetFolder.path;
       try {
         const res = await fetch('/api/storage/rename', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ old_path: itemPath, new_name: newName.trim() })
+          body: JSON.stringify({ old_path: oldPath, new_name: newName })
         });
-        if (res.ok) {
-          showToast('이름이 성공적으로 변경되었습니다.', 'check');
-          loadStorageTree();
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || '폴더명 변경 실패', 'alert-circle');
+          return;
         }
+
+        // Update expandedFolders if the renamed folder was expanded
+        if (expandedFolders.has(oldPath)) {
+          expandedFolders.delete(oldPath);
+          const newPath = data.new_path || (oldPath.includes('/') ? oldPath.substring(0, oldPath.lastIndexOf('/') + 1) + newName : newName);
+          expandedFolders.add(newPath);
+        }
+
+        // Update activeFilePath if current file was inside this folder
+        if (activeFilePath && activeFilePath.startsWith(`storage/${oldPath}/`)) {
+          const newPath = data.new_path || (oldPath.includes('/') ? oldPath.substring(0, oldPath.lastIndexOf('/') + 1) + newName : newName);
+          activeFilePath = `storage/${newPath}/` + activeFilePath.substring(`storage/${oldPath}/`.length);
+          localStorage.setItem('ais_active_file_rel', activeFilePath);
+          const pathDisplay = document.getElementById('currentFilePathDisplay');
+          if (pathDisplay) pathDisplay.textContent = activeFilePath;
+        }
+
+        closeRenameFolderModal();
+        showToast(`폴더명이 '${newName}'(으)로 변경되었습니다.`, 'check-check');
+        await loadStorageTree();
       } catch (e) {
-        showToast('이름 변경 실패', 'alert-circle');
+        showToast('폴더명 변경 통신 오류: ' + e.message, 'alert-circle');
+      }
+    }
+
+    async function renameStorageItem(itemPath, currentName, isFolder) {
+      if (isFolder) {
+        openRenameFolderModal(itemPath, currentName);
+      } else {
+        openRenameModal(itemPath, currentName);
       }
     }
 
@@ -3956,7 +4263,7 @@
       if (!chunk) return;
 
       const srcFileEl = document.getElementById('branchOffSourceFile');
-      if (srcFileEl) srcFileEl.textContent = currentFileName;
+      if (srcFileEl) srcFileEl.textContent = formatFileDisplayName(currentFileName);
 
       const badgeEl = document.getElementById('branchOffChunkBadge');
       if (badgeEl) {
@@ -3971,7 +4278,7 @@
       }
 
       const baseName = currentFileName.replace(/\.json$/i, '');
-      const suggestedName = `${baseName}_branch_c${chunkIndex + 1}.json`;
+      const suggestedName = `${baseName}_branch_c${chunkIndex + 1}`;
       const nameInput = document.getElementById('branchOffFileNameInput');
       if (nameInput) {
         nameInput.value = suggestedName;
@@ -4173,7 +4480,7 @@
                       <div class="min-w-0 flex-1">
                         <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
                           <span class="font-bold text-google-textPrimary text-xs truncate max-w-[200px] sm:max-w-xs md:max-w-sm ${isActive ? 'text-emerald-300' : ''}" title="${escapeHtml(file.name)}">
-                            ${escapeHtml(file.name)}
+                            ${escapeHtml(formatFileDisplayName(file.name))}
                           </span>
                           
                           ${isActive ? `
@@ -4340,6 +4647,11 @@
           }
           if (data.mappings && typeof data.mappings === 'object') {
             worldviewMappings = data.mappings;
+          }
+          if (data.memos && typeof data.memos === 'object') {
+            if (typeof storageMemosMap !== 'undefined') {
+              storageMemosMap = { ...storageMemosMap, ...data.memos };
+            }
           }
           localStorage.setItem('ais_user_worldviews', JSON.stringify(userWorldviews));
           localStorage.setItem('ais_worldview_mappings', JSON.stringify(worldviewMappings));
@@ -5123,12 +5435,23 @@
                           (앞부분 <span class="font-mono tree-fork-common">${file.common_with_parent || 0}개 청크</span> 일치)
                         </span>
                       </div>
+                      ${file.memo ? `
+                        <p class="text-[11px] text-emerald-300 font-medium line-clamp-1 mt-1">
+                          <span class="font-semibold text-emerald-400 not-italic mr-1">대표 메모:</span>
+                          "${escapeHtml(file.memo)}"
+                        </p>
+                      ` : ''}
+                    ` : (file.memo ? `
+                      <p class="text-[11px] text-emerald-300 font-medium line-clamp-1">
+                        <span class="font-semibold text-emerald-400 not-italic mr-1">대표 메모:</span>
+                        "${escapeHtml(file.memo)}"
+                      </p>
                     ` : `
                       <p class="text-[11px] tree-root-prompt italic line-clamp-1">
                         <span class="font-semibold tree-root-prompt-label not-italic mr-1">시작 질문:</span>
                         "${escapeHtml(file.first_prompt || '내용 없음')}"
                       </p>
-                    `}
+                    `)}
                   </div>
 
                   <div class="flex items-center space-x-2 flex-shrink-0">
@@ -5233,10 +5556,17 @@
                     (${fam.files_count || files.length}개 세션 구성)
                   </span>
                 </div>
-                <p class="text-xs text-google-textSecondary italic line-clamp-1">
-                  <span class="tree-root-prompt-label not-italic font-semibold mr-1">공통 시작점:</span>
-                  "${escapeHtml(fam.root_prompt || '내용 없음')}"
-                </p>
+                ${fam.memo ? `
+                  <p class="text-xs text-emerald-300 font-medium line-clamp-1">
+                    <span class="not-italic font-semibold mr-1 text-emerald-400">대표 메모:</span>
+                    "${escapeHtml(fam.memo)}"
+                  </p>
+                ` : `
+                  <p class="text-xs text-google-textSecondary italic line-clamp-1">
+                    <span class="tree-root-prompt-label not-italic font-semibold mr-1">공통 시작점:</span>
+                    "${escapeHtml(fam.root_prompt || '내용 없음')}"
+                  </p>
+                `}
               </div>
 
               <div class="flex items-center space-x-2 flex-shrink-0">
@@ -5313,11 +5643,16 @@
                     #${forkDisplayTurn} 청크에서 분기
                   </span>
                 </div>
+                ${node.memo ? `<p class="text-[10px] text-emerald-300 font-medium truncate mt-0.5" title="메모: ${escapeHtml(node.memo)}">${escapeHtml(node.memo)}</p>` : ''}
+              ` : (node.memo ? `
+                <p class="text-[10px] text-emerald-300 font-medium truncate" title="대표 메모: ${escapeHtml(node.memo)}">
+                  <span class="text-emerald-400 font-semibold">대표 메모:</span> "${escapeHtml(node.memo)}"
+                </p>
               ` : `
                 <p class="text-[10px] text-google-textSecondary italic truncate">
                   "${escapeHtml(node.first_prompt || '내용 없음')}"
                 </p>
-              `}
+              `)}
             </div>
 
             <div class="flex items-center justify-between pt-1 border-t border-google-borderDark/50 text-[10px]">
@@ -5450,9 +5785,15 @@
                 ${escapeHtml(fam.title || '')}
               </h3>
 
-              <p class="text-[11px] text-google-textSecondary italic line-clamp-2 bg-black/25 p-2.5 rounded-xl border border-google-borderDark/40">
-                "${escapeHtml(fam.root_prompt || '내용 없음')}"
-              </p>
+              ${fam.memo ? `
+                <p class="text-[11px] text-emerald-300 font-medium line-clamp-2 bg-emerald-950/20 p-2.5 rounded-xl border border-emerald-800/40" title="대표 메모: ${escapeHtml(fam.memo)}">
+                  <span class="text-emerald-400 font-semibold mr-1">대표 메모:</span>"${escapeHtml(fam.memo)}"
+                </p>
+              ` : `
+                <p class="text-[11px] text-google-textSecondary italic line-clamp-2 bg-black/25 p-2.5 rounded-xl border border-google-borderDark/40">
+                  "${escapeHtml(fam.root_prompt || '내용 없음')}"
+                </p>
+              `}
 
               <!-- 포함된 대화 세션 칩 목록 (대량 세션 아코디언 제공) -->
               <div class="space-y-1.5 pt-1">
@@ -6218,6 +6559,7 @@
 
       await loadWorldviewsData();
       await checkServerMode();
+      await fetchMemosMap();
       await tryAutoLoadDefaultFile();
       if (window.location.hash === '#tree') {
         switchMainView('branchTree');
@@ -6226,6 +6568,23 @@
 
     // Alt+P: Pending Input 접기/펼치기 토글 & Ctrl+S: 즉시 저장
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const renFolderModal = document.getElementById('renameFolderModal');
+        if (renFolderModal && !renFolderModal.classList.contains('hidden')) {
+          closeRenameFolderModal();
+          return;
+        }
+        const browserModal = document.getElementById('sessionMemoBrowserModal');
+        if (browserModal && !browserModal.classList.contains('hidden')) {
+          closeSessionMemoBrowser();
+          return;
+        }
+        const renModal = document.getElementById('renameModal');
+        if (renModal && !renModal.classList.contains('hidden')) {
+          closeRenameModal();
+          return;
+        }
+      }
       if (e.altKey && (e.key === 'p' || e.key === 'P' || e.key === 'ㅔ')) {
         e.preventDefault();
         togglePendingInputCollapse();
@@ -6421,7 +6780,7 @@
             <i data-lucide="copy" class="w-3.5 h-3.5"></i>
             <span>파일 경로 복사</span>
           </button>
-          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-zinc-800 flex items-center space-x-2 text-zinc-300 transition cursor-pointer" onclick="renameStorageItem('${safePath}', '${safeName}', false); closeStorageContextMenu();">
+          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-zinc-800 flex items-center space-x-2 text-zinc-300 transition cursor-pointer" onclick="openRenameModal('${safePath}', '${safeName}'); closeStorageContextMenu();">
             <i data-lucide="edit-2" class="w-3.5 h-3.5 text-blue-300"></i>
             <span>파일명 변경</span>
           </button>
@@ -6444,7 +6803,7 @@
             <span>하위 폴더 추가</span>
           </button>
           <div class="h-px bg-zinc-800 my-1"></div>
-          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-zinc-800 flex items-center space-x-2 text-zinc-300 transition cursor-pointer" onclick="renameStorageItem('${safePath}', '${safeName}', true); closeStorageContextMenu();">
+          <button type="button" class="w-full text-left px-3 py-1.5 hover:bg-zinc-800 flex items-center space-x-2 text-zinc-300 transition cursor-pointer" onclick="openRenameFolderModal('${safePath}', '${safeName}'); closeStorageContextMenu();">
             <i data-lucide="edit-2" class="w-3.5 h-3.5 text-blue-300"></i>
             <span>폴더명 변경</span>
           </button>
@@ -6772,27 +7131,131 @@
     }
 
     // ==========================================
-    // 4. JSON 파일명 변경 기능
+    // 4. JSON 세션 정보 (제목 및 메모) 관리 기능
     // ==========================================
-    function openRenameModal() {
-      const input = document.getElementById('renameModalInput');
-      if (input) {
-        input.value = currentFileName;
-        document.getElementById('renameModal').classList.remove('hidden');
-        setTimeout(() => {
-          input.focus();
-          input.select();
-        }, 50);
+    let storageMemosMap = {};
+    let renameTargetFilePath = null;
+    let renameTargetFileName = null;
+    let openedFromSessionBrowser = false;
+
+    function openRenameModalFromBrowser(targetPath, targetName) {
+      openedFromSessionBrowser = true;
+      closeSessionMemoBrowser();
+      openRenameModal(targetPath, targetName);
+    }
+
+    async function fetchMemosMap() {
+      if (!isServerMode) return;
+      try {
+        const res = await fetch('/api/memos');
+        if (res.ok) {
+          storageMemosMap = await res.json();
+          updateCurrentFileMemoBadge();
+        }
+      } catch (e) {
+        console.warn('fetchMemosMap error:', e);
       }
     }
 
+    function getFileCategoryForPath(path, name) {
+      if (!path && !name) return '미분류';
+      const cleanRel = (path || '').replace(/^storage\//, '');
+      return worldviewMappings[cleanRel] || worldviewMappings[path] || worldviewMappings[name] || '미분류';
+    }
+
+    function updateCurrentFileMemoBadge() {
+      const badge = document.getElementById('currentFileMemoBadge');
+      if (!badge) return;
+      let memo = '';
+      if (currentData && typeof currentData.memo === 'string') {
+        memo = currentData.memo.trim();
+      }
+      if (!memo) {
+        const cleanPath = (activeFilePath || '').replace(/^storage\//, '');
+        memo = (storageMemosMap[activeFilePath] || storageMemosMap[cleanPath] || storageMemosMap[currentFileName] || '').trim();
+      }
+      if (memo) {
+        badge.textContent = memo;
+        badge.title = `세션 메모: ${memo}`;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    async function openRenameModal(targetPath = null, targetName = null) {
+      renameTargetFilePath = targetPath || activeFilePath || '';
+      renameTargetFileName = targetName || currentFileName || '';
+
+      const nameInput = document.getElementById('renameModalInput');
+      const memoInput = document.getElementById('renameModalMemoInput');
+      const pathHint = document.getElementById('renameModalPathHint');
+      const wvBadge = document.getElementById('renameModalWvBadge');
+      const charCount = document.getElementById('renameModalMemoCharCount');
+
+      if (nameInput) {
+        nameInput.value = formatFileDisplayName(renameTargetFileName);
+      }
+
+      if (pathHint) {
+        const displayPath = renameTargetFilePath ? (renameTargetFilePath.startsWith('storage/') ? renameTargetFilePath : `storage/${renameTargetFilePath}`) : '현재 열린 파일';
+        pathHint.textContent = formatFileDisplayName(displayPath);
+        pathHint.title = displayPath;
+      }
+
+      if (wvBadge) {
+        const cat = getFileCategoryForPath(renameTargetFilePath, renameTargetFileName);
+        wvBadge.textContent = `세계관: ${cat}`;
+      }
+
+      // Memo lookup
+      let existingMemo = '';
+      const isTargetActive = (!targetPath || targetPath === activeFilePath || targetName === currentFileName);
+      if (isTargetActive && currentData && typeof currentData.memo === 'string') {
+        existingMemo = currentData.memo;
+      }
+      if (!existingMemo) {
+        const cleanPath = (renameTargetFilePath || '').replace(/^storage\//, '');
+        existingMemo = storageMemosMap[renameTargetFilePath] || 
+                       storageMemosMap[cleanPath] || 
+                       storageMemosMap[renameTargetFileName] || '';
+      }
+
+      if (memoInput) {
+        memoInput.value = existingMemo;
+        if (charCount) charCount.textContent = `${existingMemo.length}자`;
+        memoInput.oninput = () => {
+          if (charCount) charCount.textContent = `${memoInput.value.length}자`;
+        };
+      }
+
+      const modal = document.getElementById('renameModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          nameInput?.focus();
+        }, 50);
+      }
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
     function closeRenameModal() {
-      document.getElementById('renameModal').classList.add('hidden');
+      document.getElementById('renameModal')?.classList.add('hidden');
+      renameTargetFilePath = null;
+      renameTargetFileName = null;
+      if (openedFromSessionBrowser) {
+        openedFromSessionBrowser = false;
+        openSessionMemoBrowser();
+      }
     }
 
     async function applyRenameFile() {
-      const input = document.getElementById('renameModalInput');
-      let newName = (input?.value || '').trim();
+      const nameInput = document.getElementById('renameModalInput');
+      const memoInput = document.getElementById('renameModalMemoInput');
+
+      let newName = (nameInput?.value || '').trim();
+      const newMemo = (memoInput?.value || '').trim();
+
       if (!newName) {
         showToast('파일명을 입력해주세요.', 'alert-circle');
         return;
@@ -6801,60 +7264,375 @@
         newName += '.json';
       }
 
-      const oldName = currentFileName;
-      if (oldName === newName) {
-        closeRenameModal();
-        return;
-      }
+      const targetPath = renameTargetFilePath || activeFilePath;
+      const oldName = renameTargetFileName || currentFileName;
+      const isCurrentActive = (!renameTargetFilePath || renameTargetFilePath === activeFilePath || renameTargetFileName === currentFileName);
 
-      if (isServerMode) {
-        try {
-          if (activeFilePath && activeFilePath.startsWith('storage/')) {
-            const relStoragePath = activeFilePath.replace(/^storage\//, '');
-            const res = await fetch('/api/storage/rename', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ old_path: relStoragePath, new_name: newName })
-            });
-            const result = await res.json();
-            if (res.ok) {
-              const lastSlash = activeFilePath.lastIndexOf('/');
-              if (lastSlash !== -1) {
-                activeFilePath = activeFilePath.substring(0, lastSlash + 1) + newName;
-              } else {
-                activeFilePath = 'storage/' + newName;
+      let finalFilePath = targetPath;
+      let finalFileName = newName;
+
+      // 1. Rename if filename changed
+      if (oldName !== newName) {
+        if (isServerMode) {
+          try {
+            if (targetPath && targetPath.startsWith('storage/')) {
+              const relStoragePath = targetPath.replace(/^storage\//, '');
+              const res = await fetch('/api/storage/rename', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_path: relStoragePath, new_name: newName })
+              });
+              if (res.ok) {
+                const lastSlash = targetPath.lastIndexOf('/');
+                finalFilePath = lastSlash !== -1 ? targetPath.substring(0, lastSlash + 1) + newName : 'storage/' + newName;
+                if (isCurrentActive) {
+                  activeFilePath = finalFilePath;
+                  currentFileName = newName;
+                  localStorage.setItem('ais_active_file_rel', finalFilePath);
+                  localStorage.setItem('ais_active_file_name', newName);
+                }
               }
-              showToast(`보관함 파일명이 '${newName}'(으)로 변경되었습니다.`, 'check-check');
-              loadStorageTree();
+            } else {
+              const res = await fetch('/api/rename', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_name: oldName, new_name: newName })
+              });
+              if (res.ok) {
+                finalFilePath = newName;
+                if (isCurrentActive) {
+                  activeFilePath = newName;
+                  currentFileName = newName;
+                  localStorage.setItem('ais_active_file_rel', newName);
+                  localStorage.setItem('ais_active_file_name', newName);
+                }
+              }
             }
-          } else {
-            const res = await fetch('/api/rename', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ old_name: oldName, new_name: newName })
-            });
-            const result = await res.json();
-            if (res.ok) {
-              showToast(`로컬 파일명이 '${newName}'(으)로 변경되었습니다.`, 'check-check');
-              activeFilePath = newName;
-              loadServerFilesList();
-              loadStorageTree();
-            }
+          } catch (e) {
+            console.warn('Server rename error', e);
           }
-        } catch (e) {
-          console.warn('Server rename error', e);
+        } else {
+          finalFileName = newName;
+          if (isCurrentActive) {
+            currentFileName = newName;
+          }
         }
       }
 
-      currentFileName = newName;
-      if (!activeFilePath.startsWith('storage/')) {
-        activeFilePath = newName;
+      // 2. Save memo via /api/memo
+      if (isServerMode) {
+        try {
+          const res = await fetch('/api/memo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: finalFilePath || finalFileName, memo: newMemo })
+          });
+          if (res.ok) {
+            const cleanRel = (finalFilePath || finalFileName).replace(/^storage\//, '');
+            storageMemosMap[cleanRel] = newMemo;
+            storageMemosMap[finalFileName] = newMemo;
+            if (finalFilePath) storageMemosMap[finalFilePath] = newMemo;
+          }
+        } catch (e) {
+          console.warn('Server memo save error', e);
+        }
       }
-      document.getElementById('currentFileName').textContent = currentFileName;
-      const pathDisplay = document.getElementById('currentFilePathDisplay');
-      if (pathDisplay) pathDisplay.textContent = activeFilePath;
+
+      // 3. Update currentData if this is active file
+      if (isCurrentActive && currentData) {
+        currentData.memo = newMemo;
+        document.getElementById('currentFileName').textContent = formatFileDisplayName(currentFileName);
+        document.getElementById('currentFileName').title = currentFileName || '불러온 파일 없음';
+        const pathDisplay = document.getElementById('currentFilePathDisplay');
+        if (pathDisplay) {
+          pathDisplay.textContent = formatFileDisplayName(activeFilePath);
+          pathDisplay.title = activeFilePath || '';
+        }
+        updateCurrentFileMemoBadge();
+      }
+
+      const wasFromBrowser = openedFromSessionBrowser;
+      openedFromSessionBrowser = false;
       closeRenameModal();
-      showToast(`파일명이 '${newName}'(으)로 설정되었습니다.`, 'check');
+      showToast(`세션 정보(제목 및 메모)가 저장되었습니다.`, 'check-check');
+
+      // 4. Refresh listings
+      await loadStorageTree();
+      if (typeof fetchBranchData === 'function') {
+        await fetchBranchData(false);
+      }
+      if (wasFromBrowser) {
+        await openSessionMemoBrowser();
+      } else if (typeof refreshSessionMemoBrowser === 'function' && !document.getElementById('sessionMemoBrowserModal')?.classList.contains('hidden')) {
+        renderSessionBrowserCards();
+      }
+    }
+
+    // ==========================================
+    // 4-B. 대화 세션 탐색기 & 메모 브라우저 (Session Browser)
+    // ==========================================
+    let sessionBrowserAllFiles = [];
+    let sessionBrowserFilteredFiles = [];
+
+    async function openSessionMemoBrowser() {
+      const modal = document.getElementById('sessionMemoBrowserModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Populate Worldview dropdown options
+      const wvSelect = document.getElementById('sessionBrowserWorldviewSelect');
+      if (wvSelect) {
+        const currentVal = wvSelect.value || 'all';
+        let optionsHtml = '<option value="all">전체 세계관</option>';
+        if (Array.isArray(userWorldviews)) {
+          userWorldviews.forEach(wv => {
+            optionsHtml += `<option value="${escapeHtml(wv)}">${escapeHtml(wv)}</option>`;
+          });
+        }
+        optionsHtml += '<option value="미분류">미분류</option>';
+        wvSelect.innerHTML = optionsHtml;
+        wvSelect.value = currentVal;
+      }
+
+      await refreshSessionMemoBrowser();
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function closeSessionMemoBrowser() {
+      document.getElementById('sessionMemoBrowserModal')?.classList.add('hidden');
+    }
+
+    async function refreshSessionMemoBrowser() {
+      const container = document.getElementById('sessionBrowserContainer');
+      if (container) {
+        container.innerHTML = `
+          <div class="py-16 text-center text-google-textSecondary">
+            <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-3 text-emerald-400"></i>
+            <p class="text-xs">보관함 세션 및 메모 데이터를 불러오는 중...</p>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      }
+
+      await fetchMemosMap();
+      if (!storageTreeData || !storageTreeData.tree) {
+        await loadStorageTree();
+      }
+
+      const filesList = [];
+      function collectFiles(node) {
+        if (!node) return;
+        if (node.files && Array.isArray(node.files)) {
+          node.files.forEach(f => {
+            const cleanRel = (f.path || f.name).replace(/^storage\//, '');
+            const memo = (f.memo || storageMemosMap[f.path] || storageMemosMap[cleanRel] || storageMemosMap[f.name] || '').trim();
+            const category = getFileCategoryForPath(f.path, f.name);
+            filesList.push({
+              ...f,
+              cleanRel,
+              memo,
+              category
+            });
+          });
+        }
+        if (node.folders && Array.isArray(node.folders)) {
+          node.folders.forEach(sub => collectFiles(sub));
+        }
+      }
+
+      if (storageTreeData && storageTreeData.tree) {
+        collectFiles(storageTreeData.tree);
+      }
+
+      sessionBrowserAllFiles = filesList;
+      filterSessionBrowserItems();
+    }
+
+    function filterSessionBrowserItems() {
+      const query = (document.getElementById('sessionBrowserSearchInput')?.value || '').trim().toLowerCase();
+      const wvFilter = document.getElementById('sessionBrowserWorldviewSelect')?.value || 'all';
+      const memoOnly = !!document.getElementById('sessionBrowserMemoOnlyToggle')?.checked;
+      const sortMode = document.getElementById('sessionBrowserSortSelect')?.value || 'recent';
+
+      const clearBtn = document.getElementById('sessionBrowserClearSearch');
+      if (clearBtn) {
+        if (query) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+
+      let list = sessionBrowserAllFiles.filter(item => {
+        if (wvFilter !== 'all') {
+          if (item.category !== wvFilter) return false;
+        }
+        if (memoOnly) {
+          if (!item.memo || !item.memo.trim()) return false;
+        }
+        if (query) {
+          const matchName = (item.name || '').toLowerCase().includes(query);
+          const matchMemo = (item.memo || '').toLowerCase().includes(query);
+          const matchPath = (item.path || '').toLowerCase().includes(query);
+          const matchWv = (item.category || '').toLowerCase().includes(query);
+          if (!matchName && !matchMemo && !matchPath && !matchWv) return false;
+        }
+        return true;
+      });
+
+      if (sortMode === 'recent') {
+        list.sort((a, b) => (b.mtime || 0) - (a.mtime || 0));
+      } else if (sortMode === 'name') {
+        list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      } else if (sortMode === 'memo_first') {
+        list.sort((a, b) => {
+          const aHas = (a.memo && a.memo.trim()) ? 1 : 0;
+          const bHas = (b.memo && b.memo.trim()) ? 1 : 0;
+          if (aHas !== bHas) return bHas - aHas;
+          return (b.mtime || 0) - (a.mtime || 0);
+        });
+      } else if (sortMode === 'size') {
+        list.sort((a, b) => (b.size || 0) - (a.size || 0));
+      }
+
+      sessionBrowserFilteredFiles = list;
+      renderSessionBrowserCards();
+    }
+
+    function clearSessionBrowserSearch() {
+      const input = document.getElementById('sessionBrowserSearchInput');
+      if (input) {
+        input.value = '';
+        filterSessionBrowserItems();
+        input.focus();
+      }
+    }
+
+    function renderSessionBrowserCards() {
+      const container = document.getElementById('sessionBrowserContainer');
+      const countBadge = document.getElementById('sessionBrowserCountBadge');
+      const statsText = document.getElementById('sessionBrowserStatsText');
+
+      const totalCount = sessionBrowserAllFiles.length;
+      const filteredCount = sessionBrowserFilteredFiles.length;
+      const memoCount = sessionBrowserAllFiles.filter(f => f.memo && f.memo.trim()).length;
+
+      if (countBadge) {
+        countBadge.textContent = `${filteredCount} / ${totalCount}개`;
+      }
+      if (statsText) {
+        statsText.innerHTML = `전체 <strong>${totalCount}개</strong> 대화 세션 중 메모 등록: <strong class="text-emerald-400">${memoCount}개</strong> (현재 검색 결과: <strong>${filteredCount}개</strong>)`;
+      }
+
+      if (!container) return;
+
+      if (filteredCount === 0) {
+        container.innerHTML = `
+          <div class="py-16 text-center text-google-textSecondary space-y-2">
+            <i data-lucide="folder-search" class="w-10 h-10 mx-auto text-zinc-600 mb-2"></i>
+            <p class="text-sm font-semibold text-google-textPrimary">검색 조건에 맞는 대화 세션이 없습니다.</p>
+            <p class="text-xs text-zinc-500">검색어를 변경하거나 '메모 있는 것만' 필터를 해제해보세요.</p>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        return;
+      }
+
+      let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">';
+
+      sessionBrowserFilteredFiles.forEach(file => {
+        const isActive = (
+          (activeFilePath === `storage/${file.path}`) || 
+          (activeFilePath === file.path) || 
+          (currentFileName === file.name && activeFilePath.endsWith(file.name))
+        );
+
+        const safeName = escapeHtml(file.name);
+        const safePath = escapeHtml(file.path);
+        const safeCat = escapeHtml(file.category || '미분류');
+        const safeMemo = escapeHtml(file.memo || '');
+
+        let catClass = 'bg-purple-950/80 text-purple-300 border border-purple-700/70';
+        if (file.category === '미분류') {
+          catClass = 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/60';
+        }
+
+        html += `
+          <div class="session-browser-card bg-google-surfaceDark hover:bg-google-cardDark/90 border ${isActive ? 'border-blue-500 shadow-lg shadow-blue-900/20' : 'border-google-borderDark hover:border-zinc-500/70'} rounded-2xl p-4 transition duration-150 flex flex-col justify-between space-y-3 group shadow">
+            
+            <!-- Header: Worldview tag & Meta -->
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] px-2 py-0.5 rounded-lg font-semibold truncate max-w-[150px] ${catClass}" title="세계관: ${safeCat}">
+                🌍 ${safeCat}
+              </span>
+              <div class="flex items-center space-x-1.5 text-[10px] text-google-textSecondary font-mono flex-shrink-0">
+                <span>${file.size_formatted || ''}</span>
+                ${file.mtime_formatted ? `<span>•</span><span>${file.mtime_formatted}</span>` : ''}
+              </div>
+            </div>
+
+            <!-- Title / Filename -->
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="file-json" class="w-4 h-4 ${isActive ? 'text-blue-400' : 'text-sky-400'} flex-shrink-0"></i>
+                <h3 class="font-bold text-xs sm:text-sm text-google-textPrimary group-hover:text-blue-300 transition truncate cursor-pointer flex-1" onclick="openSessionFromBrowser('${safePath}', '${safeName}')" title="${safeName}">
+                  ${escapeHtml(formatFileDisplayName(file.name))}
+                </h3>
+                ${isActive ? `<span class="text-[9px] px-1.5 py-0.2 rounded-md bg-blue-950 text-blue-300 border border-blue-800 font-semibold flex-shrink-0">현재 열림</span>` : ''}
+              </div>
+              <div class="text-[10px] font-mono text-zinc-500 truncate" title="storage/${safePath}">
+                📁 storage/${escapeHtml(formatFileDisplayName(file.path))}
+              </div>
+            </div>
+
+            <!-- Memo Area (대표 문장) -->
+            <div class="flex-1 min-h-[68px]">
+              ${file.memo ? `
+                <div class="p-2.5 rounded-xl bg-emerald-950/25 border border-emerald-800/40 text-emerald-200 text-xs leading-relaxed max-h-32 overflow-y-auto cursor-pointer hover:border-emerald-500/60 hover:bg-emerald-950/40 transition group/memo" onclick="openRenameModalFromBrowser('${safePath}', '${safeName}')" title="클릭하여 세션 메모 수정">
+                  <div class="flex items-center justify-between text-[10px] text-emerald-400 font-semibold mb-1">
+                    <span class="flex items-center space-x-1">
+                      <i data-lucide="sticky-note" class="w-3 h-3"></i>
+                      <span>세션 메모 / 줄거리 요약</span>
+                    </span>
+                    <i data-lucide="edit-2" class="w-2.5 h-2.5 opacity-0 group-hover/memo:opacity-100 transition"></i>
+                  </div>
+                  <div class="whitespace-pre-line text-[11px] text-emerald-200/90 font-sans">${safeMemo}</div>
+                </div>
+              ` : `
+                <div class="p-3 rounded-xl bg-zinc-900/40 border border-dashed border-zinc-700/60 text-zinc-500 text-xs flex items-center justify-between cursor-pointer hover:border-emerald-600/60 hover:bg-emerald-950/15 hover:text-emerald-300 transition group/empty" onclick="openRenameModalFromBrowser('${safePath}', '${safeName}')" title="클릭하여 세션 메모 작성">
+                  <span class="text-[11px] italic">(작성된 세션 메모 없음 - 클릭하여 작성)</span>
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-zinc-600 group-hover/empty:text-emerald-400 transition"></i>
+                </div>
+              `}
+            </div>
+
+            <!-- Actions Footer -->
+            <div class="pt-2 border-t border-google-borderDark/60 flex items-center justify-between gap-1.5">
+              <div class="flex items-center space-x-1">
+                <button onclick="openCompareWithFile('${safePath}', '${safeName}', 'A'); closeSessionMemoBrowser();" class="px-2 py-1 rounded-lg bg-blue-950/80 hover:bg-blue-700 text-blue-200 text-[10px] font-mono font-bold border border-blue-800 transition cursor-pointer" title="대화 비교 [A] 창으로 열기">비교 A</button>
+                <button onclick="openCompareWithFile('${safePath}', '${safeName}', 'B'); closeSessionMemoBrowser();" class="px-2 py-1 rounded-lg bg-purple-950/80 hover:bg-purple-700 text-purple-200 text-[10px] font-mono font-bold border border-purple-800 transition cursor-pointer" title="대화 비교 [B] 창으로 열기">비교 B</button>
+                <button onclick="openRenameModalFromBrowser('${safePath}', '${safeName}')" class="p-1 rounded-lg hover:bg-zinc-800 text-google-textSecondary hover:text-emerald-400 transition cursor-pointer" title="세션 제목 및 메모 편집">
+                  <i data-lucide="file-edit" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <button onclick="openSessionFromBrowser('${safePath}', '${safeName}')" class="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center space-x-1 transition shadow-sm cursor-pointer">
+                <span>대화 열기</span>
+                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    async function openSessionFromBrowser(path, name) {
+      closeSessionMemoBrowser();
+      if (currentMainView !== 'feed') {
+        await switchMainView('feed');
+      }
+      await loadStorageFile(path, name);
     }
 
     // ==========================================
@@ -7294,9 +8072,13 @@
     // 7. 전체 렌더링
     // ==========================================
     function renderAll() {
-      document.getElementById('currentFileName').textContent = currentFileName;
+      document.getElementById('currentFileName').textContent = formatFileDisplayName(currentFileName);
+      document.getElementById('currentFileName').title = currentFileName || '불러온 파일 없음';
       const pathDisplay = document.getElementById('currentFilePathDisplay');
-      if (pathDisplay) pathDisplay.textContent = activeFilePath || currentFileName;
+      if (pathDisplay) {
+        pathDisplay.textContent = formatFileDisplayName(activeFilePath || currentFileName);
+        pathDisplay.title = activeFilePath || currentFileName || '';
+      }
       renderSettings();
       renderChunks();
       renderPendingInput();
@@ -7304,6 +8086,7 @@
       updateCollapseLabels();
       updateBranchBadge();
       updateCurrentFileWorldviewBadge();
+      updateCurrentFileMemoBadge();
       lucide.createIcons();
     }
 
@@ -7411,7 +8194,7 @@
       if (hasChildren) {
         const count = lineage.all_descendants_count;
         const descendants = lineage.all_descendants || [];
-        const childNames = descendants.map(d => d.name).slice(0, 3).join(', ') + (count > 3 ? ` 외 ${count - 3}개` : '');
+        const childNames = descendants.map(d => formatFileDisplayName(d.name)).slice(0, 3).join(', ') + (count > 3 ? ` 외 ${count - 3}개` : '');
 
         innerHtml += `
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-xl bg-purple-900/30 border border-purple-700/60 text-xs">
@@ -7459,7 +8242,7 @@
                 <!-- 1행: 부모 파일명 + 상태 배지 (줄바꿈 방지 및 자동 축약) -->
                 <div class="flex items-center flex-wrap gap-1.5">
                   <span class="font-bold ${hasModifiedParent ? 'text-amber-200' : 'text-purple-100'} truncate max-w-[200px] sm:max-w-xs md:max-w-sm" title="상위 부모: '${escapeHtml(directParent.name)}'">
-                    상위 부모: '${escapeHtml(directParent.name)}'
+                    상위 부모: '${escapeHtml(formatFileDisplayName(directParent.name))}'
                   </span>
                   ${hasModifiedParent ? `
                     <span class="px-2 py-0.5 rounded-full bg-amber-900/90 text-amber-200 border border-amber-500 text-[10px] font-bold animate-pulse flex-shrink-0 flex items-center space-x-1">
@@ -7649,7 +8432,7 @@
             <div class="h-px bg-gradient-to-r from-transparent via-emerald-600/40 to-transparent flex-1"></div>
             <div class="px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-600/60 text-emerald-200 text-[11px] font-bold flex items-center space-x-1.5 shadow-lg backdrop-blur-md">
               <i data-lucide="git-branch" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span>여기서부터 '${escapeHtml(currentFileName)}' 파일만의 고유 대화 (#${ownStartIndex + 1} ~ #${chunks.length})</span>
+              <span>여기서부터 '${escapeHtml(formatFileDisplayName(currentFileName))}' 파일만의 고유 대화 (#${ownStartIndex + 1} ~ #${chunks.length})</span>
             </div>
             <div class="h-px bg-gradient-to-r from-transparent via-emerald-600/40 to-transparent flex-1"></div>
           `;
@@ -9011,7 +9794,10 @@
     function updateSearchSessionMeta() {
       const curFileEl = document.getElementById('searchSessionCurrentFileDisplay');
       const curWvEl = document.getElementById('searchSessionWorldviewDisplay');
-      if (curFileEl) curFileEl.textContent = currentFileName || activeFilePath || '선택된 파일 없음';
+      if (curFileEl) {
+        curFileEl.textContent = formatFileDisplayName(currentFileName || activeFilePath || '선택된 파일 없음');
+        curFileEl.title = currentFileName || activeFilePath || '';
+      }
       if (curWvEl) curWvEl.textContent = getCurrentFileCategory();
     }
 
@@ -9163,7 +9949,7 @@
                   <div class="flex items-center space-x-2 min-w-0 flex-1 mr-2">
                     <i data-lucide="file-json" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
                     <span class="font-bold text-xs text-google-textPrimary group-hover:text-emerald-300 truncate" title="${safeName}">
-                      ${safeName}
+                      ${escapeHtml(formatFileDisplayName(item.filename))}
                     </span>
                   </div>
                   <span class="px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800 font-mono text-[10px] flex-shrink-0">
@@ -9809,7 +10595,7 @@
             <div class="flex items-center space-x-2.5 min-w-0 flex-1 mr-2">
               <i data-lucide="file-json" class="w-4 h-4 text-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-400 flex-shrink-0"></i>
               <div class="min-w-0">
-                <p class="text-xs font-semibold text-google-textPrimary group-hover:text-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-300 truncate">${escapeHtml(f.name)}</p>
+                <p class="text-xs font-semibold text-google-textPrimary group-hover:text-${activePickerTargetPane === 'A' ? 'blue' : 'purple'}-300 truncate" title="${escapeHtml(f.name)}">${escapeHtml(formatFileDisplayName(f.name))}</p>
                 ${folder ? `<p class="text-[10px] font-mono text-google-textSecondary opacity-75 truncate">📁 ${escapeHtml(folder)}</p>` : ''}
               </div>
             </div>
@@ -9928,14 +10714,18 @@
       }
     }
 
-    // 청크 번호 직접 입력 점프 및 스텝 이동
-    function jumpCompareChunk(pane, val) {
+    // 청크 번호 직접 입력 점프 및 스텝 이동 (각 창 독립 이동 - 상대 창 간섭 없음)
+    function jumpCompareChunk(pane, val, syncOther = false) {
       const targetNum = parseInt(val, 10);
       if (isNaN(targetNum) || targetNum < 1) return;
       const chunkIdx = targetNum - 1;
       const card = document.getElementById(`compareCard_${pane}_${chunkIdx}`);
       const feed = document.getElementById(`compareFeed${pane}`);
       if (card && feed) {
+        // 동시 스크롤 핸들러 간섭 방지
+        if (pane === 'A') isSyncingScrollA = true;
+        if (pane === 'B') isSyncingScrollB = true;
+
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         card.classList.add('ring-2', 'ring-amber-400');
         setTimeout(() => {
@@ -9945,20 +10735,30 @@
         const input = document.getElementById(`compareJumpInput${pane}`);
         if (input) input.value = targetNum;
 
-        // 동시 스크롤 켜져있을 경우 상대 창의 동일 번호 청크로도 함께 이동
-        if (isCompareSyncScroll) {
-          const otherPane = (pane === 'A') ? 'B' : 'A';
-          const otherCard = document.getElementById(`compareCard_${otherPane}_${chunkIdx}`);
-          if (otherCard) {
-            otherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            otherCard.classList.add('ring-2', 'ring-amber-400');
-            setTimeout(() => {
-              otherCard.classList.remove('ring-2', 'ring-amber-400');
-            }, 1200);
+        // ONLY when syncOther is explicitly true (상단 동일 이동 버튼에서만 상대 창 동반 이동)
+        if (syncOther) {
+          const syncInput = document.getElementById('compareSyncJumpInput');
+          if (syncInput) syncInput.value = targetNum;
+
+          if (isCompareSyncScroll) {
+            const otherPane = (pane === 'A') ? 'B' : 'A';
+            const otherCard = document.getElementById(`compareCard_${otherPane}_${chunkIdx}`);
+            if (otherCard) {
+              otherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              otherCard.classList.add('ring-2', 'ring-amber-400');
+              setTimeout(() => {
+                otherCard.classList.remove('ring-2', 'ring-amber-400');
+              }, 1200);
+            }
+            const otherInput = document.getElementById(`compareJumpInput${otherPane}`);
+            if (otherInput) otherInput.value = targetNum;
           }
-          const otherInput = document.getElementById(`compareJumpInput${otherPane}`);
-          if (otherInput) otherInput.value = targetNum;
         }
+
+        setTimeout(() => {
+          isSyncingScrollA = false;
+          isSyncingScrollB = false;
+        }, 600);
       } else {
         showToast(`[${pane}] #${targetNum} 청크를 찾을 수 없습니다.`, 'alert-circle');
       }
@@ -9972,13 +10772,411 @@
       const max = data?.chunkedPrompt?.chunks?.length || 1;
       let next = Math.max(1, Math.min(max, cur + delta));
       input.value = next;
-      jumpCompareChunk(pane, next);
+      jumpCompareChunk(pane, next, false);
+    }
+
+    // 좌/우 대화 모두 동일한 번호로 동시 이동 (내용이 다르더라도 같은 청크 번호로 동시 점프)
+    function jumpCompareBothPanes(val) {
+      const targetNum = parseInt(val, 10);
+      if (isNaN(targetNum) || targetNum < 1) {
+        showToast('이동할 청크 번호를 1 이상의 숫자로 입력하세요.', 'alert-circle');
+        return;
+      }
+      const chunkIdx = targetNum - 1;
+
+      // 동시 스크롤의 비율 기반 스크롤 핸들러 간섭 방지
+      isSyncingScrollA = true;
+      isSyncingScrollB = true;
+
+      const feedA = document.getElementById('compareFeedA');
+      const feedB = document.getElementById('compareFeedB');
+      const cardA = document.getElementById(`compareCard_A_${chunkIdx}`);
+      const cardB = document.getElementById(`compareCard_B_${chunkIdx}`);
+
+      let foundA = false;
+      let foundB = false;
+
+      if (cardA && feedA) {
+        cardA.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        cardA.classList.add('ring-2', 'ring-amber-400');
+        setTimeout(() => cardA.classList.remove('ring-2', 'ring-amber-400'), 1500);
+        foundA = true;
+      } else if (feedA && compareDataA?.chunkedPrompt?.chunks?.length) {
+        const maxA = compareDataA.chunkedPrompt.chunks.length;
+        const fallbackA = document.getElementById(`compareCard_A_${maxA - 1}`);
+        if (fallbackA) {
+          fallbackA.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          fallbackA.classList.add('ring-2', 'ring-amber-400');
+          setTimeout(() => fallbackA.classList.remove('ring-2', 'ring-amber-400'), 1500);
+        }
+      }
+
+      if (cardB && feedB) {
+        cardB.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        cardB.classList.add('ring-2', 'ring-amber-400');
+        setTimeout(() => cardB.classList.remove('ring-2', 'ring-amber-400'), 1500);
+        foundB = true;
+      } else if (feedB && compareDataB?.chunkedPrompt?.chunks?.length) {
+        const maxB = compareDataB.chunkedPrompt.chunks.length;
+        const fallbackB = document.getElementById(`compareCard_B_${maxB - 1}`);
+        if (fallbackB) {
+          fallbackB.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          fallbackB.classList.add('ring-2', 'ring-amber-400');
+          setTimeout(() => fallbackB.classList.remove('ring-2', 'ring-amber-400'), 1500);
+        }
+      }
+
+      // 입력란 및 각 패널 개별 입력창 값 동기화
+      const syncInput = document.getElementById('compareSyncJumpInput');
+      if (syncInput) syncInput.value = targetNum;
+      const inputA = document.getElementById('compareJumpInputA');
+      if (inputA) inputA.value = targetNum;
+      const inputB = document.getElementById('compareJumpInputB');
+      if (inputB) inputB.value = targetNum;
+
+      // 부드러운 스크롤 완료 후 스크롤 잠금 해제
+      setTimeout(() => {
+        isSyncingScrollA = false;
+        isSyncingScrollB = false;
+      }, 600);
+
+      if (foundA && foundB) {
+        showToast(`좌/우 대화 모두 #${targetNum} 청크로 이동했습니다.`, 'crosshair');
+      } else if (foundA) {
+        showToast(`[A] #${targetNum} 청크로 이동했습니다. ([B]는 최대 ${compareDataB?.chunkedPrompt?.chunks?.length || 0}개)`, 'crosshair');
+      } else if (foundB) {
+        showToast(`[B] #${targetNum} 청크로 이동했습니다. ([A]는 최대 ${compareDataA?.chunkedPrompt?.chunks?.length || 0}개)`, 'crosshair');
+      } else {
+        showToast(`#${targetNum} 청크를 찾을 수 없습니다.`, 'alert-circle');
+      }
+    }
+
+    function stepCompareBothPanes(delta) {
+      const input = document.getElementById('compareSyncJumpInput');
+      const cur = parseInt(input?.value || '1', 10);
+      const maxA = compareDataA?.chunkedPrompt?.chunks?.length || 1;
+      const maxB = compareDataB?.chunkedPrompt?.chunks?.length || 1;
+      const max = Math.max(maxA, maxB);
+      let next = Math.max(1, Math.min(max, (isNaN(cur) ? 1 : cur) + delta));
+      if (input) input.value = next;
+      jumpCompareBothPanes(next);
+    }
+
+    // 두 텍스트 간 종합 유사도 계산 (정확 일치, 공백 정규화, 글자 2-gram + 단어 토큰 결합)
+    function computeChunkSimilarity(textA, textB) {
+      if (!textA || !textB) return 0;
+      const tA = textA.trim();
+      const tB = textB.trim();
+      if (tA === tB) return 1.0;
+
+      // 공백 및 줄바꿈 정규화
+      const nA = tA.replace(/\s+/g, ' ');
+      const nB = tB.replace(/\s+/g, ' ');
+      if (nA === nB) return 0.99;
+
+      const lenA = nA.length;
+      const lenB = nB.length;
+      if (lenA === 0 || lenB === 0) return 0;
+
+      // 1. 글자 2-gram Dice 유사도
+      const bgMapA = new Map();
+      for (let i = 0; i < lenA - 1; i++) {
+        const bg = nA.substring(i, i + 2);
+        bgMapA.set(bg, (bgMapA.get(bg) || 0) + 1);
+      }
+      let charMatches = 0;
+      for (let i = 0; i < lenB - 1; i++) {
+        const bg = nB.substring(i, i + 2);
+        const count = bgMapA.get(bg) || 0;
+        if (count > 0) {
+          charMatches++;
+          bgMapA.set(bg, count - 1);
+        }
+      }
+      const charDice = (lenA + lenB > 2) ? (2.0 * charMatches) / ((lenA - 1) + (lenB - 1)) : 0;
+
+      // 2. 단어 토큰 Dice 유사도
+      const wordsA = nA.split(' ');
+      const wordsB = nB.split(' ');
+      const wordMapA = new Map();
+      wordsA.forEach(w => wordMapA.set(w, (wordMapA.get(w) || 0) + 1));
+      let wordMatches = 0;
+      wordsB.forEach(w => {
+        const count = wordMapA.get(w) || 0;
+        if (count > 0) {
+          wordMatches++;
+          wordMapA.set(w, count - 1);
+        }
+      });
+      const wordDice = (wordsA.length + wordsB.length > 0)
+        ? (2.0 * wordMatches) / (wordsA.length + wordsB.length)
+        : 0;
+
+      // 3. 결합 가중치 (글자 바이그램 60% + 단어 토큰 40%)
+      const combined = (charDice * 0.6) + (wordDice * 0.4);
+      return Math.min(0.99, Math.max(0, combined));
+    }
+
+    // 두 대화 창의 대응되는 청크 쌍을 나란히 화면 중앙에 정렬 (A는 sourceIndex 유지, B는 targetIndex로 이동하여 서로 같은 내용이 나란히 보이도록 보장)
+    function alignMatchedChunks(sourcePane, sourceIndex, otherPane, targetIndex, sim = 1.0) {
+      isSyncingScrollA = true;
+      isSyncingScrollB = true;
+
+      const sourceCard = document.getElementById(`compareCard_${sourcePane}_${sourceIndex}`);
+      const otherCard = document.getElementById(`compareCard_${otherPane}_${targetIndex}`);
+
+      const ringClass = (sim >= 0.99) ? 'ring-emerald-400' : (sim >= 0.88 ? 'ring-amber-400' : 'ring-purple-400');
+
+      if (sourceCard) {
+        sourceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        sourceCard.classList.add('ring-4', ringClass);
+        setTimeout(() => sourceCard.classList.remove('ring-4', ringClass), 2500);
+      }
+      if (otherCard) {
+        otherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        otherCard.classList.add('ring-4', ringClass);
+        setTimeout(() => otherCard.classList.remove('ring-4', ringClass), 2500);
+      }
+
+      // 각 창의 개별 점프 입력란에 각자의 실제 청크 번호 독립 업데이트 (상대 창 번호로 덮어쓰지 않음)
+      const inputSource = document.getElementById(`compareJumpInput${sourcePane}`);
+      if (inputSource) inputSource.value = sourceIndex + 1;
+      const inputOther = document.getElementById(`compareJumpInput${otherPane}`);
+      if (inputOther) inputOther.value = targetIndex + 1;
+
+      // 동시 스크롤 핸들러 간섭 방지 시간 유지
+      setTimeout(() => {
+        isSyncingScrollA = false;
+        isSyncingScrollB = false;
+      }, 700);
+
+      showToast(`[${sourcePane}] #${sourceIndex + 1} ↔ [${otherPane}] #${targetIndex + 1} 일치 청크 쌍 나란히 정렬 완료`, 'check-circle');
+    }
+
+    // 상대 대화(Opposite Pane)에서 특정 청크의 100% 완전 일치 또는 90%+ 유사 청크 추적
+    function findChunkMatchInOpposite(sourcePane, sourceIndex) {
+      const sourceData = (sourcePane === 'A') ? compareDataA : compareDataB;
+      const otherPane = (sourcePane === 'A') ? 'B' : 'A';
+      const otherData = (sourcePane === 'A') ? compareDataB : compareDataA;
+
+      const sourceChunks = sourceData?.chunkedPrompt?.chunks || [];
+      const otherChunks = otherData?.chunkedPrompt?.chunks || [];
+
+      if (!otherChunks.length) {
+        showToast(`상대 대화 [${otherPane}]에 비교할 청크가 없습니다.`, 'alert-circle');
+        return;
+      }
+
+      const sourceChunk = sourceChunks[sourceIndex];
+      if (!sourceChunk || !sourceChunk.text) {
+        showToast('선택한 청크의 내용이 비어 있습니다.', 'alert-circle');
+        return;
+      }
+
+      const sourceText = sourceChunk.text;
+      let bestSim = 0;
+      let bestIdx = -1;
+      const exactMatches = [];
+      const highMatches = []; // 88%+ (실질 90%대) matches
+
+      otherChunks.forEach((targetChunk, j) => {
+        const sim = computeChunkSimilarity(sourceText, targetChunk.text || '');
+        if (sim >= 0.99) {
+          exactMatches.push({ index: j, sim: 1.0 });
+        } else if (sim >= 0.88) {
+          highMatches.push({ index: j, sim });
+        }
+        if (sim > bestSim) {
+          bestSim = sim;
+          bestIdx = j;
+        }
+      });
+
+      // 모달에 상세 분석 결과 표시 (추적 버튼 클릭 시 즉시 상대 창으로 이동하지 않고, 모달 내 하단 버튼을 눌렀을 때만 이동하도록 보장)
+      openCompareMatchModal({
+        sourcePane,
+        sourceIndex,
+        sourceChunk,
+        otherPane,
+        otherChunks,
+        bestSim,
+        bestIdx,
+        exactMatches,
+        highMatches
+      });
+
+      // 안내 토스트 메시지
+      const pct = Math.round(bestSim * 100);
+      if (bestSim >= 0.99) {
+        showToast(`🎉 [${otherPane}] #${bestIdx + 1}번과 100% 완전 일치 발견! (하단 버튼으로 이동 가능)`, 'check-circle');
+      } else if (bestSim >= 0.88) {
+        showToast(`✨ [${otherPane}] #${bestIdx + 1}번과 ${pct}% 유사 일치 발견! (하단 버튼으로 이동 가능)`, 'sparkles');
+      } else if (bestSim >= 0.60) {
+        showToast(`🔍 [${otherPane}] #${bestIdx + 1}번과 부분 유사 (${pct}%)합니다.`, 'search');
+      } else {
+        showToast(`❌ [${otherPane}]에 존재하지 않는 새로운 청크입니다. (최고 유사도: ${pct}%)`, 'alert-triangle');
+      }
+    }
+
+    function openCompareMatchModal(info) {
+      const {
+        sourcePane,
+        sourceIndex,
+        sourceChunk,
+        otherPane,
+        otherChunks,
+        bestSim,
+        bestIdx,
+        exactMatches,
+        highMatches
+      } = info;
+
+      const modal = document.getElementById('compareMatchModal');
+      const body = document.getElementById('compareMatchModalBody');
+      const meta = document.getElementById('compareMatchModalMeta');
+      const jumpBtn = document.getElementById('btnCompareMatchJump');
+      if (!modal || !body) return;
+
+      const pct = Math.round(bestSim * 100);
+      const isExact = (bestSim >= 0.99);
+      const isHigh = (!isExact && bestSim >= 0.88);
+      const isPartial = (!isExact && !isHigh && bestSim >= 0.60);
+      const isNotFound = (bestSim < 0.60);
+
+      // 1. 상태 배너 구성
+      let bannerHtml = '';
+      if (isExact) {
+        bannerHtml = `
+          <div class="p-4 rounded-xl bg-emerald-950/70 border border-emerald-600/70 flex items-start space-x-3 text-emerald-200">
+            <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 flex-shrink-0 mt-0.5">
+              <i data-lucide="check-check" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/30 text-emerald-300 border border-emerald-400/40">100% 완전 일치</span>
+                <h4 class="text-sm font-bold text-white">상대 대화 [${otherPane}] #${bestIdx + 1}번에 동일한 내용이 존재합니다!</h4>
+              </div>
+              <p class="text-xs text-emerald-300/90 mt-1 leading-relaxed">
+                💡 세션 진행 중 다른 질문이나 청크가 중간에 삽입/삭제되어 <strong>번호 인덱스(#${sourceIndex + 1} ➔ #${bestIdx + 1})만 밀렸을 뿐</strong>, 대화 본문 내용은 100% 동일합니다.
+              </p>
+              ${exactMatches.length > 1 ? `<p class="text-[11px] text-emerald-400 mt-1 font-mono">※ 동일 내용 청크가 총 ${exactMatches.length}개 발견됨: #${exactMatches.map(m => m.index + 1).join(', #')}</p>` : ''}
+            </div>
+          </div>
+        `;
+      } else if (isHigh) {
+        bannerHtml = `
+          <div class="p-4 rounded-xl bg-amber-950/70 border border-amber-600/70 flex items-start space-x-3 text-amber-200">
+            <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 flex-shrink-0 mt-0.5">
+              <i data-lucide="sparkles" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/30 text-amber-300 border border-amber-400/40">${pct}% 유사 일치</span>
+                <h4 class="text-sm font-bold text-white">상대 대화 [${otherPane}] #${bestIdx + 1}번 청크와 거의 일치합니다!</h4>
+              </div>
+              <p class="text-xs text-amber-300/90 mt-1 leading-relaxed">
+                💡 전체 문맥과 핵심 골격이 거의 동일하며, <strong>일부 단어 수정이나 문장 추가/다듬기</strong>가 진행된 상태입니다.
+              </p>
+            </div>
+          </div>
+        `;
+      } else if (isPartial) {
+        bannerHtml = `
+          <div class="p-4 rounded-xl bg-purple-950/70 border border-purple-600/70 flex items-start space-x-3 text-purple-200">
+            <div class="p-2 rounded-lg bg-purple-500/20 text-purple-400 flex-shrink-0 mt-0.5">
+              <i data-lucide="file-question" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-500/30 text-purple-300 border border-purple-400/40">${pct}% 부분 유사</span>
+                <h4 class="text-sm font-bold text-white">상대 대화 [${otherPane}] #${bestIdx + 1}번과 부분적으로 유사합니다.</h4>
+              </div>
+              <p class="text-xs text-purple-300/90 mt-1 leading-relaxed">
+                💡 같은 주제나 키워드를 다루고 있으나 문장 구성에 상당한 차이가 있습니다.
+              </p>
+            </div>
+          </div>
+        `;
+      } else {
+        bannerHtml = `
+          <div class="p-4 rounded-xl bg-rose-950/70 border border-rose-600/70 flex items-start space-x-3 text-rose-200">
+            <div class="p-2 rounded-lg bg-rose-500/20 text-rose-400 flex-shrink-0 mt-0.5">
+              <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/30 text-rose-300 border border-rose-400/40">일치 내용 없음</span>
+                <h4 class="text-sm font-bold text-white">상대 대화 [${otherPane}]에 존재하지 않는 완전히 새로운 내용입니다!</h4>
+              </div>
+              <p class="text-xs text-rose-300/90 mt-1 leading-relaxed">
+                💡 단순히 위치가 밀린 것이 아니라, <strong>상대 세션에는 아예 작성/생성되지 않은 독자적인 대화 청크</strong>입니다. (전체 청크 중 최고 유사도: ${pct}%)
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. 본문 미리보기 스니펫 (원본 vs 매칭 상대 청크)
+      const sourceSnippet = (sourceChunk.text || '').substring(0, 300) + ((sourceChunk.text || '').length > 300 ? '...' : '');
+      const targetChunk = (bestIdx !== -1) ? otherChunks[bestIdx] : null;
+      const targetSnippet = targetChunk ? ((targetChunk.text || '').substring(0, 300) + ((targetChunk.text || '').length > 300 ? '...' : '')) : '(일치하는 청크 없음)';
+
+      const comparisonHtml = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+          <!-- 기준 청크 -->
+          <div class="p-3 rounded-xl bg-google-surfaceDark border border-google-borderDark flex flex-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-google-borderDark/60">
+              <span class="font-bold text-[11px] text-${sourcePane === 'A' ? 'blue' : 'purple'}-400 font-mono">[${sourcePane}] 기준 청크 #${sourceIndex + 1}</span>
+              <span class="text-[10px] text-google-textSecondary font-mono">${(sourceChunk.text || '').length}자 • ${sourceChunk.role || 'user'}</span>
+            </div>
+            <p class="text-xs text-google-textPrimary font-mono whitespace-pre-wrap break-words leading-relaxed max-h-36 overflow-y-auto select-text">${escapeHtml(sourceSnippet)}</p>
+          </div>
+
+          <!-- 상대 매칭 청크 -->
+          <div class="p-3 rounded-xl bg-google-surfaceDark border border-${isExact ? 'emerald' : (isHigh ? 'amber' : (isPartial ? 'purple' : 'google-borderDark'))}/60 flex flex-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-google-borderDark/60">
+              <span class="font-bold text-[11px] text-${otherPane === 'A' ? 'blue' : 'purple'}-400 font-mono">[${otherPane}] 가장 유사한 청크 ${bestIdx !== -1 ? `#${bestIdx + 1}` : '없음'}</span>
+              <span class="text-[10px] text-google-textSecondary font-mono">${targetChunk ? `${(targetChunk.text || '').length}자 • ${pct}% 일치` : ''}</span>
+            </div>
+            <p class="text-xs text-google-textPrimary font-mono whitespace-pre-wrap break-words leading-relaxed max-h-36 overflow-y-auto select-text ${isNotFound ? 'italic opacity-60 text-zinc-400' : ''}">${escapeHtml(targetSnippet)}</p>
+          </div>
+        </div>
+      `;
+
+      body.innerHTML = bannerHtml + comparisonHtml;
+
+      if (meta) {
+        meta.textContent = `기준: [${sourcePane}] #${sourceIndex + 1} ➔ 탐색 대상: [${otherPane}] 총 ${otherChunks.length}개 청크 전수 분석 완료`;
+      }
+
+      if (jumpBtn) {
+        if (bestIdx !== -1 && !isNotFound) {
+          jumpBtn.classList.remove('hidden');
+          jumpBtn.onclick = () => {
+            closeCompareMatchModal();
+            alignMatchedChunks(sourcePane, sourceIndex, otherPane, bestIdx, bestSim);
+          };
+          const matchLabel = (bestSim >= 0.99) ? '100% 일치' : (bestSim >= 0.88 ? `${pct}% 유사` : `${pct}% 부분 유사`);
+          jumpBtn.innerHTML = `<i data-lucide="columns-2" class="w-3.5 h-3.5"></i><span>[${otherPane}] #${bestIdx + 1}번 청크로 이동 (${matchLabel} 나란히 비교)</span>`;
+        } else {
+          jumpBtn.classList.add('hidden');
+        }
+      }
+
+      modal.classList.remove('hidden');
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    function closeCompareMatchModal() {
+      document.getElementById('compareMatchModal')?.classList.add('hidden');
     }
 
     // 비교 모드 초기화
     async function initCompareView(forceReload = false) {
-      // 1. Pane A 초기화 (현재 열린 activeFilePath와 currentData를 기본으로 설정)
-      if (!compareDataA || forceReload || (activeFilePath && compareFilePathA !== activeFilePath)) {
+      // 1. Pane A 초기화 (비어있거나 명시적 강제 초기화 시에만)
+      if (!compareDataA || (forceReload && !compareFilePathA)) {
         if (currentData && currentData.chunkedPrompt) {
           compareDataA = JSON.parse(JSON.stringify(currentData));
           compareFilePathA = activeFilePath || currentFileName || '대화_A.json';
@@ -9998,7 +11196,7 @@
       }
 
       // 2. Pane B 초기화 (비어있는 경우 자동으로 연관된 부모/자식 또는 두 번째 파일 추천)
-      if (!compareDataB || forceReload) {
+      if (!compareDataB || (forceReload && !compareFilePathB)) {
         const allFiles = getAllFilesForCompare();
         let targetBFile = null;
 
@@ -10102,8 +11300,14 @@
       // 파일명 표시
       const fNameA = document.getElementById('compareFileNameDisplayA');
       const fNameB = document.getElementById('compareFileNameDisplayB');
-      if (fNameA) fNameA.textContent = compareFileNameA || '대화 A를 선택하세요';
-      if (fNameB) fNameB.textContent = compareFileNameB || '대화 B를 선택하세요';
+      if (fNameA) {
+        fNameA.textContent = compareFileNameA ? formatFileDisplayName(compareFileNameA) : '대화 A를 선택하세요';
+        fNameA.title = compareFileNameA || '';
+      }
+      if (fNameB) {
+        fNameB.textContent = compareFileNameB ? formatFileDisplayName(compareFileNameB) : '대화 B를 선택하세요';
+        fNameB.title = compareFileNameB || '';
+      }
 
       // 통계 뱃지
       const statsA = document.getElementById('compareStatsA');
@@ -10121,6 +11325,9 @@
       const jumpInputB = document.getElementById('compareJumpInputB');
       if (jumpInputA) jumpInputA.max = chunksA.length;
       if (jumpInputB) jumpInputB.max = chunksB.length;
+
+      const syncJumpInput = document.getElementById('compareSyncJumpInput');
+      if (syncJumpInput) syncJumpInput.max = Math.max(chunksA.length, chunksB.length);
 
       // Diff 계산
       const diff = computeCompareDiffStats(chunksA, chunksB);
@@ -10253,6 +11460,11 @@
                 <button onclick="toggleCompareChunkEdit('${pane}', ${i})" class="px-2 py-0.5 rounded-lg bg-google-cardDark hover:bg-zinc-700/80 border border-google-borderDark text-[11px] text-google-textSecondary hover:text-white font-medium flex items-center space-x-1 transition cursor-pointer" title="${isEditing ? '미리보기 완료' : '내용 직접 편집'}">
                   <i data-lucide="${isEditing ? 'check' : 'pencil'}" class="w-3 h-3 ${isEditing ? 'text-emerald-400' : ''}"></i>
                   <span class="${isEditing ? 'text-emerald-400 font-bold' : ''}">${isEditing ? '완료' : '수정'}</span>
+                </button>
+
+                <!-- Search Match in Opposite Pane (상대 대화에서 일치/유사 청크 추적) -->
+                <button onclick="findChunkMatchInOpposite('${pane}', ${i})" class="p-1 rounded-lg bg-google-cardDark hover:bg-amber-950/60 border border-google-borderDark hover:border-amber-500/60 text-google-textSecondary hover:text-amber-300 transition cursor-pointer" title="상대 대화(${otherPane})에서 이 내용과 100% 일치하거나 90%+ 유사한 청크가 있는지, 또는 완전 신규 내용인지 추적 검색">
+                  <i data-lucide="scan-search" class="w-3.5 h-3.5 text-amber-400"></i>
                 </button>
 
                 <!-- Copy to opposite pane -->
@@ -10606,11 +11818,58 @@
       }
     }
 
-    // 비교 뷰 새로고침
+    // 비교 뷰 새로고침: 현재 A창과 B창에 열려있는 파일의 최신 데이터를 다시 불러옴
     async function refreshComparePanes() {
+      if (compareIsDirtyA || compareIsDirtyB) {
+        if (!confirm('수정 중인 저장되지 않은 변경사항이 있습니다. 새로고침하여 파일 원본 데이터로 다시 불러오시겠습니까?')) {
+          return;
+        }
+      }
       showToast('대화 데이터를 새로고침합니다...', 'refresh-cw');
-      await initCompareView(true);
-      showToast('대화 비교 뷰가 갱신되었습니다.', 'check');
+
+      let reloadedA = false;
+      let reloadedB = false;
+
+      // 1. Pane A 새로고침: 현재 compareFilePathA를 우선 유지하여 최신 내용 re-fetch
+      if (compareFilePathA) {
+        try {
+          const res = await fetch(`/api/file?path=${encodeURIComponent(compareFilePathA)}`);
+          if (res.ok) {
+            compareDataA = await res.json();
+            compareIsDirtyA = false;
+            compareEditingIndicesA.clear();
+            document.getElementById('compareDirtyBadgeA')?.classList.add('hidden');
+            reloadedA = true;
+            if (activeFilePath && compareFilePathA === activeFilePath) {
+              currentData = JSON.parse(JSON.stringify(compareDataA));
+              renderChunks();
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 2. Pane B 새로고침: 현재 compareFilePathB를 우선 유지하여 최신 내용 re-fetch
+      if (compareFilePathB) {
+        try {
+          const res = await fetch(`/api/file?path=${encodeURIComponent(compareFilePathB)}`);
+          if (res.ok) {
+            compareDataB = await res.json();
+            compareIsDirtyB = false;
+            compareEditingIndicesB.clear();
+            document.getElementById('compareDirtyBadgeB')?.classList.add('hidden');
+            reloadedB = true;
+          }
+        } catch (_) {}
+      }
+
+      // 3. 만약 대화 데이터가 아예 비어있었던 경우에만 기본 초기화 진행
+      if (!compareDataA || !compareDataB) {
+        await initCompareView(false);
+      } else {
+        renderComparePanes();
+      }
+
+      showToast('대화 비교 뷰가 최신 데이터로 갱신되었습니다.', 'check');
     }
 
     // --- 사이드바 미니 검색 컨트롤러 ---
@@ -10712,7 +11971,7 @@
                class="p-2.5 rounded-xl bg-google-surfaceDark/90 border border-google-borderDark hover:border-blue-500/70 transition cursor-pointer space-y-1.5 group select-none shadow-sm ${isCurrentFile ? 'border-blue-900/60 bg-blue-950/20' : ''}">
             <div class="flex items-center justify-between text-[10px]">
               <span class="font-bold text-blue-400 group-hover:text-blue-300 truncate max-w-[150px]" title="${safeName}">
-                ${safeName}
+                ${escapeHtml(formatFileDisplayName(item.filename))}
               </span>
               <span class="px-1.5 py-0.2 rounded-full bg-purple-950 text-purple-300 border border-purple-800 font-mono text-[9px] flex-shrink-0">
                 ${safeCat}
