@@ -1,5 +1,7 @@
 # Google AI Studio Prompt & Chunk Manager
 
+> 📖 **전체 기능 상세 매뉴얼 및 명세서:** 다른 AI 세션이나 개발자에게 공유할 수 있는 전체 기능 정의서는 [FEATURES.md](FEATURES.md)에 상세히 정리되어 있습니다.
+
 Google AI Studio에서 내보낸(Export) JSON 파일을 마치 AI Studio 웹 인터페이스처럼 직관적으로 시각화하고, 청크 단위로 자유롭게 편집, 복제, 복사/붙여넣기 및 관리할 수 있는 도구입니다.
 
 ---
